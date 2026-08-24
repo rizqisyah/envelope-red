@@ -1,5 +1,4 @@
-/* Placeholder families until the design's real faces are known. Trim what this
-   design does not use — every import here is a font request. */
+/* Only the families Frame 254 (cover) needs. The body frame's faces get added per band. */
 @import "@fontsource/playball/400.css";
 @import "@fontsource/ibarra-real-nova/500-italic.css";
 @import "@fontsource/jost/400.css";
@@ -7,10 +6,21 @@
 @import "./style/tokens.css";
 
 /*
- * Self-hosted faces go here: drop the file in src/assets/fonts/ and add an @font-face
- * block pointing at it. Record the license in a comment beside it — several of the
- * faces these templates use are demo cuts that are personal-use only.
+ * The couple name's real face. Self-hosted rather than CDN so it survives the CSP and
+ * works offline. It ships as the .ttf the foundry distributes — 57KB, and converting to
+ * woff2 needs a toolchain this repo does not carry.
+ *
+ * LICENSE: this is the DEMO cut (fontspace.com/charoly-signature-font-f126461), which is
+ * personal-use only. Shipping this template commercially needs the paid family. Swapping
+ * it is one url() here — the metrics are the same.
  */
+@font-face {
+  font-family: "Charoly Demo";
+  src: url("./assets/fonts/charoly-demo-regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 *,
 *::before,

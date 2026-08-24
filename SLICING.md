@@ -1,8 +1,8 @@
 # Slicing notes — template 5
 
-Nothing has been sliced yet. This file carries the **method** the earlier templates
-arrived at, with every template-specific measurement stripped out. Fill the tables in as
-the frames are cut; keep the traps — every one of them cost real time to find.
+The **cover (Frame 254) is sliced**; the body frame is not. This file carries the method
+the earlier templates arrived at plus this template's own measurements. Fill the rest in
+as the frames are cut; keep the traps — every one of them cost real time to find.
 
 `../slicing-wedding-template-4` is the finished reference implementation. Read its
 `SLICING.md` and its `src/components/sections/*.vue` when a rule here needs an example.
@@ -12,25 +12,53 @@ the frames are cut; keep the traps — every one of them cost real time to find.
 | Path | What it is |
 |---|---|
 | `src/App.vue` | Desktop split layout (left panel + 430px column), cover→body reveal |
-| `src/components/cover/CoverSection.vue` | **Placeholder.** Replace with the sliced cover; keep the props and the `open` event |
+| `src/components/cover/CoverSection.vue` | **Sliced** from Frame 254. Layer table in `src/lib/coverLayers.ts` |
 | `src/components/invite/InviteBody.vue` | **Placeholder.** The sheet: declares `--px` and lists the bands |
 | `src/components/invite/BandArt.vue` | Renders a `BandLayer[]` table with per-layer entrances. Design-agnostic |
 | `src/lib/bandLayer.ts` / `bandAssets.ts` | The layer type, and the glob that turns `src/assets/<band>/parts/*.webp` into urls |
 | `src/lib/api.ts` / `composables/useWedding.ts` | Live data + `DESIGN_MODE`. Every band's copy is data-driven |
 | `src/composables/useReveal.ts` / `useFitText.ts` / `usePreloadAssets.ts` | Scroll reveal, text fitting, asset preload (glob-driven, no edit needed) |
-| `src/style/tokens.css` | Colour + font tokens. **Placeholders** — resample from the design |
+| `src/style/tokens.css` | Colour + font tokens. Sampled off Frame 254; `--body-h` still to come |
 | `scripts/` | The slicing toolchain, below |
 
 Dev server runs on **5178** (template-4 is on 5176) so both can run side by side.
 
-## Fill these in first
+## The frames
 
-1. The two frames (cover + body), their node ids and sizes.
-2. `--body-h`, `--frame-w`, `--frame-h` in `tokens.css`.
-3. The palette, sampled off the design's own text fills.
-4. The font table: which family each node uses, and which are substituted.
-5. `.figma-ref/frame<N>-{raw,layout,assets,zorder}.json` — dump these once and work from
-   them rather than re-querying Figma.
+| Frame | Node | Size | State |
+|---|---|---|---|
+| 254 — cover | `2852:577` | 375 x 725 | sliced → `src/components/cover/CoverSection.vue` |
+| 253 — body | (not dumped) | 375 x ? | **not sliced.** `--body-h` is still 0 |
+
+`.figma-ref/frame254-raw.json` is the full child list with a verdict per node;
+`-assets.json` is the four layers that survived, their positions and how each was
+derived. Work from those rather than re-querying Figma.
+
+## Palette (sampled off Frame 254's own fills)
+
+| Token | Value | Where |
+|---|---|---|
+| `--wine` / `--paper` | `#530915` | `Rectangle 124`, the plate the whole cover sits on |
+| `--gold-bright` | `#eed891` | couple name, "Click to open..." |
+| `--gold-pale` | `#e8e4a9` | "The Wedding Of" |
+| `--gold-muted` | `#d0cb84` | guest block |
+
+`--paper` is the wine, not a cream — it is the ground for `<body>`, the desktop column
+and `.cover`, and any other value flashes at every seam on a full-bleed design.
+
+## Fonts
+
+| Figma face | Token | Shipping as |
+|---|---|---|
+| Charoly Demo | `--font-display` | **the real file**, self-hosted from `src/assets/fonts/`. Demo cut, personal-use only |
+| BusinessPenmanshipW00-Bold | `--font-script` | **SUB** — Playball. No webfont and no file |
+| Ibarra Real Nova Medium Italic | `--font-serif` | fontsource, as authored |
+| Jost | `--font-sans` | fontsource, as authored |
+
+Playball's compensation lives on `.cover__eyebrow`: **size up** 20 → 23 and `left`
+53 → 51. Playball sets *narrower* than the penmanship, which is the opposite of the way
+these substitutions usually go — do not assume the sign. Retiring the substitute means
+reverting both numbers, not just the family.
 
 ## The thing that will bite you: exported bounds are not node bounds
 
@@ -159,6 +187,30 @@ bands, not an absolute fidelity score: it carries every deliberate deviation fro
 — substitute fonts, the live countdown where the design bakes a static plate, the live wish
 list and gallery where it bakes rasters of mock content.
 
+Measured as `web-mobile.png` vs `.figma-tmp/frame254-1x.png`, per channel, 0-255.
+
 | band | delta | band | delta |
 |---|---|---|---|
-| — | — | — | — |
+| cover (Frame 254, below the status bar) | 1.35 | — | — |
+
+## Cover-specific findings
+
+**Only four of Frame 254's eight non-text children paint anything.** `Rectangle 124` is
+flat `#530915` and became a CSS background; `bac 1` is flat white and fully buried under
+it; `watermarked_img_...-Photoroom 4` exports 1x1 fully transparent; the iOS status bar
+is device chrome. Export first, decide after — the frame's node list is not the layer list.
+
+**This MCP exports nodes unclipped, but not always.** `bac 1` came back 375 wide against
+a declared 422, so the clip rule still applies. The two rotated nodes came back *larger*
+than declared. `cascac 1` matched the re-centre rule to 1px; `dsvfsb 1` (the calla lily,
+~84 degrees) did not — its reported bounds put it 180px below where it renders, exactly
+the "bounds lie outright" case. Its position is `locate.py`'s match (err 17.2).
+
+**`pointer-events: none` on `.cover__layer` is load-bearing.** The lily is authored across
+the "Click to open..." box and above it in the global z order, so without it the cover
+cannot be opened at all — Playwright reports the img intercepting the click.
+
+**A Figma text box shorter than its own line is a fitText trap.** `Ahmad & Salma` is 32px
+type in a 27px box. Reproduced literally, `scrollHeight` exceeds `clientHeight` on a
+single line and `useFitText` silently shrinks the name to 0.92. Give the rule the full
+line-height and pay the 2.5px back through `top`.

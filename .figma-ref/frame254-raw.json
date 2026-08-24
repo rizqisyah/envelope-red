@@ -1,0 +1,21 @@
+{
+  "frame": "2852:577",
+  "name": "Frame 254",
+  "size": { "w": 375, "h": 725 },
+  "note": "children are BOTTOM-FIRST; index+1 is the z used by coverLayers.ts and CoverSection.vue",
+  "children": [
+    { "z": 1, "id": "2852:579", "name": "bac 1", "type": "RECTANGLE", "x": -22, "y": 29, "w": 422, "h": 704, "fill": "#ffffff", "verdict": "PAINTS_NOTHING — flat white, fully buried under Rectangle 124" },
+    { "z": 2, "id": "2852:578", "name": "Rectangle 124", "type": "RECTANGLE", "x": 0, "y": 0, "w": 375, "h": 725, "fill": "#530915", "verdict": "flat colour — CSS background, no asset" },
+    { "z": 3, "id": "2854:610", "name": "fa719578-...-Photoroom 1", "type": "RECTANGLE", "x": 47, "y": 222, "w": 295, "h": 196, "verdict": "asset — envelope" },
+    { "z": 4, "id": "2852:581", "name": "watermarked_img_...-Photoroom 4", "type": "RECTANGLE", "x": 144, "y": 111, "w": 549, "h": 686, "verdict": "PAINTS_NOTHING — export is 1x1, fully transparent" },
+    { "z": 5, "id": "2852:582", "name": "Nama Tamu", "type": "TEXT", "x": 106, "y": 524, "w": 163, "h": 25, "font": "Ibarra Real Nova 16 Medium Italic", "fill": "#d0cb84" },
+    { "z": 6, "id": "2852:583", "name": "The Wedding Of", "type": "TEXT", "x": 53, "y": 147, "w": 269, "h": 30, "font": "BusinessPenmanshipW00-Bold 20/30", "fill": "#e8e4a9" },
+    { "z": 7, "id": "2852:584", "name": "Click to open...", "type": "TEXT", "x": 40, "y": 454, "w": 133, "h": 30, "font": "Jost 15/30 +2%", "fill": "#eed891" },
+    { "z": 8, "id": "2852:585", "name": "Ahmad & Salma", "type": "TEXT", "x": 50, "y": 185, "w": 289, "h": 27, "font": "Charoly Demo 32/27", "fill": "#eed891" },
+    { "z": 9, "id": "2852:586", "name": "Status / Default - Black", "type": "INSTANCE", "x": 0, "y": 0, "w": 375, "h": 44, "verdict": "device chrome — not rendered on the web" },
+    { "z": 10, "id": "2852:587", "name": "Dear Mr/ Mrs/ Ms", "type": "TEXT", "x": 91, "y": 503, "w": 193, "h": 25, "font": "Ibarra Real Nova 14 Medium Italic", "fill": "#d0cb84" },
+    { "z": 11, "id": "2854:614", "name": "004dd5ed-...-Photoroom 1", "type": "RECTANGLE", "x": 163, "y": 332, "w": 64, "h": 64, "verdict": "asset — gold wax seal" },
+    { "z": 12, "id": "2854:615", "name": "dsvfsb 1", "type": "RECTANGLE", "x": 61, "y": 483.76, "w": 139.91, "h": 248.6, "verdict": "asset — calla lily, ROTATED ~84deg. Reported bounds lie outright; located at 59,344 259x163 (err 17.2)" },
+    { "z": 13, "id": "2913:3757", "name": "cascac 1", "type": "RECTANGLE", "x": 158, "y": 85, "w": 59, "h": 58, "verdict": "asset — cameo medallion, rotated. Re-centre rule gave 153,80; located at 153,81 (err 4.1)" }
+  ]
+}

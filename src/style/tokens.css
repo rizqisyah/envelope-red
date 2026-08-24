@@ -1,24 +1,42 @@
 :root {
-  /* Theme hooks — useWedding() overwrites these from the API's theme_config. */
+  /*
+   * Theme hooks — useWedding() overwrites these from the API's theme_config.
+   * The three text hooks are still the placeholders: nothing on the cover path reads
+   * them, and seeding them with Frame 254's gold-on-wine fills would hand the body
+   * bands a pale gold where they expect a maroon. Re-sample them off Frame 253 when
+   * it is sliced. --bg-body is real — Frame 253 sits on the same wine plate.
+   */
   --maroon-title: #ad2124;
   --maroon-text: #790707;
   --gold: #ac6f28;
-  --bg-body: #f2ece1;
+  --bg-body: #530915;
 
-  /* colors — sample these off the design's own text fills once it is sliced. */
-  --paper: #f2ece1; /* the ground the sheet sits on */
+  /* colors — sampled from Frame 254's own fills */
+  --wine: #530915; /* Rectangle 124, the plate the whole cover sits on */
+  --gold-bright: #eed891; /* couple name, "Click to open..." */
+  --gold-pale: #e8e4a9; /* "The Wedding Of" */
+  --gold-muted: #d0cb84; /* guest block */
+  /*
+   * The ground for <body>, the desktop column and the cover box. This design is
+   * full-bleed wine, so a cream --paper would flash at every seam.
+   */
+  --paper: #530915;
 
   /*
-   * fonts — placeholders from @fontsource until the design's real faces are known.
-   * Self-hosted faces go in src/assets/fonts/ with an @font-face in style.css.
+   * fonts — BusinessPenmanshipW00 (--font-script) has no webfont and no file, so it
+   * runs on the closest fontsource substitute. Its size compensation is measured by
+   * sweep against the render and lives on `.cover__eyebrow`; retiring the substitute
+   * means re-measuring, not just swapping this value.
    */
-  --font-script: "Playball", cursive;
-  --font-display: "Ibarra Real Nova", serif; /* couple name */
+  --font-script: "Playball", cursive; /* SUB for BusinessPenmanshipW00-Bold — "The Wedding Of" */
+  /* Frame 254's real face, self-hosted (see the @font-face in style.css). No substitute
+     and therefore no compensation: the couple name runs at Figma's own 32/27. */
+  --font-display: "Charoly Demo", serif; /* couple name */
   --font-serif: "Ibarra Real Nova", serif; /* guest block */
   --font-sans: "Jost", system-ui, sans-serif; /* UI labels */
   --font-body: "Cormorant Garamond", serif; /* body copy */
 
-  /* design frame reference — set these from the Figma frames. */
+  /* design frame reference (Figma Frame 254 cover; the body frame is not sliced yet) */
   --frame-w: 375;
   --frame-h: 725;
   --body-h: 0;

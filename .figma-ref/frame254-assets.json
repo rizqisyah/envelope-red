@@ -1,0 +1,20 @@
+{
+  "frame": "2852:577",
+  "scale": 2,
+  "assetDir": "src/assets/opening/",
+  "ref": ".figma-tmp/frame254-1x.png",
+  "meanAbsDelta": 14.68,
+  "note": "delta is art-only (no live text, no status bar) against the 1x frame render",
+  "nodes": {
+    "2854:610": { "asset": "parts/2854-610.webp", "x": 47, "y": 222, "w": 295, "h": 196, "source": "figma bounds (export matched node size)", "err": 17.04 },
+    "2854:614": { "asset": "parts/2854-614.webp", "x": 163, "y": 332, "w": 64, "h": 64, "source": "figma bounds (export matched node size)", "err": 6.31 },
+    "2854:615": { "asset": "parts/2854-615.webp", "x": 59, "y": 344, "w": 259, "h": 163, "source": "locate.py", "err": 17.16 },
+    "2913:3757": { "asset": "parts/2913-3757.webp", "x": 153, "y": 81, "w": 69, "h": 68, "source": "locate.py (agrees with the re-centre rule)", "err": 4.06 }
+  },
+  "dropped": {
+    "2852:579": "flat white, buried under the maroon plate",
+    "2852:578": "flat #530915 — CSS background",
+    "2852:581": "exports 1x1 fully transparent",
+    "2852:586": "iOS status bar chrome"
+  }
+}
