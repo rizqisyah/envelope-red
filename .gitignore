@@ -28,15 +28,10 @@ dist-ssr
 *.sln
 *.sw?
 
-# .figma-ref holds the Figma node map the slicing depends on - keep it tracked.
+# Playwright screenshots + Figma scratch renders. `.figma-ref` holds the Figma node
+# map the slicing depends on and stays tracked; only the scratch dir is ignored.
 .figma-tmp/
 
 # Python bytecode from the slicing scripts.
 __pycache__/
 *.pyc
-
-# Playwright screenshots + Figma scratch renders.
-.figma-tmp/
-
-# Font source archives — the face actually used lives in src/assets/fonts/.
-font/

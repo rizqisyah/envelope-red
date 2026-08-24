@@ -19,7 +19,7 @@ from solve_band import load, paste, compose, make_mask, band_error, FRAME_W
 def probe(jobpath, nid, xr, yr):
     job=json.load(open(jobpath)); y0,y1=job['y0'],job['y1']; H=y1-y0; L=job['layers']
     imgs={s['id']:load(s['asset'], s.get('scale',2)) for s in L}
-    ref=Image.open('.figma-tmp/frame242-full.png').convert('RGB').crop((0,y0,FRAME_W,y1))
+    ref=Image.open(os.environ.get('BAND_REF') or sys.exit('set BAND_REF=<1x body frame render png>')).convert('RGB').crop((0,y0,FRAME_W,y1))
     mask=make_mask(job.get('textMasks',[]),y0,H)
     i=[k for k,s in enumerate(L) if s['id']==nid][0]; im=imgs[nid]
     below=compose(L,imgs,y0,H,hi=i); above=compose(L,imgs,y0,H,lo=i+1)

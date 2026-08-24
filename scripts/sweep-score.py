@@ -7,9 +7,12 @@ mostly background and the sweep found nothing; widen or move the box.
     python3 scripts/sweep-score.py
 """
 import json
+import os
+import sys
 from PIL import Image, ImageChops
 
-REF = '.figma-tmp/frame242-full.png'  # scale 1, so 1px == 1 design px
+# scale 1, so 1px == 1 design px
+REF = os.environ.get('BAND_REF') or sys.exit('set BAND_REF=<1x body frame render png>')
 
 job = json.load(open('.figma-tmp/sweep.json'))
 x0, y0, x1, y1 = job['box']

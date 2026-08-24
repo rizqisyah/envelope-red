@@ -92,7 +92,7 @@ search therefore falls back to the clip rule; only `PAINTS_NOTHING` is dropped, 
 for layers that paint an artifact the render does not have.
 
 Settle the ambiguous ones by compositing the band offline and scoring it against the
-render (`scripts/merge-plate.py`, `scripts/band-diff.py`), not by eye.
+render (`scripts/solve_band.py`, `scripts/worth.py`, `scripts/band-diff.py`), not by eye.
 
 **A flat-colour layer defeats `locate.py`.** Cream matches cream anywhere, so a blurred
 single-colour plate scores under `GOOD_ERR` a couple of hundred px from where it belongs.
