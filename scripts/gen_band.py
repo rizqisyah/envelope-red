@@ -25,6 +25,7 @@ Two things make this more than a coordinate dump:
 
 Writes src/lib/bands/<section>.ts and prints a per-band summary.
 """
+import hashlib
 import json
 import os
 import pathlib
@@ -52,6 +53,12 @@ GOOD_ERR = 40.0  # locate.py: above this an asset is not visible at that spot
 # "under ~15 is a real match" -- or it moves layers the clip rule had right. At 40 it
 # took hero from 4.32 to 9.20 and quote from 4.00 to 8.83.
 SURE_ERR = 15.0
+# A node whose reported box barely overlaps the frame is a rotated or mirrored copy whose
+# bounds are fiction -- Figma still exported pixels for it, so it renders SOMEWHERE. The
+# clip rule cannot help (the export was not clipped, so neither reconcile branch fires)
+# and `locate` never fires either, because a hint outside the frame has nothing to match.
+# Below this fraction on-frame, search the full width at the reported y instead.
+ON_FRAME_MIN = 0.25
 OUT_DIR = pathlib.Path("src/lib/bands")
 
 # Rotated nodes whose reported bounds are fiction AND which no position in the frame
@@ -64,7 +71,7 @@ OUT_DIR = pathlib.Path("src/lib/bands")
 # 475x159.65 source (c2a52e8a), but the fourth, 2706:144, is genuinely visible:
 # dropping it took akad from 7.62 to 8.58 and the sheet from 8.15 to 8.24, so it stays.
 # Add to this list only with a before/after delta for that node alone.
-PAINTS_NOTHING = {}  # per-design; see SLICING.md for how these are measured
+PAINTS_NOTHING = {"2878:299", "2899:222"}  # measured one at a time; see SLICING.md
 
 # Layers where the clip rule is right and the search is wrong. A layer buried under
 # most of its band scores badly WHERE IT BELONGS, so the search wanders off to open
@@ -102,23 +109,25 @@ TRUST_CLIP = {}  # per-design; see SLICING.md for how these are measured
 # under 2706:157 and 2706:156, so locate.py only scores 60 there and the search never
 # fires. Offline composite over rows 140-360, x 230-375: 6.358 at the reported 363,
 # 2.582 at 286 (measured after 2706:157's PIN_Y below, which overlaps it).
-PIN_X = {}  # per-design; see SLICING.md for how these are measured
+# 2877:255 / 2877:256 are the mirrored fan pair behind the "Love brought us here"
+# medallion. Both report y 3348 (inside the gallery band) and export 280x280 unclipped,
+# so neither reconcile branch fires and the fiction stands -- they render as a pair of
+# arcs across the linen card that the design does not have. A full-frame template match
+# puts them 280px higher, straddling the groom/gallery boundary: 2877:255 at 0,3068
+# (err 5.56) and its mirror at 156,3068 (err 15.50), which is the pair across the frame.
+# 2858:262 is the right-hand curtain of the groom band's mirrored pair. Its reported x is
+# 450 -- fully off-frame -- so the off-frame rescue above fires and finds x 23, stacking
+# it on top of its own mirror (2858:266, at x 0) and leaving the frame's right third bare.
+# The pair meets in the middle: 375 - 264 = 111, which scores 18.11 against 26.77 at 23.
+PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111}
 
-# Same class of failure, but the y is wrong too, so PIN_X alone cannot fix it.
-# 2712:169 is resepsi's third flower cluster. It reports 111,5258 -- the bare lattice
-# in the middle of the arch, where the render shows nothing -- because it belongs in
-# the LEFT DOME cluster, overlapping 2712:167/171. That overlap is also why locate.py
-# scores it at err 76 where it belongs (its visible siblings score 59-152 at their own
-# correct spots for the same reason), so the search never fires and the reported
-# bounds stand. Settled by compositing the band offline and scoring rows 0-560 against
-# the render: 5.350 at the reported 111,5258, 4.496 with the layer dropped entirely,
-# 3.696 at 34,5143 -- which is exactly where locate.py put it too.
-# 2706:157 is akad's other right-side rose cluster. It reports 262,4270 -- hanging low
-# off the right pillar, below the arch spring -- but the render has it up in the dome
-# cluster at 262,4155, which is also where locate.py puts it (err 77.69: the same
-# occlusion trap, 2706:156's vine paints over it). Offline composite over rows 140-360,
-# x 230-375: 14.473 at the reported 4270, 6.358 at 4155.
-PIN_Y = {"2712:169": 5143, "2706:157": 4155}
+# Same class of failure, but the y is wrong too, so PIN_X alone cannot fix it. Both of
+# Frame 253's entries are the fan pair above -- their y is 280px out as well as their x,
+# which is why neither PIN alone would do. A layer earns a place here only when a
+# full-frame template match disagrees with its reported bounds AND scores low enough to
+# be believed (locate.py: "under ~15 is a real match"); an occluded layer scoring badly
+# where it belongs is not evidence of anything.
+PIN_Y = {"2877:255": 3068, "2877:256": 3068}
 
 
 def reconcile(pos, node_size, exp_size, frame_size):
@@ -201,17 +210,50 @@ def band_tops(children):
         s = c["section"]
         firsts[s] = min(firsts.get(s, c["y"]), c["y"])
     ordered = sorted(firsts.items(), key=lambda kv: kv[1])
+    # The sheet must start at the frame's top edge. The first band's first child can sit
+    # below y0 (Frame 253's does, at 67), and honouring that would open a gap above the
+    # first band that the design does not have.
+    if ordered:
+        ordered[0] = (ordered[0][0], 0)
+    # Round the tops FIRST, then derive each height from the next rounded top. Rounding
+    # top and height independently leaves a 1px seam between bands wherever both round
+    # the same way, and the sheet ends up short of FRAME_H.
+    ordered = [(name, round(top)) for name, top in ordered]
     spans = {}
     for i, (name, top) in enumerate(ordered):
         nxt = ordered[i + 1][1] if i + 1 < len(ordered) else FRAME_H
-        spans[name] = (round(top), round(nxt - top))
+        spans[name] = (top, nxt - top)
     return spans, [name for name, _ in ordered]
 
 
 def main():
+    # scripts/solve_alpha.py's output: the opacity Figma's MCP never reports, and the
+    # residual offset the clip/re-centre/locate chain could not reach. Both are optional
+    # -- an unsolved frame just generates at full opacity and no nudge.
+    alpha_path = pathlib.Path(f".figma-ref/frame{FRAME}-alpha.json")
+    place_path = pathlib.Path(f".figma-ref/frame{FRAME}-place.json")
+    blend_path = pathlib.Path(f".figma-ref/frame{FRAME}-blend.json")
+    ALPHA = json.load(alpha_path.open()) if alpha_path.exists() else {}
+    PLACE = json.load(place_path.open()) if place_path.exists() else {}
+    BLEND = json.load(blend_path.open()) if blend_path.exists() else {}
+
     zorder = json.load(open(f".figma-ref/frame{FRAME}-zorder.json"))
     children = zorder["children"] if isinstance(zorder, dict) else zorder
     assets = json.load(open(f".figma-ref/frame{FRAME}-assets.json"))["nodes"]
+
+    # A sprite used by more than one node cannot be template-matched: every copy scores
+    # the same at every other copy's slot, and `locate` happily reports card 1's plate at
+    # card 2's position. The gift band's three identical account plates lost their first
+    # card entirely to this. Their reported bounds are already right -- trust them.
+    # Keyed on the file's BYTES, not its path: Figma exports each node separately, so the
+    # gift band's three identical plates are three different .webp files with identical
+    # content. Hashing is what actually finds them.
+    used = {}
+    for nid, a in assets.items():
+        f = pathlib.Path("src/assets/" + a["asset"])
+        if f.exists():
+            used.setdefault(hashlib.md5(f.read_bytes()).hexdigest(), []).append(nid)
+    twins = {nid for ids in used.values() if len(ids) > 1 for nid in ids}
 
     spans, order = band_tops(children)
     wanted = sys.argv[1:] or order
@@ -241,10 +283,30 @@ def main():
             scale = a.get("assetScale", SCALE)
             w, h = im.width // scale, im.height // scale
 
-            found, err = locate.locate(path, max(0, round(c["x"])), max(0, round(c["y"])))
+            # Fraction of the NODE that overlaps the frame -- against c["w"], never the
+            # export width. A blurred or rotated node exports far wider than it claims,
+            # and dividing by that understated every such node into a false rescue: the
+            # gift band went 5.4 -> 25.3 the one time this read `w`.
+            on_frame = max(0.0, min(c["x"] + c["w"], FRAME_W) - max(c["x"], 0)) / max(1.0, c["w"])
+            found, err = (None, None)
+            if c["id"] not in twins:
+                found, err = locate.locate(path, max(0, round(c["x"])), max(0, round(c["y"])))
             if found and found[4] < GOOD_ERR and c["id"] not in TRUST_CLIP:
                 x, y = found[0], found[1]
                 matched += 1
+            elif on_frame < ON_FRAME_MIN and c["id"] not in TRUST_CLIP and c["id"] not in twins:
+                # Taken unconditionally, unlike the rescue below: where the reported box
+                # puts this layer it is invisible, so ANY match inside the frame is better
+                # evidence than bounds that place it off the edge. The error is still
+                # meaningless on an occluded layer -- the groom arch's floral scores 78
+                # where it belongs, the same as its visible twin in the bride band.
+                hit = rescue(path, max(0, round(c["y"])), span=60, step=4)
+                if hit:
+                    x, y = hit[0], hit[1]
+                    matched += 1
+                else:
+                    x = reconcile(c["x"], c["w"], w, FRAME_W)
+                    y = reconcile(c["y"], c["h"], h, FRAME_H)
             elif w < round(c["w"]) or h < round(c["h"]):
                 # Figma clipped this export, which means the node bleeds off an edge --
                 # and a bleeding node in this file is usually a rotated one, whose
@@ -276,9 +338,13 @@ def main():
             else:
                 x = reconcile(c["x"], c["w"], w, FRAME_W)
                 y = reconcile(c["y"], c["h"], h, FRAME_H)
+            x, y = PLACE.get(c["id"], (x, y))
+            # PIN_X/PIN_Y last: they are hand-measured against the render, so they beat
+            # both the reconcile chain and the solver's own search.
             x = PIN_X.get(c["id"], x)
             y = PIN_Y.get(c["id"], y)
-            rows.append((c["z"], c["id"], a["asset"], x, y - top, w, h))
+            rows.append((c["z"], c["id"], a["asset"], x, y - top, w, h,
+                         ALPHA.get(c["id"], 1.0), BLEND.get(c["id"], "normal")))
 
         rows.sort(key=lambda r: r[0])
         if not rows:
@@ -301,13 +367,13 @@ export const BAND_HEIGHT = {height}
 
 export const LAYERS: BandLayer[] = [
 """
-        for z, nid, asset, x, y, w, h in rows:
-            mod = asset.replace("/", "_").replace("-", "_").replace(".webp", "")
+        for z, nid, asset, x, y, w, h, alpha, mode in rows:
+            extra = "" if alpha == 1.0 else f", a: {alpha}"
+            extra += "" if mode == "normal" else f", b: '{mode}'"
             body += (
                 f"  {{ z: {z}, id: '{nid}', src: assets['{asset}'],"
-                f" x: {x}, y: {y}, w: {w}, h: {h} }},\n"
+                f" x: {x}, y: {y}, w: {w}, h: {h}{extra} }},\n"
             )
-            del mod
         body += "]\n"
 
         header = """import { assets } from '../bandAssets'

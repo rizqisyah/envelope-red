@@ -1,0 +1,1191 @@
+{
+ "frame": "2852:202",
+ "scale": 2,
+ "assetDir": "src/assets/",
+ "nodes": {
+  "2894:883": {
+   "asset": "closing/parts/2894-883.webp",
+   "figmaName": "Open Burgundy Velvet Envelope-Photoroom 2",
+   "x": 187.85,
+   "y": 7100,
+   "w": 185,
+   "h": 212
+  },
+  "2896:933": {
+   "asset": "gallery/parts/2896-933.webp",
+   "figmaName": "b2afd220-eb4a-47b3-aba5-53c0bf865964-Photoroom 2",
+   "x": 105,
+   "y": 3143,
+   "w": 169,
+   "h": 239
+  },
+  "2894:910": {
+   "asset": "footer/parts/2894-910.webp",
+   "figmaName": "Desain tanpa judul (7) 1",
+   "x": 45,
+   "y": 7745,
+   "w": 294,
+   "h": 196
+  },
+  "2894:886": {
+   "asset": "closing/parts/2894-886.webp",
+   "figmaName": "7ca91d1a-c25e-4538-bb36-81afc9f6e2dd-Photoroom 2",
+   "x": 32,
+   "y": 7217,
+   "w": 311,
+   "h": 467
+  },
+  "2894:887": {
+   "asset": "closing/parts/2894-887.webp",
+   "figmaName": "Ellipse 27",
+   "x": 117,
+   "y": 7321,
+   "w": 141,
+   "h": 244
+  },
+  "2894:903": {
+   "asset": "footer/parts/2894-903.webp",
+   "figmaName": "Desain tanpa judul 1",
+   "x": 45,
+   "y": 7735,
+   "w": 286,
+   "h": 161
+  },
+  "2893:849": {
+   "asset": "rsvp/parts/2893-849.webp",
+   "figmaName": "Desain tanpa judul (4) 2",
+   "x": 457.73,
+   "y": 6279,
+   "w": 192.39,
+   "h": 290.28
+  },
+  "2893:850": {
+   "asset": "gift/parts/2893-850.webp",
+   "figmaName": "Desain tanpa judul (3) 2",
+   "x": -19,
+   "y": 5281,
+   "w": 430,
+   "h": 108
+  },
+  "2893:834": {
+   "asset": "rsvp/parts/2893-834.webp",
+   "figmaName": "9ed2e2b0-5fe5-4ea8-9573-c5aee6522477-Photoroom 1",
+   "x": 263,
+   "y": 6024,
+   "w": 171,
+   "h": 216
+  },
+  "2893:832": {
+   "asset": "rsvp/parts/2893-832.webp",
+   "figmaName": "b47ea314-881d-4930-a72a-b7f773d0d45e-Photoroom 1",
+   "x": 317,
+   "y": 6225.39,
+   "w": 86,
+   "h": 129
+  },
+  "2893:828": {
+   "asset": "rsvp/parts/2893-828.webp",
+   "figmaName": "57561e85-5b06-4007-996f-b80d21cf8874-Photoroom 1",
+   "x": -68,
+   "y": 6064,
+   "w": 143,
+   "h": 191
+  },
+  "2893:829": {
+   "asset": "rsvp/parts/2893-829.webp",
+   "figmaName": "9c8283ed-3b7a-4f5c-9eb8-b1a99fc825b9-Photoroom 1",
+   "x": -43,
+   "y": 6214,
+   "w": 78,
+   "h": 98
+  },
+  "2883:368": {
+   "asset": "youme/parts/2883-368.webp",
+   "figmaName": "6b60b201-d737-40a4-b0b2-7757b4c81305-Photoroom 1",
+   "x": 338.42,
+   "y": 5212,
+   "w": 61.81,
+   "h": 92.72
+  },
+  "2881:360": {
+   "asset": "acara/parts/2881-360.webp",
+   "figmaName": "Untitled_Artwork (3) 4",
+   "x": 77,
+   "y": 4954,
+   "w": 221,
+   "h": 128
+  },
+  "2881:358": {
+   "asset": "theday/parts/2881-358.webp",
+   "figmaName": "fgvfedvfb 1",
+   "x": -17,
+   "y": 3886,
+   "w": 407,
+   "h": 407
+  },
+  "2880:333": {
+   "asset": "acara/parts/2880-333.webp",
+   "figmaName": "Rectangle 168",
+   "x": 77,
+   "y": 4700,
+   "w": 221,
+   "h": 340
+  },
+  "2880:334": {
+   "asset": "acara/parts/2880-334.webp",
+   "figmaName": "Ellipse 22",
+   "x": 87,
+   "y": 4710,
+   "w": 9,
+   "h": 10
+  },
+  "2880:336": {
+   "asset": "acara/parts/2880-336.webp",
+   "figmaName": "Ellipse 24",
+   "x": 87,
+   "y": 5020,
+   "w": 9,
+   "h": 10
+  },
+  "2880:335": {
+   "asset": "acara/parts/2880-335.webp",
+   "figmaName": "Ellipse 23",
+   "x": 280,
+   "y": 4710,
+   "w": 9,
+   "h": 10
+  },
+  "2880:337": {
+   "asset": "acara/parts/2880-337.webp",
+   "figmaName": "Ellipse 25",
+   "x": 280,
+   "y": 5020,
+   "w": 9,
+   "h": 10
+  },
+  "2893:845": {
+   "asset": "invite/parts/2893-845.webp",
+   "figmaName": "Untitled_Artwork (3) 1",
+   "x": 1,
+   "y": 1233,
+   "w": 374,
+   "h": 261
+  },
+  "2893:846": {
+   "asset": "invite/parts/2893-846.webp",
+   "figmaName": "Untitled_Artwork (3) 3",
+   "x": 1,
+   "y": 1233,
+   "w": 374,
+   "h": 261
+  },
+  "2878:327": {
+   "asset": "acara/parts/2878-327.webp",
+   "figmaName": "fa719578-c161-476b-8260-47b9238acebb-Photoroom 2",
+   "x": 33,
+   "y": 4265.38,
+   "w": 167,
+   "h": 111
+  },
+  "2878:287": {
+   "asset": "acara/parts/2878-287.webp",
+   "figmaName": "b2afd220-eb4a-47b3-aba5-53c0bf865964-Photoroom 1",
+   "x": 49,
+   "y": 4313,
+   "w": 278,
+   "h": 393
+  },
+  "2899:222": {
+   "asset": "acara/parts/2899-222.webp",
+   "figmaName": "v dsv cdx 1",
+   "x": 360.66,
+   "y": 4668,
+   "w": 137,
+   "h": 148
+  },
+  "2877:260": {
+   "asset": "theday/parts/2877-260.webp",
+   "figmaName": "Untitled_Artwork (3) 1",
+   "x": 0,
+   "y": 3829,
+   "w": 374,
+   "h": 261
+  },
+  "2881:350": {
+   "asset": "theday/parts/2881-350.webp",
+   "figmaName": "Untitled_Artwork (3) 3",
+   "x": 0,
+   "y": 3829,
+   "w": 374,
+   "h": 261
+  },
+  "2878:301": {
+   "asset": "acara/parts/2878-301.webp",
+   "figmaName": "dsvfsb 6",
+   "x": 279.23,
+   "y": 4535.5,
+   "w": 82,
+   "h": 146
+  },
+  "2878:302": {
+   "asset": "acara/parts/2878-302.webp",
+   "figmaName": "dsvfsb 7",
+   "x": 327.13,
+   "y": 4517.78,
+   "w": 69.37,
+   "h": 123.26
+  },
+  "2881:347": {
+   "asset": "acara/parts/2881-347.webp",
+   "figmaName": "dsvfsb 8",
+   "x": 101.13,
+   "y": 5099.78,
+   "w": 69.37,
+   "h": 123.26
+  },
+  "2881:349": {
+   "asset": "youme/parts/2881-349.webp",
+   "figmaName": "dsvfsb 9",
+   "x": 108.25,
+   "y": 5131.88,
+   "w": 81.33,
+   "h": 144.51
+  },
+  "2875:225": {
+   "asset": "gallery/parts/2875-225.webp",
+   "figmaName": "Rectangle 164",
+   "x": 0,
+   "y": 3323,
+   "w": 375,
+   "h": 558
+  },
+  "2875:226": {
+   "asset": "gallery/parts/2875-226.webp",
+   "figmaName": "Rectangle 165",
+   "x": 52,
+   "y": 3378,
+   "w": 275,
+   "h": 403
+  },
+  "2889:785": {
+   "asset": "theday/parts/2889-785.webp",
+   "figmaName": "Desain tanpa judul (1) 1",
+   "x": 131,
+   "y": 3829,
+   "w": 114,
+   "h": 149
+  },
+  "2877:263": {
+   "asset": "theday/parts/2877-263.webp",
+   "figmaName": "Untitled_Artwork (3) 2",
+   "x": 52,
+   "y": 3822,
+   "w": 275,
+   "h": 192
+  },
+  "2875:228": {
+   "asset": "gallery/parts/2875-228.webp",
+   "figmaName": "prewed",
+   "x": 104,
+   "y": 3504,
+   "w": 167,
+   "h": 98
+  },
+  "2877:262": {
+   "asset": "theday/parts/2877-262.webp",
+   "figmaName": "75ba4ca78120408b69afec7223ab069e-Photoroom 2",
+   "x": 30,
+   "y": 3920,
+   "w": 315,
+   "h": 315
+  },
+  "2911:3752": {
+   "asset": "theday/parts/2911-3752.webp",
+   "figmaName": "Image (Orn Couple)",
+   "x": 154,
+   "y": 4038,
+   "w": 66,
+   "h": 13
+  },
+  "2877:258": {
+   "asset": "theday/parts/2877-258.webp",
+   "figmaName": "\u2014Pngtree\u2014shadow overlay window gray_6863520 1",
+   "x": 478,
+   "y": 3871,
+   "w": 478,
+   "h": 478
+  },
+  "2878:297": {
+   "asset": "acara/parts/2878-297.webp",
+   "figmaName": "Ellipse 21",
+   "x": 31.72,
+   "y": 4421.39,
+   "w": 67.57,
+   "h": 83.62
+  },
+  "2878:295": {
+   "asset": "acara/parts/2878-295.webp",
+   "figmaName": "76f0078a526b497e4e3f35ec51a675d0-Photoroom 2",
+   "x": 17,
+   "y": 4406,
+   "w": 96.85,
+   "h": 114.4
+  },
+  "2878:299": {
+   "asset": "acara/parts/2878-299.webp",
+   "figmaName": "7ca91d1a-c25e-4538-bb36-81afc9f6e2dd-Photoroom 1",
+   "x": 382,
+   "y": 4792,
+   "w": 161,
+   "h": 241
+  },
+  "2858:262": {
+   "asset": "groom/parts/2858-262.webp",
+   "figmaName": "vdfvfd",
+   "x": 450,
+   "y": 2385,
+   "w": 339,
+   "h": 339
+  },
+  "2858:266": {
+   "asset": "groom/parts/2858-266.webp",
+   "figmaName": "vdfvfd",
+   "x": -78,
+   "y": 2385,
+   "w": 339,
+   "h": 339
+  },
+  "2854:632": {
+   "asset": "quote/parts/2854-632.webp",
+   "figmaName": "75ba4ca78120408b69afec7223ab069e-Photoroom 3",
+   "x": -4,
+   "y": 701,
+   "w": 383,
+   "h": 383
+  },
+  "2854:641": {
+   "asset": "quote/parts/2854-641.webp",
+   "figmaName": "dsvfsb 3",
+   "x": 382.39,
+   "y": 891.72,
+   "w": 104,
+   "h": 185
+  },
+  "2854:640": {
+   "asset": "quote/parts/2854-640.webp",
+   "figmaName": "Rangkaian Bunga Burgundy dan Blush Cascading 1",
+   "x": 245,
+   "y": 982,
+   "w": 130,
+   "h": 136
+  },
+  "2858:230": {
+   "asset": "bride/parts/2858-230.webp",
+   "figmaName": "96fc7d2c-81dd-4bc1-a9cc-89db2362c7c1-Photoroom 1",
+   "x": 0,
+   "y": 2134,
+   "w": 122,
+   "h": 184
+  },
+  "2858:250": {
+   "asset": "bride/parts/2858-250.webp",
+   "figmaName": "96fc7d2c-81dd-4bc1-a9cc-89db2362c7c1-Photoroom 2",
+   "x": 364,
+   "y": 2134,
+   "w": 122,
+   "h": 184
+  },
+  "2858:251": {
+   "asset": "groom/parts/2858-251.webp",
+   "figmaName": "Rectangle 163",
+   "x": 0,
+   "y": 2304,
+   "w": 375,
+   "h": 102
+  },
+  "2857:224": {
+   "asset": "bride/parts/2857-224.webp",
+   "figmaName": "d9b0af19-47fb-4495-afb7-4b89b9959e24-Photoroom 3",
+   "x": 0,
+   "y": 1690,
+   "w": 154,
+   "h": 274
+  },
+  "2856:648": {
+   "asset": "bride/parts/2856-648.webp",
+   "figmaName": "Vector 2",
+   "x": 30,
+   "y": 1638,
+   "w": 309,
+   "h": 247
+  },
+  "2856:647": {
+   "asset": "bride/parts/2856-647.webp",
+   "figmaName": "fc fd 1",
+   "x": 7,
+   "y": 1494,
+   "w": 357,
+   "h": 529
+  },
+  "2855:642": {
+   "asset": "invite/parts/2855-642.webp",
+   "figmaName": "Open Burgundy Velvet Envelope-Photoroom 1",
+   "x": 46,
+   "y": 1078,
+   "w": 199,
+   "h": 229
+  },
+  "2854:625": {
+   "asset": "hero/parts/2854-625.webp",
+   "figmaName": "dsvfsb 2",
+   "x": 23,
+   "y": 273,
+   "w": 69,
+   "h": 122
+  },
+  "2854:627": {
+   "asset": "invite/parts/2854-627.webp",
+   "figmaName": "gfbgfn 1",
+   "x": 119.47,
+   "y": 1010,
+   "w": 137.35,
+   "h": 146.52
+  },
+  "2858:248": {
+   "asset": "invite/parts/2858-248.webp",
+   "figmaName": "Rectangle 161",
+   "x": 111.62,
+   "y": 1264.16,
+   "w": 83,
+   "h": 117
+  },
+  "2858:249": {
+   "asset": "invite/parts/2858-249.webp",
+   "figmaName": "Rectangle 162",
+   "x": 118.01,
+   "y": 1273.89,
+   "w": 66.47,
+   "h": 86.28
+  },
+  "2854:637": {
+   "asset": "quote/parts/2854-637.webp",
+   "figmaName": "5bca6c5ca87aebe673afec2e00ef0908-Photoroom 1",
+   "x": 172,
+   "y": 994,
+   "w": 181,
+   "h": 242
+  },
+  "2858:244": {
+   "asset": "invite/parts/2858-244.webp",
+   "figmaName": "Rectangle 161",
+   "x": 231,
+   "y": 1139.59,
+   "w": 83,
+   "h": 117
+  },
+  "2858:245": {
+   "asset": "invite/parts/2858-245.webp",
+   "figmaName": "Rectangle 162",
+   "x": 240,
+   "y": 1146.98,
+   "w": 66.47,
+   "h": 86.28
+  },
+  "2896:929": {
+   "asset": "hero/parts/2896-929.webp",
+   "figmaName": "Rectangle 173",
+   "x": 173.18,
+   "y": 206,
+   "w": 167,
+   "h": 263.55
+  },
+  "2852:231": {
+   "asset": "hero/parts/2852-231.webp",
+   "figmaName": "mempelai page 1",
+   "x": 17,
+   "y": 270,
+   "w": 342,
+   "h": 342
+  },
+  "2852:328": {
+   "asset": "gift/parts/2852-328.webp",
+   "figmaName": "Rectangle 135",
+   "x": 24,
+   "y": 5534,
+   "w": 324,
+   "h": 110
+  },
+  "2852:329": {
+   "asset": "gift/parts/2852-329.webp",
+   "figmaName": "Rectangle 136",
+   "x": 307,
+   "y": 5534,
+   "w": 44,
+   "h": 110
+  },
+  "2852:333": {
+   "asset": "gift/parts/2852-333.webp",
+   "figmaName": "BCA_logo_Bank_Central_Asia-1-2048x650 1",
+   "x": 40,
+   "y": 5549,
+   "w": 60,
+   "h": 19.04
+  },
+  "2852:336": {
+   "asset": "gift/parts/2852-336.webp",
+   "figmaName": "Rectangle 135",
+   "x": 24,
+   "y": 5653,
+   "w": 324,
+   "h": 110
+  },
+  "2852:337": {
+   "asset": "gift/parts/2852-337.webp",
+   "figmaName": "Rectangle 136",
+   "x": 307,
+   "y": 5653,
+   "w": 44,
+   "h": 110
+  },
+  "2852:341": {
+   "asset": "gift/parts/2852-341.webp",
+   "figmaName": "BCA_logo_Bank_Central_Asia-1-2048x650 1",
+   "x": 40,
+   "y": 5668,
+   "w": 60,
+   "h": 19.04
+  },
+  "2852:358": {
+   "asset": "gift/parts/2852-358.webp",
+   "figmaName": "ed742d1c38731a13260f54866e18013d-Photoroom 2",
+   "x": 318,
+   "y": 5695,
+   "w": 21,
+   "h": 21
+  },
+  "2852:344": {
+   "asset": "gift/parts/2852-344.webp",
+   "figmaName": "Rectangle 135",
+   "x": 24,
+   "y": 5772,
+   "w": 324,
+   "h": 110
+  },
+  "2852:345": {
+   "asset": "gift/parts/2852-345.webp",
+   "figmaName": "Rectangle 136",
+   "x": 307,
+   "y": 5772,
+   "w": 44,
+   "h": 110
+  },
+  "2852:357": {
+   "asset": "gift/parts/2852-357.webp",
+   "figmaName": "ed742d1c38731a13260f54866e18013d-Photoroom 1",
+   "x": 318,
+   "y": 5578,
+   "w": 21,
+   "h": 21
+  },
+  "2852:360": {
+   "asset": "gift/parts/2852-360.webp",
+   "figmaName": "ed742d1c38731a13260f54866e18013d-Photoroom 3",
+   "x": 318,
+   "y": 5814,
+   "w": 21,
+   "h": 21
+  },
+  "2852:387": {
+   "asset": "rsvp/parts/2852-387.webp",
+   "figmaName": "Rectangle",
+   "x": 129,
+   "y": 6389,
+   "w": 115,
+   "h": 32
+  },
+  "2852:389": {
+   "asset": "rsvp/parts/2852-389.webp",
+   "figmaName": "Input",
+   "x": 58,
+   "y": 6321,
+   "w": 258,
+   "h": 36
+  },
+  "2893:835": {
+   "asset": "rsvp/parts/2893-835.webp",
+   "figmaName": "c7dd071b-4fd7-43fc-b409-4481837286a9-Photoroom 7",
+   "x": 404,
+   "y": 6217,
+   "w": 72,
+   "h": 72
+  },
+  "2854:624": {
+   "asset": "hero/parts/2854-624.webp",
+   "figmaName": "395da1d3-4a35-4977-9af8-3e79b55e0aa1-Photoroom 1",
+   "x": 383.49,
+   "y": 268.24,
+   "w": 346.47,
+   "h": 259.85
+  },
+  "2854:621": {
+   "asset": "hero/parts/2854-621.webp",
+   "figmaName": "d9b0af19-47fb-4495-afb7-4b89b9959e24-Photoroom 1",
+   "x": 103,
+   "y": 335,
+   "w": 111,
+   "h": 198
+  },
+  "2854:622": {
+   "asset": "hero/parts/2854-622.webp",
+   "figmaName": "d9b0af19-47fb-4495-afb7-4b89b9959e24-Photoroom 2",
+   "x": 419,
+   "y": 147,
+   "w": 142,
+   "h": 253
+  },
+  "2854:626": {
+   "asset": "hero/parts/2854-626.webp",
+   "figmaName": "f4d5ebf3acbda30b7e623bf9044d1a31-Photoroom 3",
+   "x": 222,
+   "y": 374,
+   "w": 110,
+   "h": 67
+  },
+  "2856:645": {
+   "asset": "invite/parts/2856-645.webp",
+   "figmaName": "Ellipse 17",
+   "x": 206,
+   "y": 1232,
+   "w": 117,
+   "h": 140
+  },
+  "2856:643": {
+   "asset": "invite/parts/2856-643.webp",
+   "figmaName": "76f0078a526b497e4e3f35ec51a675d0-Photoroom 1",
+   "x": 183,
+   "y": 1204,
+   "w": 163,
+   "h": 193
+  },
+  "2856:644": {
+   "asset": "invite/parts/2856-644.webp",
+   "figmaName": "Kartu Save the Date Elegan Berkembung (1)-Photoroom 1",
+   "x": 99,
+   "y": 1195,
+   "w": 89,
+   "h": 61
+  },
+  "2857:223": {
+   "asset": "bride/parts/2857-223.webp",
+   "figmaName": "just us!",
+   "x": 61,
+   "y": 1491,
+   "w": 244,
+   "h": 164
+  },
+  "2857:225": {
+   "asset": "bride/parts/2857-225.webp",
+   "figmaName": "dsvfsb 4",
+   "x": 404.73,
+   "y": 1744.61,
+   "w": 138.44,
+   "h": 245.99
+  },
+  "2857:226": {
+   "asset": "bride/parts/2857-226.webp",
+   "figmaName": "004dd5ed-9e77-43be-930a-c6ebf157f58a-Photoroom 2",
+   "x": 232,
+   "y": 1822.82,
+   "w": 85,
+   "h": 85
+  },
+  "2858:253": {
+   "asset": "groom/parts/2858-253.webp",
+   "figmaName": "d9b0af19-47fb-4495-afb7-4b89b9959e24-Photoroom 4",
+   "x": 365.73,
+   "y": 2634,
+   "w": 154,
+   "h": 274
+  },
+  "2858:254": {
+   "asset": "groom/parts/2858-254.webp",
+   "figmaName": "Vector 3",
+   "x": 26.73,
+   "y": 2582,
+   "w": 309,
+   "h": 247
+  },
+  "2858:255": {
+   "asset": "groom/parts/2858-255.webp",
+   "figmaName": "fc fd 2",
+   "x": 358.73,
+   "y": 2438,
+   "w": 357,
+   "h": 529
+  },
+  "2858:257": {
+   "asset": "groom/parts/2858-257.webp",
+   "figmaName": "dsvfsb 5",
+   "x": -39,
+   "y": 2688.61,
+   "w": 138.44,
+   "h": 245.99
+  },
+  "2858:258": {
+   "asset": "groom/parts/2858-258.webp",
+   "figmaName": "004dd5ed-9e77-43be-930a-c6ebf157f58a-Photoroom 3",
+   "x": 133.73,
+   "y": 2766.82,
+   "w": 85,
+   "h": 85
+  },
+  "2875:232": {
+   "asset": "gallery/parts/2875-232.webp",
+   "figmaName": "Ellipse 18",
+   "x": 160,
+   "y": 3632,
+   "w": 9,
+   "h": 9
+  },
+  "2875:233": {
+   "asset": "gallery/parts/2875-233.webp",
+   "figmaName": "Ellipse 19",
+   "x": 183,
+   "y": 3632,
+   "w": 9,
+   "h": 9
+  },
+  "2875:234": {
+   "asset": "gallery/parts/2875-234.webp",
+   "figmaName": "Ellipse 20",
+   "x": 206,
+   "y": 3632,
+   "w": 9,
+   "h": 9
+  },
+  "2877:255": {
+   "asset": "gallery/parts/2877-255.webp",
+   "figmaName": "ChatGPT Image Aug 21, 2026, 11_51_14 PM-Photoroom 1",
+   "x": -68,
+   "y": 3348,
+   "w": 280,
+   "h": 280
+  },
+  "2877:256": {
+   "asset": "gallery/parts/2877-256.webp",
+   "figmaName": "ChatGPT Image Aug 21, 2026, 11_51_14 PM-Photoroom 2",
+   "x": 437,
+   "y": 3348,
+   "w": 280,
+   "h": 280
+  },
+  "2877:264": {
+   "asset": "theday/parts/2877-264.webp",
+   "figmaName": "004dd5ed-9e77-43be-930a-c6ebf157f58a-Photoroom 4",
+   "x": 151,
+   "y": 3904,
+   "w": 72,
+   "h": 72
+  },
+  "2878:283": {
+   "asset": "acara/parts/2878-283.webp",
+   "figmaName": "5bca6c5ca87aebe673afec2e00ef0908-Photoroom 2",
+   "x": 204,
+   "y": 4294,
+   "w": 143,
+   "h": 88
+  },
+  "2878:300": {
+   "asset": "acara/parts/2878-300.webp",
+   "figmaName": "4ccd60f9d56e6516ee0a542cff8b41ce-Photoroom 1",
+   "x": 259,
+   "y": 4451,
+   "w": 73,
+   "h": 73
+  },
+  "2878:293": {
+   "asset": "acara/parts/2878-293.webp",
+   "figmaName": "The Wedding of (8) 2",
+   "x": 179,
+   "y": 4518,
+   "w": 16.33,
+   "h": 22.97
+  },
+  "2878:305": {
+   "asset": "acara/parts/2878-305.webp",
+   "figmaName": "Rectangle 167",
+   "x": 163,
+   "y": 4604,
+   "w": 50,
+   "h": 21
+  },
+  "2878:323": {
+   "asset": "acara/parts/2878-323.webp",
+   "figmaName": "The Wedding of (8) 2",
+   "x": 179,
+   "y": 4876,
+   "w": 16.33,
+   "h": 22.97
+  },
+  "2878:325": {
+   "asset": "acara/parts/2878-325.webp",
+   "figmaName": "Rectangle 167",
+   "x": 163,
+   "y": 4962,
+   "w": 50,
+   "h": 21
+  },
+  "2878:308": {
+   "asset": "acara/parts/2878-308.webp",
+   "figmaName": "d19901e3c61850d67c8b42a50ff83f95-Photoroom 1",
+   "x": 35,
+   "y": 4541.42,
+   "w": 71,
+   "h": 106
+  },
+  "2878:311": {
+   "asset": "acara/parts/2878-311.webp",
+   "figmaName": "13dc2ffe-5091-47c8-a275-2b266c3410cd-Photoroom 1",
+   "x": 114,
+   "y": 4607,
+   "w": 87,
+   "h": 130
+  },
+  "2878:310": {
+   "asset": "acara/parts/2878-310.webp",
+   "figmaName": "3fc991cabaa40d38414e260505b4714e-Photoroom 1",
+   "x": 83,
+   "y": 4618,
+   "w": 45,
+   "h": 45
+  },
+  "2879:332": {
+   "asset": "acara/parts/2879-332.webp",
+   "figmaName": "3fc991cabaa40d38414e260505b4714e-Photoroom 3",
+   "x": 88,
+   "y": 4333,
+   "w": 50,
+   "h": 50
+  },
+  "2878:312": {
+   "asset": "acara/parts/2878-312.webp",
+   "figmaName": "3fc991cabaa40d38414e260505b4714e-Photoroom 2",
+   "x": 109,
+   "y": 4647,
+   "w": 31,
+   "h": 31
+  },
+  "2879:331": {
+   "asset": "acara/parts/2879-331.webp",
+   "figmaName": "c7dd071b-4fd7-43fc-b409-4481837286a9-Photoroom 1",
+   "x": 128,
+   "y": 4358,
+   "w": 71,
+   "h": 71
+  },
+  "2880:339": {
+   "asset": "acara/parts/2880-339.webp",
+   "figmaName": "Emblem Angsa Maroon Elegan 1",
+   "x": -16,
+   "y": 4754.05,
+   "w": 132,
+   "h": 88
+  },
+  "2881:342": {
+   "asset": "acara/parts/2881-342.webp",
+   "figmaName": "c7dd071b-4fd7-43fc-b409-4481837286a9-Photoroom 2",
+   "x": 47,
+   "y": 4935,
+   "w": 66,
+   "h": 66
+  },
+  "2883:369": {
+   "asset": "gift/parts/2883-369.webp",
+   "figmaName": "c7dd071b-4fd7-43fc-b409-4481837286a9-Photoroom 5",
+   "x": 279,
+   "y": 5288,
+   "w": 89,
+   "h": 89
+  },
+  "2881:348": {
+   "asset": "acara/parts/2881-348.webp",
+   "figmaName": "c7dd071b-4fd7-43fc-b409-4481837286a9-Photoroom 3",
+   "x": 96,
+   "y": 4968,
+   "w": 54,
+   "h": 54
+  },
+  "2881:361": {
+   "asset": "acara/parts/2881-361.webp",
+   "figmaName": "c7dd071b-4fd7-43fc-b409-4481837286a9-Photoroom 4",
+   "x": 271,
+   "y": 4732,
+   "w": 54,
+   "h": 54
+  },
+  "2881:343": {
+   "asset": "acara/parts/2881-343.webp",
+   "figmaName": "dd394a56-c64d-424d-a92b-31fe52e64004-Photoroom 4",
+   "x": 112,
+   "y": 4678,
+   "w": 43,
+   "h": 54
+  },
+  "2881:352": {
+   "asset": "acara/parts/2881-352.webp",
+   "figmaName": "004dd5ed-9e77-43be-930a-c6ebf157f58a-Photoroom 5",
+   "x": 161,
+   "y": 5010,
+   "w": 54,
+   "h": 54
+  },
+  "2883:365": {
+   "asset": "youme/parts/2883-365.webp",
+   "figmaName": "Rectangle 169",
+   "x": 47,
+   "y": 5144,
+   "w": 282,
+   "h": 197
+  },
+  "2883:366": {
+   "asset": "youme/parts/2883-366.webp",
+   "figmaName": "Ellipse 26",
+   "x": 77,
+   "y": 5166,
+   "w": 228,
+   "h": 154
+  },
+  "2883:370": {
+   "asset": "gift/parts/2883-370.webp",
+   "figmaName": "c7dd071b-4fd7-43fc-b409-4481837286a9-Photoroom 6",
+   "x": 247,
+   "y": 5347.41,
+   "w": 57.7,
+   "h": 57.7
+  },
+  "2893:840": {
+   "asset": "rsvp/parts/2893-840.webp",
+   "figmaName": "13dc2ffe-5091-47c8-a275-2b266c3410cd-Photoroom 2",
+   "x": 394,
+   "y": 6088,
+   "w": 109,
+   "h": 164
+  },
+  "2893:848": {
+   "asset": "wish/parts/2893-848.webp",
+   "figmaName": "Desain tanpa judul (4) 1",
+   "x": -176,
+   "y": 6508,
+   "w": 216,
+   "h": 325
+  },
+  "2894:860": {
+   "asset": "wish/parts/2894-860.webp",
+   "figmaName": "gdrfgb 1",
+   "x": 294,
+   "y": 6588,
+   "w": 33,
+   "h": 33
+  },
+  "2894:863": {
+   "asset": "wish/parts/2894-863.webp",
+   "figmaName": "Rectangle 170",
+   "x": 42,
+   "y": 6646,
+   "w": 292,
+   "h": 93
+  },
+  "2894:872": {
+   "asset": "wish/parts/2894-872.webp",
+   "figmaName": "Rectangle 170",
+   "x": 42,
+   "y": 6746,
+   "w": 292,
+   "h": 137
+  },
+  "2894:877": {
+   "asset": "wish/parts/2894-877.webp",
+   "figmaName": "Rectangle 170",
+   "x": 42,
+   "y": 6892,
+   "w": 292,
+   "h": 137
+  },
+  "2894:880": {
+   "asset": "wish/parts/2894-880.webp",
+   "figmaName": "Rectangle 171",
+   "x": 42,
+   "y": 7041,
+   "w": 292,
+   "h": 33
+  },
+  "2894:882": {
+   "asset": "wish/parts/2894-882.webp",
+   "figmaName": "\u2014Pngtree\u2014shadow overlay window gray_6863520 2",
+   "x": 459,
+   "y": 6414,
+   "w": 478,
+   "h": 478
+  },
+  "2894:905": {
+   "asset": "closing/parts/2894-905.webp",
+   "figmaName": "6b60b201-d737-40a4-b0b2-7757b4c81305-Photoroom 2",
+   "x": 42,
+   "y": 7400,
+   "w": 75,
+   "h": 113
+  },
+  "2894:892": {
+   "asset": "closing/parts/2894-892.webp",
+   "figmaName": "5d8831b8-ba4a-4715-b846-b2eeee80b642-Photoroom 3",
+   "x": 2,
+   "y": 7418,
+   "w": 379,
+   "h": 213
+  },
+  "2894:914": {
+   "asset": "closing/parts/2894-914.webp",
+   "figmaName": "Ellipse 28",
+   "x": 265,
+   "y": 7515,
+   "w": 84,
+   "h": 108
+  },
+  "2894:909": {
+   "asset": "closing/parts/2894-909.webp",
+   "figmaName": "76f0078a526b497e4e3f35ec51a675d0-Photoroom 3",
+   "x": 248,
+   "y": 7503,
+   "w": 115,
+   "h": 136
+  },
+  "2894:907": {
+   "asset": "closing/parts/2894-907.webp",
+   "figmaName": "Desain tanpa judul (4) 3",
+   "x": -51.31,
+   "y": 7428,
+   "w": 254.35,
+   "h": 254.35
+  },
+  "2894:908": {
+   "asset": "closing/parts/2894-908.webp",
+   "figmaName": "Desain tanpa judul (8) 1",
+   "x": 179,
+   "y": 7082,
+   "w": 164,
+   "h": 164
+  },
+  "2894:911": {
+   "asset": "footer/parts/2894-911.webp",
+   "figmaName": "Rectangle 172",
+   "x": 0,
+   "y": 7955,
+   "w": 375,
+   "h": 32
+  },
+  "2894:913": {
+   "asset": "closing/parts/2894-913.webp",
+   "figmaName": "c7dd071b-4fd7-43fc-b409-4481837286a9-Photoroom 8",
+   "x": 258,
+   "y": 7456,
+   "w": 76,
+   "h": 76
+  },
+  "2894:916": {
+   "asset": "closing/parts/2894-916.webp",
+   "figmaName": "13dc2ffe-5091-47c8-a275-2b266c3410cd-Photoroom 3",
+   "x": 381,
+   "y": 7275,
+   "w": 109,
+   "h": 164
+  },
+  "2894:919": {
+   "asset": "closing/parts/2894-919.webp",
+   "figmaName": "Emblem Angsa Maroon Elegan 2",
+   "x": 291.85,
+   "y": 7516,
+   "w": 126,
+   "h": 84
+  },
+  "2894:923": {
+   "asset": "closing/parts/2894-923.webp",
+   "figmaName": "57561e85-5b06-4007-996f-b80d21cf8874-Photoroom 2",
+   "x": 105,
+   "y": 7152,
+   "w": 83,
+   "h": 111
+  },
+  "2894:920": {
+   "asset": "closing/parts/2894-920.webp",
+   "figmaName": "3fc991cabaa40d38414e260505b4714e-Photoroom 4",
+   "x": 124,
+   "y": 7242,
+   "w": 57,
+   "h": 57
+  },
+  "2894:922": {
+   "asset": "closing/parts/2894-922.webp",
+   "figmaName": "3fc991cabaa40d38414e260505b4714e-Photoroom 5",
+   "x": 97,
+   "y": 7275,
+   "w": 47,
+   "h": 47
+  },
+  "2894:925": {
+   "asset": "footer/parts/2894-925.webp",
+   "figmaName": "004dd5ed-9e77-43be-930a-c6ebf157f58a-Photoroom 6",
+   "x": 153,
+   "y": 7843,
+   "w": 70,
+   "h": 70
+  },
+  "2896:932": {
+   "asset": "gallery/parts/2896-932.webp",
+   "figmaName": "Love brought us here",
+   "x": 45,
+   "y": 3251,
+   "w": 286,
+   "h": 127
+  },
+  "2896:934": {
+   "asset": "gallery/parts/2896-934.webp",
+   "figmaName": "Desain tanpa judul (9) 1",
+   "x": 148,
+   "y": 3163,
+   "w": 84,
+   "h": 84
+  },
+  "2896:936": {
+   "asset": "theday/parts/2896-936.webp",
+   "figmaName": "Desain tanpa judul (10) 1",
+   "x": 102,
+   "y": 3795,
+   "w": 175,
+   "h": 34
+  },
+  "2896:937": {
+   "asset": "theday/parts/2896-937.webp",
+   "figmaName": "Desain tanpa judul (10) 2",
+   "x": 102,
+   "y": 3829,
+   "w": 175,
+   "h": 34
+  },
+  "2896:938": {
+   "asset": "gallery/parts/2896-938.webp",
+   "figmaName": "Desain tanpa judul (10) 3",
+   "x": 135,
+   "y": 3263,
+   "w": 109,
+   "h": 24
+  },
+  "2920:221": {
+   "asset": "closing/parts/2920-221.webp",
+   "figmaName": "xasxa 1",
+   "x": 275.17,
+   "y": 7122.42,
+   "w": 26.89,
+   "h": 26.63
+  }
+ }
+}

@@ -26,6 +26,26 @@ const FRAME_W = 375
  *
  * All of it is transform + opacity, so it stays on the compositor.
  */
+const styleFor = (l: BandLayer, i: number): Record<string, string> => ({
+  zIndex: String(l.z),
+  left: `calc(${l.x} * var(--px))`,
+  top: `calc(${l.y} * var(--px))`,
+  width: `calc(${l.w} * var(--px))`,
+  height: `calc(${l.h} * var(--px))`,
+  /*
+   * Figma's MCP reports neither `opacity` nor `blendMode`, so both are solved off the
+   * render by scripts/solve_alpha.py and carried on the layer. Absent means the layer
+   * paints at full strength, stacked normally.
+   *
+   * The opacity goes through a custom property rather than straight onto `opacity`,
+   * because the entrance animation also drives opacity — its `to` frame has to land on
+   * the layer's own value or a faded plate would flash to full strength as it arrives.
+   */
+  '--a': String(l.a ?? 1),
+  mixBlendMode: l.b ?? 'normal',
+  ...entrance(l, i),
+})
+
 const entrance = (l: BandLayer, i: number) => {
   const isBackdrop = l.w >= FRAME_W * 0.9 && l.h > 200
   const centre = l.x + l.w / 2
@@ -88,14 +108,7 @@ const stagger = () => Math.min(props.step, MAX_STAGGER / Math.max(1, visible().l
     :height="layer.h"
     loading="lazy"
     decoding="async"
-    :style="{
-      zIndex: layer.z,
-      left: `calc(${layer.x} * var(--px))`,
-      top: `calc(${layer.y} * var(--px))`,
-      width: `calc(${layer.w} * var(--px))`,
-      height: `calc(${layer.h} * var(--px))`,
-      ...entrance(layer, i),
-    }"
+    :style="styleFor(layer, i)"
   />
 </template>
 
@@ -109,6 +122,7 @@ const stagger = () => Math.min(props.step, MAX_STAGGER / Math.max(1, visible().l
   position: absolute;
   max-width: none; /* several layers are authored wider than the 375px frame */
   visibility: hidden;
+  opacity: var(--a, 1);
   will-change: transform, opacity;
 }
 
@@ -124,7 +138,7 @@ const stagger = () => Math.min(props.step, MAX_STAGGER / Math.max(1, visible().l
       rotate(var(--rot)) scale(var(--scale));
   }
   to {
-    opacity: 1;
+    opacity: var(--a, 1);
     transform: none;
   }
 }

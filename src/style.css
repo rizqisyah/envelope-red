@@ -1,8 +1,22 @@
-/* Only the families Frame 254 (cover) needs. The body frame's faces get added per band. */
+/* Frame 254 (cover). */
 @import "@fontsource/playball/400.css";
 @import "@fontsource/ibarra-real-nova/500-italic.css";
 @import "@fontsource/jost/400.css";
 @import "@fontsource/cormorant-garamond/400.css";
+@import "@fontsource/cormorant-garamond/700.css";
+/* Frame 253 (invitation body). */
+@import "@fontsource/alex-brush/400.css";
+@import "@fontsource/great-vibes/400.css";
+@import "@fontsource/playfair-display-sc/400.css";
+@import "@fontsource/ovo/400.css";
+@import "@fontsource/bellefair/400.css";
+@import "@fontsource/eb-garamond/400.css";
+@import "@fontsource/eb-garamond/400-italic.css";
+@import "@fontsource/libre-caslon-condensed/400.css";
+@import "@fontsource/libre-caslon-condensed/400-italic.css";
+/* The QS Ar-Rum verse. Figma reports the node as Playfair, which has no Arabic coverage
+   at all — the design is looking at Figma's own fallback, not at Playfair. */
+@import "@fontsource/amiri/arabic-400.css";
 @import "./style/tokens.css";
 
 /*
@@ -20,6 +34,63 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+/*
+ * The countdown digits. Same story as Charoly Demo.
+ *
+ * LICENSE: DEMO cut (fontspace.com/activists-font-f100554), personal-use only.
+ * Shipping this template commercially needs the paid family.
+ */
+@font-face {
+  font-family: "Activists";
+  src: url("./assets/fonts/activists-regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+ * Every band of Frame 253 is the same shape: sliced art from BandArt.vue, and live copy
+ * positioned over it in design px. These rules are global rather than repeated in each
+ * band's scoped block — a section's own stylesheet then carries nothing but its nodes'
+ * coordinates, which is the only part that differs.
+ *
+ * `> *:not(.band-art)` rather than a class per node: BandArt's images are the only
+ * children a band does not place itself, and they set their own z inline.
+ */
+.band {
+  position: relative;
+}
+
+.band > *:not(.band-art) {
+  /* Above every sliced layer. BandArt sets z inline, which beats a rule. */
+  z-index: 900;
+  position: absolute;
+  margin: 0;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(calc(24 * var(--px)));
+  transition:
+    opacity 1200ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0ms),
+    transform 1600ms cubic-bezier(0.16, 1, 0.28, 1) var(--delay, 0ms);
+}
+
+.band.is-in > *:not(.band-art) {
+  opacity: 1;
+  transform: none;
+}
+
+/*
+ * Motion this large is exactly what a vestibular disorder cannot tolerate, so the
+ * reduced-motion path is not a shortened version of it — it is no movement at all.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .band > *:not(.band-art) {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 *,

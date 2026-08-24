@@ -11,11 +11,20 @@
   --gold: #ac6f28;
   --bg-body: #530915;
 
-  /* colors — sampled from Frame 254's own fills */
-  --wine: #530915; /* Rectangle 124, the plate the whole cover sits on */
-  --gold-bright: #eed891; /* couple name, "Click to open..." */
-  --gold-pale: #e8e4a9; /* "The Wedding Of" */
-  --gold-muted: #d0cb84; /* guest block */
+  /* colours — sampled from Frames 254 and 253's own fills */
+  --wine: #530915; /* Rectangle 124/126, the plate the cover and the sheet's top half sit on */
+  --wine-soft: #702029; /* the invite band's A/S monogram */
+  --gold-bright: #eed891; /* cover couple name, "Click to open..." */
+  --gold-pale: #e8e4a9; /* cover "The Wedding Of" */
+  --gold-muted: #d0cb84; /* guest block, and every name on the wine half of the sheet */
+  --cream-text: #fffedf; /* the QS Ar-Rum block */
+  --crimson: #9a1010; /* every band heading on the cream half */
+  --crimson-bright: #a60d0d; /* the countdown */
+  --crimson-deep: #6b0d0e; /* the RSVP form */
+  --rose: #a25959; /* "You, Me & Forever" */
+  --maps: #660c21; /* the MAPS chips */
+  --bronze: #7c4a15; /* the closing paragraph */
+  --blush: #ffe7e7; /* the closing couple name */
   /*
    * The ground for <body>, the desktop column and the cover box. This design is
    * full-bleed wine, so a cream --paper would flash at every seam.
@@ -32,13 +41,43 @@
   /* Frame 254's real face, self-hosted (see the @font-face in style.css). No substitute
      and therefore no compensation: the couple name runs at Figma's own 32/27. */
   --font-display: "Charoly Demo", serif; /* couple name */
-  --font-serif: "Ibarra Real Nova", serif; /* guest block */
+  --font-serif: "Ibarra Real Nova", serif; /* guest block, wish-form placeholders */
   --font-sans: "Jost", system-ui, sans-serif; /* UI labels */
-  --font-body: "Cormorant Garamond", serif; /* body copy */
 
-  /* design frame reference (Figma Frame 254 cover; the body frame is not sliced yet) */
+  /*
+   * Frame 253. Four of these are substitutes — the design's own faces are commercial
+   * cuts with no webfont and no file. Each is measured by ink box against the render
+   * where it carries a compensation; retiring one means re-measuring, not just swapping
+   * the value here.
+   */
+  --font-heading: "Alex Brush", cursive; /* real face — every band heading */
+  /*
+   * SUB for Roben Elegante — the two given names. Roben Elegante is exceptionally wide:
+   * "Ayilhah" measures 144 design px of ink at 32px in the render, against 82 for Great
+   * Vibes and 76 for the two other candidates tried (Italianno, Pinyon Script). Nothing
+   * on fontsource is that wide, so the size is compensated up as far as the box allows
+   * (see .bride__call) and the name still sets narrower than the design. That is the
+   * known deviation; licensing the real face is what closes it.
+   */
+  --font-name: "Great Vibes", cursive;
+  --font-caps: "Playfair Display SC", serif; /* real face — full names, gallery labels */
+  --font-parent: "Ovo", serif; /* real face — "Putri/Putra Pertama dari ..." */
+  --font-detail: "Bellefair", serif; /* real face — the akad/resepsi details */
+  --font-body: "EB Garamond", serif; /* real face — gift and RSVP copy */
+  --font-card: "Libre Caslon Condensed", serif; /* real face — the wish cards */
+  --font-figures: "Activists", serif; /* real face, self-hosted — the countdown digits */
+  --font-quote: "Cormorant Garamond", serif; /* real face — the RSVP field labels */
+  /* SUB for Blosta Script (closing name) and Bibliophile Script (the S monogram). */
+  --font-signature: "Alex Brush", cursive;
+  /* SUB for April Signature — the closing paragraph. A signature face set as a
+     five-line paragraph is unreadable at 15px, so this runs on the book italic the
+     rest of the sheet's copy uses. */
+  --font-closing: "EB Garamond", serif;
+  --font-arabic: "Amiri", serif; /* the QS Ar-Rum verse */
+
+  /* design frame reference (Figma Frame 254 cover / Frame 253 body) */
   --frame-w: 375;
   --frame-h: 725;
-  --body-h: 0;
+  --body-h: 7979;
   --card-max: 430px;
 }

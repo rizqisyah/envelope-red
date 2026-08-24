@@ -1,8 +1,8 @@
 # Slicing notes — template 5
 
-The **cover (Frame 254) is sliced**; the body frame is not. This file carries the method
-the earlier templates arrived at plus this template's own measurements. Fill the rest in
-as the frames are cut; keep the traps — every one of them cost real time to find.
+Both frames are sliced. This file carries the method the earlier templates arrived at
+plus this template's own measurements. Keep the traps — every one of them cost real
+time to find.
 
 `../slicing-wedding-template-4` is the finished reference implementation. Read its
 `SLICING.md` and its `src/components/sections/*.vue` when a rule here needs an example.
@@ -28,11 +28,41 @@ Dev server runs on **5178** (template-4 is on 5176) so both can run side by side
 | Frame | Node | Size | State |
 |---|---|---|---|
 | 254 — cover | `2852:577` | 375 x 725 | sliced → `src/components/cover/CoverSection.vue` |
-| 253 — body | (not dumped) | 375 x ? | **not sliced.** `--body-h` is still 0 |
+| 253 — body | `2852:202` | 375 x 7979 | sliced → `src/components/sections/*.vue` |
 
-`.figma-ref/frame254-raw.json` is the full child list with a verdict per node;
-`-assets.json` is the four layers that survived, their positions and how each was
-derived. Work from those rather than re-querying Figma.
+`.figma-ref/frame254-raw.json` is the cover's full child list with a verdict per node;
+`-assets.json` is the four layers that survived. For the body, `frame253-zorder.json`
+is every node in global paint order with its band, `-assets.json` the 148 sliced
+sprites, and `-alpha/-place/-blend.json` the three solved properties (below). Work from
+those rather than re-querying Figma.
+
+## The body frame's bands
+
+Frame 253's 268 nodes are cut into 14 bands. Band tops are derived by `gen_band.py` from
+the nodes assigned to each; the assignment itself is a y-range table in
+`scripts/build_refs.py`, because Figma has no section marker to read.
+
+| band | y | band | y |
+|---|---|---|---|
+| hero | 0 | acara (akad + resepsi) | 4265 |
+| quote | 701 | youme | 5132 |
+| invite | 1010 | gift | 5281 |
+| bride | 1491 | rsvp | 6024 |
+| groom (opens with the divider) | 2226 | wish | 6414 |
+| gallery | 3143 | closing | 7082 |
+| theday | 3795 | footer | 7631 |
+
+Akad and Resepsi are ONE band: the design draws them inside a single floral arch whose
+layers cross both cards, and splitting it would put half that arch in each band's
+coordinate space for no gain. The "And / Better together" divider is the head of `groom`
+for the same reason.
+
+**The first band starts at 0, not at its first child.** Frame 253's first child sits at
+y 67; honouring that would open a 67px gap above the sheet. `band_tops()` clamps it.
+
+**Round the tops, then derive the heights.** Rounding a top and its height independently
+leaves a 1px seam wherever both round the same way, and the sheet ends up short of
+`--body-h`. `sheet-shot.mjs` prints the built sheet height — it must equal 7979 exactly.
 
 ## Palette (sampled off Frame 254's own fills)
 
@@ -78,14 +108,56 @@ derived from the clip/expansion rule. Regenerate rather than nudging numbers by 
 ## Toolchain
 
 ```sh
-BODY_FRAME=<N> BODY_H=<h> python3 scripts/gen_band.py          # every band
-BODY_FRAME=<N> BODY_H=<h> python3 scripts/gen_band.py hero     # just one
+python3 scripts/flatten_frame.py <raw node json> <flat json>   # once per Figma re-dump
+python3 scripts/build_refs.py                               # zorder + assets + webp
+BODY_FRAME=253 BODY_H=7979 python3 scripts/gen_band.py         # every band
+BODY_FRAME=253 BODY_H=7979 python3 scripts/gen_band.py hero    # just one
+BODY_FRAME=253 BODY_H=7979 python3 scripts/solve_alpha.py      # opacity/blend/position
 
 npm run dev &                                                  # port 5178
-node scripts/shot.mjs 5178                                     # writes .figma-tmp/web-*.png
-BAND_REF=<1x body render.png> python3 scripts/band-diff.py <y0> <y1>
+node scripts/sheet-shot.mjs 5178                               # 1:1 sheet shot
+BODY_FRAME=253 python3 scripts/sheet-score.py                  # every band, one pass
+BAND_REF=<1x body render.png> python3 scripts/band-diff.py <y0> <y1>   # one band, 3-up
 LOCATE_REF=<1x frame render.png> python3 scripts/locate.py <asset.webp>
+node scripts/shot.mjs 5178                                     # eyeball at 3 viewports
 ```
+
+The loop is: `gen_band` (raw geometry) → `solve_alpha` (refine) → `gen_band` (bake) →
+`sheet-shot` → `sheet-score`. `solve_alpha` persists ABSOLUTE positions, so running it
+again after a regenerate refines the previous pass instead of doubling it. Two passes
+converge; a third moves nothing.
+
+## Figma's MCP does not report opacity or blendMode
+
+`get_node` and `get_design_context` return bounds, fills and type — and nothing else.
+Every export therefore comes back at full strength and stacked normally, which is wrong
+for two whole classes of layer in this file:
+
+- **Light-leak plates.** `2877:258` and `2894:882` (both "Pngtree shadow overlay window")
+  are near-black rasters with light streaks, authored to be SCREENED over the band.
+  Stacked normally they are a grey slab across everything.
+- **Faded texture.** Several lace and glitter plates run at a fraction of full opacity.
+
+`scripts/solve_alpha.py` recovers all three properties — opacity, blend mode and a
+residual position — by compositing the band offline and scoring it against the render.
+Two things make that composite match what the browser paints, and both were bugs first:
+
+- **Bands overlap**, so the window is filled from EVERY band's table in global `z`
+  order, not just this band's own layers.
+- **The sheet's ground is two CSS plates**, not one (`GROUND` in the script). They are
+  in `InviteBody.vue` rather than any band table, so the solver has to paint them itself.
+
+**The gates are deliberately blunt.** A free search over ±40px, nine opacities and five
+blend modes can almost always shave a hundredth off a busy band by moving a layer
+somewhere visibly wrong. `MOVE_GAIN`, `MIN_GAIN` and `DROP_GAIN` make a change pay for
+itself before it is kept, and `MIN_SOLVE` skips anything under 24px — a 9px dot matches
+any patch of its own colour, so its Figma bounds are better evidence than any search.
+Loosening these was measurably worse: at the original thresholds the solver faded the
+"Save the Date" card to 20% and moved the gallery's dark plate 46px left.
+
+**Solve order is position → paint → position → paint.** Paint-first fades a
+correctly-shaped layer out of a band because it is in the wrong place; position-first
+chases the grey slab a screened plate makes. Both get a second look.
 
 `gen_band.py` reads `.figma-ref/frame<N>-zorder.json` and `-assets.json` and writes
 `src/lib/bands/<band>.ts`. Its three exception sets — `PAINTS_NOTHING`, `TRUST_CLIP`,
@@ -129,7 +201,7 @@ Those go in `TRUST_CLIP`, which `gen_band.py` honours *before* the first `locate
 **Both-edges-bleed breaks the clip rule.** The rule guesses which edge cut an export; a
 node bleeding past both gets pinned to the wrong side and stacks on its own mirror. `PIN_X`.
 
-## Fonts
+## Live text, and what stays as art
 
 Every text node stays **live** so `useWedding()` can drive it — never bake type into an
 image to dodge a missing face. Each family is one token in `tokens.css`, so swapping a
@@ -151,6 +223,47 @@ Two traps that display faces keep repeating:
 
 Record the license beside every self-hosted `@font-face` in `style.css`. Several of the
 faces these templates use are demo cuts that are personal-use only.
+
+**Two exceptions, both `TEXT_PATH`.** "Love brought us here" (`2896:932`) and "just us!"
+(`2857:223`) are lettering bent along a curve. Nothing in CSS reproduces that and neither
+is data-driven, so both ship as art — the only text in either frame that does.
+
+**Chrome that has to work ships as CSS, not as a raster.** A picture of an input cannot
+be typed into and a picture of three wish cards cannot grow with a longer message, so
+these are skipped from their band's `LAYERS` and redrawn:
+
+| band | skipped | why |
+|---|---|---|
+| rsvp | `2852:389`, `2852:387` | the field and Send plates; the other two fields are frames Figma never exported at all |
+| wish | `2894:863/872/877`, `2894:880`, `2894:860` | fixed-height card plates, the "Show more" bar, and the send icon |
+| gift | `2852:357/358/360`, `2852:333/341` | the copy buttons, and the BCA logos — which are per-account, not per-card |
+| gallery | `2875:232/233/234` | the carousel dots, which now carry active state |
+
+**Skipping is per-node and easy to half-do.** A raster left in the table under something
+the component also draws is invisible when the two agree and wrong the moment they do
+not: the BCA logos would have printed over a Mandiri account number, and the Send plate
+sat 71px off the button, only looking right because it landed on the select, which is the
+same colour. Whatever a band redraws, skip.
+
+**An icon the design exports is not one to redraw in CSS.** Both button glyphs started as
+hand-built shapes — a `box-shadow` double outline and a `clip-path` triangle — and both
+are now the exported asset inside a real `<button>`. Less code, and the glyph is Figma's
+rather than a guess at it.
+
+The wish list is a flow, not three plates: a live message can be any length, and the
+design's own three are already two different heights. The gift and acara bands go the
+other way — their art has a fixed number of apertures, so both cap the live list at what
+the art can hold (3 accounts, 2 events) rather than painting past the last plate.
+
+**A `Show more` that reveals nothing is worse than no button**, so the wish band's design
+fallback carries FOUR wishes. Frame 253 draws three cards and the bar; with only three
+fallback wishes the bar would never appear and the band would not match the render.
+
+**An authored newline cannot survive an HTML template either.** `&#10;` in a Vue template
+is folded to a space by the parser, so the design's own breaks ("Save the / Date",
+"Wedding / invitation", "Where / love becomes / home.") come from a script constant and
+the box sets `white-space: pre-line`. This is the same trap as the `useWedding()` one
+above, one layer further out.
 
 ## Design mode
 
@@ -175,6 +288,22 @@ lands against a zero-size box — the band renders blank. Use `<template v-for>`
 scrolls at >=768px; below that the bands never reveal, which reads as a blank sheet rather
 than a scroll bug.
 
+## Still open
+
+Three light-leak/texture plates report positions the render contradicts and no full-frame
+match beats err 80, so they sit where the clip rule left them and their bands carry the
+difference: `2893:849` (rsvp's diagonal light wash), `2877:263` (the gallery card's
+glitter panel) and the oval-and-pearls between the two acara cards. Each needs the offline
+composite treatment in "Off-frame nodes" above — score the band with the layer at each
+candidate spot, not by eye.
+
+`figma-mcp-go` reports no `opacity` and no `blendMode`, which is why `solve_alpha.py`
+exists at all. The official `plugin:figma:figma` server exposes a `use_figma` tool that
+runs JavaScript against the file and may be able to read both directly; it needs an OAuth
+round trip this session did not have. If it can, one call over 148 node ids replaces the
+whole inverse problem with ground truth and `solve_alpha.py` collapses to a position-only
+refiner. Worth testing before the next template.
+
 ## Deployment
 
 `VITE_DEFAULT_SLUG` must be set per deployment — without it `src/lib/api.ts` falls back to
@@ -187,11 +316,36 @@ bands, not an absolute fidelity score: it carries every deliberate deviation fro
 — substitute fonts, the live countdown where the design bakes a static plate, the live wish
 list and gallery where it bakes rasters of mock content.
 
-Measured as `web-mobile.png` vs `.figma-tmp/frame254-1x.png`, per channel, 0-255.
+Cover: `web-mobile.png` vs `.figma-tmp/frame254-1x.png`. Body: `web-sheet-1x.png` vs
+`.figma-tmp/exports253/frame253-full.png`, one row per band, from
+`BODY_FRAME=253 python3 scripts/sheet-score.py`. Per channel, 0-255, unmasked — so every
+band carries its own deliberate deviations: the substitute faces, the live countdown
+where the design bakes four zeroes, and the live wish/gallery lists where it bakes
+rasters of mock content.
 
 | band | delta | band | delta |
 |---|---|---|---|
-| cover (Frame 254, below the status bar) | 1.35 | — | — |
+| cover (Frame 254, below the status bar) | 1.35 | acara | 11.53 |
+| hero | 7.97 | youme | 6.34 |
+| quote | 12.30 | gift | 4.58 |
+| invite | 6.27 | rsvp | 18.42 |
+| bride | 3.15 | wish | 16.71 |
+| groom | 2.80 | closing | 2.72 |
+| gallery | 17.61 | footer | 5.57 |
+| theday | 6.96 | **sheet (0–7979)** | **8.54** |
+
+The four worst bands are the four with the most live chrome, and most of their number is
+that chrome rather than a placement error:
+
+- **rsvp 18.42** — the design prints a filled-in sample form; the live one shows
+  placeholders, which are lighter by design. Its light-leak plate (`2893:849`) is also
+  still unplaced: it reports x 457, fully off-frame, and no full-frame match beats err 80.
+- **wish 16.71** — three fixed plates in the design against a live list that grows with
+  its content, plus the same substitute-italic difference in every card.
+- **gallery 17.61** — the linen card's glitter panel (`2877:263`) is the same unplaced
+  case as the rsvp plate: reported at y 3822, best full-frame match err 82.
+- **quote 12.30 / acara 11.53** — Playball standing in for BusinessPenmanshipW00, and
+  Bellefair set against the render's own hinting, over a lot of small copy.
 
 ## Cover-specific findings
 
