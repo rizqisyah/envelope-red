@@ -88,7 +88,14 @@ PAINTS_NOTHING = {"2878:299", "2899:222"}  # measured one at a time; see SLICING
 # and the search moved it to 90,4345 -- bare lattice inside the arch, where the render
 # shows nothing but the "Akad Nikah" backdrop. Cropping the render at both spots settles
 # it: the rose is at 62,4189 and 90,4345 is empty.
-TRUST_CLIP = {}  # per-design; see SLICING.md for how these are measured
+# 2878:325 is the Resepsi card's MAPS chip -- 50x21 of flat cream. Its Akad twin
+# (2878:305) lands correctly because nothing overrides its bounds; this one does not,
+# because Figma re-compressed the two identical chips into two different files, so the
+# md5 twin check does not pair them and locate.py runs. A flat cream chip matches cream
+# anywhere: it scored better 150px up and to the right, and the chip rendered against the
+# right edge while the word MAPS sat on bare card 150px away. Its reported 163,4962 is
+# right and is exactly its twin's x.
+TRUST_CLIP = {"2878:325"}  # per-design; see SLICING.md for how these are measured
 
 # The clip rule guesses WHICH edge cut an export, and for a node that bleeds past both
 # it guesses wrong. 2712:333 reports x 175 w 268 and exports 175 wide, so the rule reads
@@ -119,7 +126,36 @@ TRUST_CLIP = {}  # per-design; see SLICING.md for how these are measured
 # 450 -- fully off-frame -- so the off-frame rescue above fires and finds x 23, stacking
 # it on top of its own mirror (2858:266, at x 0) and leaving the frame's right third bare.
 # The pair meets in the middle: 375 - 264 = 111, which scores 18.11 against 26.77 at 23.
-PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111}
+# 2854:624 is hero's ornate picture frame -- the "bingkai" the whole band is built
+# around, 375x428 of it. It reports x 383.49, wholly off-frame, so the ON_FRAME_MIN
+# rescue fires and drops it at 0,344; solve_alpha then found the only way to make a
+# 428px-tall frame in the wrong place score better was to fade it to 0.2, and the band
+# rendered as a white card with a ghost around it. A full-frame template match puts it
+# at 0,147, err 7.00 -- well inside locate.py's "under ~15 is certain".
+# 2854:632 is the quote band's arched wine panel. It reports -4,701 and exports 375x399
+# against a declared 383x383, so the clip rule reads the width as left-clipped (right, x
+# becomes 0) and the height as expanded and re-centres it to 693 (wrong -- the 16px of
+# bleed is all on the bottom edge). locate.py then made it worse, sliding it to y 572,
+# and the panel painted 129px up into the hero band -- which is what "jarak antar section
+# kedeketan" actually was. A near-flat wine plate matches wine anywhere, so RGB point
+# matching has nothing to lock onto here: every candidate scores 11-14 and the "best" is
+# visibly wrong. The edge settles it instead. At x 187 the render's panel edge starts at
+# y 718-720 and the asset's at y 18-20, so the top is y 700, and the left edge agrees
+# within 3-5px at x 0 across five sample rows.
+# 2857:223 ("just us!") and 2896:932 ("Love brought us here") are the frame's two
+# TEXT_PATH nodes -- lettering the designer outlined and arched, so Figma exports the
+# GLYPH INK and reports the text box. Bride's box is 244x164 and its ink 134x48, which
+# the clip rule reads as a right-clipped export and leaves pinned to the box's left edge:
+# "JUST US!" sat 55px left of centre. Ink centred in the box lands within 1px of the
+# render on both (61 + (244-134)/2 = 116 against a measured 117; 45 + (286-218)/2 = 79
+# against 78), so the x is a rule the clip branch simply cannot see. The y is not: an
+# arched TEXT_PATH's reported top is its UNROTATED top, and the ink actually starts 17px
+# above it here and 9px above it in the gallery -- no ratio connects the two, so both
+# axes are measured. Method: the asset's own alpha box against the ink box in the render
+# (white on wine for the gallery, gold on wine for the bride), which gives the origin
+# outright rather than scoring a match.
+PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111, "2854:624": 0, "2854:632": 0,
+         "2857:223": 117, "2896:932": 78}
 
 # Same class of failure, but the y is wrong too, so PIN_X alone cannot fix it. Both of
 # Frame 253's entries are the fan pair above -- their y is 280px out as well as their x,
@@ -127,7 +163,8 @@ PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111}
 # full-frame template match disagrees with its reported bounds AND scores low enough to
 # be believed (locate.py: "under ~15 is a real match"); an occluded layer scoring badly
 # where it belongs is not evidence of anything.
-PIN_Y = {"2877:255": 3068, "2877:256": 3068}
+PIN_Y = {"2877:255": 3068, "2877:256": 3068, "2854:624": 147, "2854:632": 700,
+         "2857:223": 1474, "2896:932": 3242}
 
 
 def reconcile(pos, node_size, exp_size, frame_size):

@@ -22,7 +22,7 @@ export const LAYERS: BandLayer[] = [
   { z: 140, id: '2875:234', src: assets['gallery/parts/2875-234.webp'], x: 206, y: 489, w: 9, h: 9 },
   { z: 141, id: '2877:255', src: assets['gallery/parts/2877-255.webp'], x: 0, y: -75, w: 212, h: 280 },
   { z: 142, id: '2877:256', src: assets['gallery/parts/2877-256.webp'], x: 156, y: -75, w: 218, h: 280 },
-  { z: 222, id: '2896:932', src: assets['gallery/parts/2896-932.webp'], x: 45, y: 108, w: 218, h: 40 },
+  { z: 222, id: '2896:932', src: assets['gallery/parts/2896-932.webp'], x: 78, y: 99, w: 218, h: 40 },
   { z: 223, id: '2896:934', src: assets['gallery/parts/2896-934.webp'], x: 148, y: 20, w: 84, h: 84 },
   { z: 227, id: '2896:938', src: assets['gallery/parts/2896-938.webp'], x: 133, y: 117, w: 113, h: 30 },
 ]

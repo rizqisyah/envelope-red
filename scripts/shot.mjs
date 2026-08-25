@@ -35,7 +35,7 @@ const motion = await browser.newPage({ viewport: { width: 375, height: 812 }, de
 await motion.goto(URL, { waitUntil: 'networkidle' })
 await motion.waitForTimeout(1100)
 await motion.screenshot({ path: `${OUT}/web-entrance.png` })
-await motion.click('.cover__open')
+await motion.click('.cover__hit')
 await motion.waitForTimeout(2200)
 await motion.screenshot({ path: `${OUT}/web-hero-reveal.png` })
 // The reduced-motion shots below force everything visible, so they can't tell us
@@ -47,7 +47,7 @@ await motion.close()
 const page = await browser.newPage({ viewport: { width: 375, height: 812 }, deviceScaleFactor: 2 })
 await page.goto(URL, { waitUntil: 'networkidle' })
 await page.waitForTimeout(1000)
-await page.click('.cover__open')
+await page.click('.cover__hit')
 await page.waitForTimeout(3000)
 const opened = await page.locator('#invite').isVisible()
 const coverGone = (await page.locator('.opening').count()) === 0
@@ -63,7 +63,7 @@ const sheet = await browser.newPage({
 })
 await sheet.goto(URL, { waitUntil: 'networkidle' })
 await sheet.waitForTimeout(800)
-await sheet.click('.cover__open')
+await sheet.click('.cover__hit')
 await sheet.waitForTimeout(2500)
 await sheet.locator('.hero').screenshot({ path: `${OUT}/web-hero.png` })
 // Scroll the whole sheet past the viewport first: the reveals are viewport-gated

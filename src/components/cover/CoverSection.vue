@@ -46,8 +46,20 @@ const fitCouple = useFitText()
       <p class="cover__dear">Dear Mr/ Mrs/ Ms</p>
       <p class="cover__guest">{{ guestName }}</p>
 
-      <!-- 2852:584 — z 7, above the envelope, below the seal and the lily. -->
-      <button type="button" class="cover__open" @click="$emit('open')">Click to open...</button>
+      <!--
+        2852:584 — z 7, above the envelope, below the seal and the lily. The words are
+        the label; the envelope above them is the hit area, which is what the design
+        actually invites you to tap. So the text is a plain <p> and the button is a
+        transparent plate over the envelope's box (2854:610, 47/222/295x196), named by
+        the label it sits under.
+      -->
+      <p id="cover-open-label" class="cover__open">Click to open...</p>
+      <button
+        type="button"
+        class="cover__hit"
+        aria-labelledby="cover-open-label"
+        @click="$emit('open')"
+      />
     </div>
   </section>
 </template>
@@ -232,9 +244,7 @@ const fitCouple = useFitText()
   top: calc(454 * var(--px));
   left: calc(40 * var(--px));
   width: calc(133 * var(--px));
-  border: 0;
-  background: none;
-  cursor: pointer;
+  pointer-events: none;
   font-family: var(--font-sans);
   font-size: calc(15 * var(--px));
   line-height: calc(30 * var(--px));
@@ -245,10 +255,32 @@ const fitCouple = useFitText()
     opacity 240ms ease;
 }
 
-.cover__open:hover,
-.cover__open:focus-visible {
+/*
+ * The hit area is invisible, so its own hover state would be too — the affordance is
+ * carried by the label and the envelope, which lift together when the plate is hovered.
+ */
+.cover__hit {
+  z-index: 7;
+  top: calc(222 * var(--px));
+  left: calc(47 * var(--px));
+  width: calc(295 * var(--px));
+  height: calc(196 * var(--px));
+  border: 0;
+  background: none;
+  cursor: pointer;
+  /* No entrance of its own — it is invisible, and animating it would gate the tap. */
+  animation: none;
+}
+
+.cover__frame:has(.cover__hit:hover) .cover__open,
+.cover__frame:has(.cover__hit:focus-visible) .cover__open {
   transform: translateY(calc(-2 * var(--px)));
   opacity: 0.82;
+}
+
+.cover__hit:focus-visible {
+  outline: calc(1.5 * var(--px)) solid var(--gold-muted);
+  outline-offset: calc(2 * var(--px));
 }
 
 @media (prefers-reduced-motion: reduce) {

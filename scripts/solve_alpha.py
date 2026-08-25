@@ -79,9 +79,20 @@ SEARCH = 40
 # Figma's MCP does not report blendMode either, so it is solved the same way as alpha.
 MODES = ["normal", "screen", "multiply", "lighten", "darken"]
 
+# Layers whose paint is settled by hand and must not be re-solved. gen_band.py's PIN_X /
+# PIN_Y already protect their POSITION (pins are applied after PLACE), but nothing
+# protects their alpha, and a hand-placed layer is exactly the kind the solver got wrong
+# in the first place. 2854:624 is hero's ornate frame: it was faded to 0.2 while it sat
+# 197px below where it belongs, and there is no reason to let that happen twice.
+NO_SOLVE = {"2854:624"}
+
+# No closing brace in the pattern: gen_band appends `, a: ...` and `, b: '...'` to any
+# row this script has already solved, and anchoring on `h: N }` silently dropped every
+# such row from all_layers() on the SECOND run -- the composite then had a hole exactly
+# where the solved plates are, and the solver refit its neighbours against it.
 ROW = re.compile(
     r"\{ z: (\d+), id: '([^']+)', src: assets\['([^']+)'\], "
-    r"x: (-?[\d.]+), y: (-?[\d.]+), w: ([\d.]+), h: ([\d.]+) \}"
+    r"x: (-?[\d.]+), y: (-?[\d.]+), w: ([\d.]+), h: ([\d.]+)"
 )
 
 
@@ -247,6 +258,8 @@ def main():
         for r in [r for r in window if r["band"] == band]:
             im = images[r["id"]]
             if im.width < MIN_SOLVE or im.height < MIN_SOLVE:
+                continue
+            if r["id"] in NO_SOLVE:
                 continue
             if r["id"] in twins:
                 # Repeated sprite: the gift band draws the same card plate three times,

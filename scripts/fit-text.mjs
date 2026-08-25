@@ -19,7 +19,7 @@ const OUT = '.figma-tmp'
 const browser = await chromium.launch()
 const page = await browser.newPage({ viewport: { width: 375, height: 900 }, reducedMotion: 'reduce' })
 await page.goto(`http://localhost:${port}/?to=A`, { waitUntil: 'networkidle' })
-await page.click('.cover__open')
+await page.click('.cover__hit')
 await page.waitForTimeout(2500)
 await page.evaluate((y) => window.scrollTo(0, y), Math.max(0, Number(cy) - 400))
 await page.waitForTimeout(500)

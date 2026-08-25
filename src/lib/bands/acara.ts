@@ -31,7 +31,7 @@ export const LAYERS: BandLayer[] = [
   { z: 160, id: '2878:293', src: assets['acara/parts/2878-293.webp'], x: 179, y: 253, w: 16, h: 23 },
   { z: 161, id: '2878:305', src: assets['acara/parts/2878-305.webp'], x: 163, y: 339, w: 50, h: 21 },
   { z: 168, id: '2878:323', src: assets['acara/parts/2878-323.webp'], x: 179, y: 611, w: 16, h: 23 },
-  { z: 169, id: '2878:325', src: assets['acara/parts/2878-325.webp'], x: 298, y: 548, w: 50, h: 21 },
+  { z: 169, id: '2878:325', src: assets['acara/parts/2878-325.webp'], x: 163, y: 697, w: 50, h: 21 },
   { z: 171, id: '2878:308', src: assets['acara/parts/2878-308.webp'], x: 35, y: 267, w: 84, h: 114 },
   { z: 172, id: '2878:311', src: assets['acara/parts/2878-311.webp'], x: 264, y: 341, w: 87, h: 130 },
   { z: 173, id: '2878:310', src: assets['acara/parts/2878-310.webp'], x: 83, y: 353, w: 45, h: 45 },

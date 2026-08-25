@@ -23,7 +23,7 @@ const page = await browser.newPage({
 })
 await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
 await page.waitForTimeout(600)
-await page.click('.cover__open')
+await page.click('.cover__hit')
 await page.waitForTimeout(2400)
 
 // Every band below the fold is viewport-gated, so walk the sheet before shooting it.
