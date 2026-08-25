@@ -19,5 +19,4 @@ export const LAYERS: BandLayer[] = [
   { z: 197, id: '2894:872', src: assets['wish/parts/2894-872.webp'], x: 42, y: 332, w: 292, h: 137 },
   { z: 200, id: '2894:877', src: assets['wish/parts/2894-877.webp'], x: 42, y: 478, w: 292, h: 137 },
   { z: 203, id: '2894:880', src: assets['wish/parts/2894-880.webp'], x: 42, y: 627, w: 292, h: 33 },
-  { z: 205, id: '2894:882', src: assets['wish/parts/2894-882.webp'], x: -40, y: 40, w: 375, h: 478, a: 0.12, b: 'screen' },
 ]

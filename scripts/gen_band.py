@@ -71,7 +71,19 @@ OUT_DIR = pathlib.Path("src/lib/bands")
 # 475x159.65 source (c2a52e8a), but the fourth, 2706:144, is genuinely visible:
 # dropping it took akad from 7.62 to 8.58 and the sheet from 8.15 to 8.24, so it stays.
 # Add to this list only with a before/after delta for that node alone.
-PAINTS_NOTHING = {"2878:299", "2899:222"}  # measured one at a time; see SLICING.md
+# 2878:299 was in this set and should not have been: it is the acara band's ornate oval
+# mirror, and it measured as invisible only because it was measured at its reported
+# 382,4792, which is off the right edge. Placed at 221,4551 it takes that region from
+# 53.22 to 4.28. Read this list as "measured where its bounds say" -- for a node whose
+# bounds are fiction that is not a measurement of anything.
+#
+# 2899:222, the three-strand pearl necklace, stays -- for a different reason. Figma
+# exported it UNROTATED and UNSCALED: a 147x157 upright necklace, where the render drapes
+# it at about -55 degrees at roughly 0.7 scale, 103x100 on the card. No translation
+# matches that, a rotation search only got the region from 6.87 to 6.50, and drawing an
+# upright necklace across the Resepsi card is worse than drawing nothing. Reproducing it
+# needs a rotate+scale on the layer, not a position.
+PAINTS_NOTHING = {"2899:222"}  # measured one at a time; see SLICING.md
 
 # Layers where the clip rule is right and the search is wrong. A layer buried under
 # most of its band scores badly WHERE IT BELONGS, so the search wanders off to open
@@ -154,8 +166,22 @@ TRUST_CLIP = {"2878:325"}  # per-design; see SLICING.md for how these are measur
 # axes are measured. Method: the asset's own alpha box against the ink box in the render
 # (white on wine for the gallery, gold on wine for the bride), which gives the origin
 # outright rather than scoring a match.
+# The four below are plates whose reported bounds put them off-frame, so the rescue
+# dropped them somewhere arbitrary and solve_alpha then faded them to make the arbitrary
+# spot score. Each is measured by scripts/place_plate.py against a FIXED box over the
+# thing it is supposed to explain, so every candidate is scored on the same pixels:
+#   2877:263  the gallery card's lace hem        53.68 -> 19.69 over the card's lower half
+#   2894:882  the reservation card's window light 28.04 -> 17.41 over the whole band
+#   2878:299  the acara band's ornate oval mirror 53.22 ->  4.28 over the gap between cards
+#   2894:892  the closing band's pearl rope        6.28 ->  3.96 over the rope's own run
 PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111, "2854:624": 0, "2854:632": 0,
-         "2857:223": 117, "2896:932": 78}
+         "2857:223": 117, "2896:932": 78,
+         "2877:263": 52, "2894:882": 0, "2878:299": 221, "2894:892": 0,
+         # 2878:311 is the acara band's long amaranthus drip. Its y is right and its x is
+         # not: reported 114, locate moved it to 264, and it hung down the middle of the
+         # ornate oval the design keeps clean. Over the akad blob's left shoulder,
+         # 9.04 -> 2.71.
+         "2878:311": 27}
 
 # Same class of failure, but the y is wrong too, so PIN_X alone cannot fix it. Both of
 # Frame 253's entries are the fan pair above -- their y is 280px out as well as their x,
@@ -164,7 +190,34 @@ PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111, "2854:624": 0, "2854:6
 # be believed (locate.py: "under ~15 is a real match"); an occluded layer scoring badly
 # where it belongs is not evidence of anything.
 PIN_Y = {"2877:255": 3068, "2877:256": 3068, "2854:624": 147, "2854:632": 700,
-         "2857:223": 1474, "2896:932": 3242}
+         "2857:223": 1474, "2896:932": 3242,
+         "2877:263": 3626, "2894:882": 5936, "2878:299": 4551, "2894:892": 7418,
+         "2878:311": 4607}
+
+# Opacity and blend mode for the layers whose POSITION is pinned above. solve_alpha
+# fitted their alpha against a composite in which they sat hundreds of pixels from home,
+# and the only way to make a plate in the wrong place score well is to fade it out --
+# 2877:263 came back at 0.3 screen, which is a lace panel dissolved to a pink smear.
+# These are measured at the pinned position by scripts/place_plate.py and, like PIN_X and
+# PIN_Y, are applied after the solver's own answer. Add the same ids to solve_alpha's
+# NO_SOLVE so the next run does not refit them.
+# 2875:226 is the gallery band's linen card. Its 0.85 was solved while the lace hem sat
+# 150px below it, and 0.85 over wine is what made the card read pink against the render's
+# grey-white. Swept together with the hem against the card's own box: card 0.95 with the
+# hem at full strength scores 9.62, against 13.36 for the pair the solver left.
+PIN_A = {"2877:263": 1.0, "2894:882": 1.0, "2878:299": 1.0, "2894:892": 1.0,
+         "2875:226": 0.95}
+PIN_B = {"2877:263": "normal", "2894:882": "normal", "2878:299": "normal",
+         "2894:892": "normal", "2875:226": "normal"}
+
+# A layer paints in the band its own y lands in, not the band Figma filed it under.
+# 2894:882 is filed in `wish` because its reported y is 6414, the wish band's first row --
+# but it actually paints from 5936, entirely inside rsvp. Left in wish it renders fine and
+# reveals wrong: useReveal gates a band's layers on THAT band scrolling in, so the
+# reservation card's window light would fade up only once the wish band appeared below it.
+# 2877:263 is the same story one band up: filed in `theday`, it hems the GALLERY card at
+# 3626 and would otherwise fade in only when the countdown below it scrolled into view.
+BAND_OF = {"2894:882": "rsvp", "2877:263": "gallery"}
 
 
 def reconcile(pos, node_size, exp_size, frame_size):
@@ -304,7 +357,7 @@ def main():
         rows, matched, dropped = [], 0, []
 
         for c in children:
-            if c["section"] != name:
+            if BAND_OF.get(c["id"], c["section"]) != name:
                 continue
             if c["id"] in PAINTS_NOTHING:
                 dropped.append(f"{c['id']} (z{c['z']}, buried in the design)")
@@ -381,7 +434,8 @@ def main():
             x = PIN_X.get(c["id"], x)
             y = PIN_Y.get(c["id"], y)
             rows.append((c["z"], c["id"], a["asset"], x, y - top, w, h,
-                         ALPHA.get(c["id"], 1.0), BLEND.get(c["id"], "normal")))
+                         PIN_A.get(c["id"], ALPHA.get(c["id"], 1.0)),
+                         PIN_B.get(c["id"], BLEND.get(c["id"], "normal"))))
 
         rows.sort(key=lambda r: r[0])
         if not rows:

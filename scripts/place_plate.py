@@ -1,27 +1,40 @@
 #!/usr/bin/env python3
-"""Find where ONE layer belongs when it is far from where the tables put it.
+"""Find where ONE layer belongs when it is hundreds of pixels from where the tables put it.
 
 solve_alpha.py refines a layer inside a +/-40px window, which is the right window for a
-layer the clip rule nearly had. It is useless for the class of layer this file exists
-for: a rotated or off-frame node whose reported bounds are outright fiction, sitting
-hundreds of pixels from its true home. locate.py cannot help either -- it matches raw
-RGB, so a plate authored to be SCREENED (a light leak, a lace overlay) has nothing to
-lock onto, and every such plate scores over 80 wherever you put it.
+layer the clip rule nearly had. It is useless for the class this file exists for: a
+rotated or off-frame node whose reported bounds are outright fiction. locate.py cannot
+help either -- it matches raw RGB, so a plate authored to be SCREENED (a light leak, a
+lace overlay) has nothing to lock onto and scores over 80 wherever you put it.
 
-The fix is to search wide under the SAME compositing model solve_alpha scores with:
-every other layer painted at its solved opacity and blend mode, the CSS ground plates
-underneath, live copy masked out, and the candidate composited through its own trial
-alpha and blend. Then a plate that only makes sense screened is scored screened.
+    BODY_FRAME=253 BODY_H=7979 python3 scripts/place_plate.py 2877:263 55 3655 325 3785
 
-    BODY_FRAME=253 BODY_H=7979 python3 scripts/place_plate.py 2877:263 2894:882
+The four numbers are the SCORING BOX in frame-global design px, and giving one is the
+whole point of this script. Two earlier cuts scored each candidate over its own moving
+footprint, and both returned nonsense for every plate:
 
-Prints the best (x, y, alpha, mode) per node with its score against the score where the
-table has it now. Nothing is written -- put what it finds in gen_band.py's PIN_X/PIN_Y
-(and NO_SOLVE, so the refiner does not walk it back) once you have looked at the crop.
+  - over a footprint clipped by the frame edge, a candidate pushed 90% off-frame is
+    scored across a 20px sliver of flat ground and wins with a perfect 0.000;
+  - over a footprint free to move, the cheapest thing a layer can do is land on ground
+    the rest of the band already renders correctly and fade to 0.12, which is what all
+    three light-leak plates returned. Scoring the layer's CONTRIBUTION instead of its
+    absolute error does not fix this: a near-invisible plate still contributes a small
+    negative, and that beats a correctly placed plate whose shape is not yet perfect.
 
-Y_SPAN bounds the vertical search around the layer's own band; widen it for a node that
-has no business being in the band Figma filed it under.
+A box that does not move removes both. Pick one over the area the layer is supposed to
+explain -- the card it washes, the panel it edges -- and every candidate is measured on
+the same pixels. The "without the layer" number printed first is the bar to beat; a
+placement that does not clearly beat it is not a placement.
+
+Search bounds default to the box grown by MARGIN and the asset's own size. EXTRA
+overrides where other layers sit, for placing several plates that overlap in sequence:
+
+    EXTRA='{"2877:263":[52,3626]}' python3 scripts/place_plate.py 2877:258 ...
+
+Nothing is written. Put what it finds in gen_band.py's PIN_X / PIN_Y (and solve_alpha's
+NO_SOLVE, so the refiner cannot walk it back) once you have looked at the crop.
 """
+import json
 import os
 import sys
 
@@ -32,128 +45,142 @@ import solve_alpha as S  # noqa: E402  -- reuses its ground, mask, blend and pas
 
 Image.MAX_IMAGE_PIXELS = None
 
-# How far above and below the layer's own band to look. The plates this is for are
-# filed one band away from where they paint, not across the whole sheet.
-Y_SPAN = int(os.environ.get("Y_SPAN", "900"))
-# Coarse pass, then two refinements. The coarse step has to be smaller than the smallest
-# feature that identifies the plate, or the search steps straight over the true minimum.
-STEPS = (8, 2, 1)
+if len(sys.argv) < 6:
+    sys.exit(__doc__)
+NID = sys.argv[1]
+BX0, BY0, BX1, BY1 = (int(v) for v in sys.argv[2:6])
+# How far outside the scoring box a candidate may sit. A plate usually overhangs the
+# thing it explains, so the default is generous; narrow it when the search wanders.
+MARGIN = int(os.environ.get("MARGIN", "260"))
+# A full-width plate has almost no horizontal freedom -- 375 wide in a 375 frame -- and
+# giving it 260px of it turns a 3-minute search into a 30-minute one for no gain.
+X_MARGIN = int(os.environ.get("X_MARGIN", str(MARGIN)))
+EXTRA = json.loads(os.environ.get("EXTRA", "{}"))
+STEP = int(os.environ.get("STEP", "4"))
+# Coarse position runs on a handful of paint settings, not all 40. Full strength and
+# something near half, in the three modes a leak or an overlay is plausibly authored in:
+# the point of the coarse pass is to find the SHAPE, and shape does not move with alpha.
+COARSE_PAINT = [(a, m) for m in ("normal", "screen", "lighten") for a in (1.0, 0.4)]
+# PAINT="1.0:normal" fixes the paint and searches position only. Use it for a plate that
+# is plainly a solid object rather than a light effect: the closing band's pearl rope is
+# thin, pale, and on cream, so it moves the score by less than the noise elsewhere in any
+# box big enough to contain it -- and a free alpha then "wins" by picking `darken`, which
+# renders white pearls invisible. Fixing the paint makes the search answer the only
+# question actually in doubt.
+PAINT = os.environ.get("PAINT")
+# Figma exports a rotated node's art UNROTATED -- the acara band's pearl necklace exports
+# as an upright 147x157 necklace while the render drapes it at about -35 degrees. No
+# translation can match that, and the search just reports a tiny gain wherever it lands.
+# ROT="-60:60:5" searches rotation as a third axis; the winning angle goes in gen_band's
+# PIN_R and comes out as a CSS rotate on the layer.
+ROT = os.environ.get("ROT")
 
 
 def main():
     ref = Image.open(S.REF).convert("RGB")
-    alphas = S.json.load(open(S.ALPHA_FILE)) if os.path.exists(S.ALPHA_FILE) else {}
-    blends = S.json.load(open(S.BLEND_FILE)) if os.path.exists(S.BLEND_FILE) else {}
-    spans = S.band_spans()
+    alphas = json.load(open(S.ALPHA_FILE)) if os.path.exists(S.ALPHA_FILE) else {}
+    blends = json.load(open(S.BLEND_FILE)) if os.path.exists(S.BLEND_FILE) else {}
     layers = S.all_layers()
-    by_id = {r["id"]: r for r in layers}
 
-    # gen_band.py's PAINTS_NOTHING drops a layer from the tables outright, and two of
-    # this frame's entries turn out to be the acara band's missing oval-and-pearls -- they
-    # measured as invisible only because they were measured where their fictional bounds
-    # put them. So fall back to the raw node records, which is exactly the case this
-    # script is for.
     zorder = {c["id"]: c for c in
-              S.json.load(open(f".figma-ref/frame{S.FRAME}-zorder.json"))["children"]}
-    assets = S.json.load(open(f".figma-ref/frame{S.FRAME}-assets.json"))["nodes"]
+              json.load(open(f".figma-ref/frame{S.FRAME}-zorder.json"))["children"]}
+    assets = json.load(open(f".figma-ref/frame{S.FRAME}-assets.json"))["nodes"]
 
-    for nid in sys.argv[1:]:
-        row = by_id.get(nid)
-        if not row and nid in zorder and nid in assets:
-            c = zorder[nid]
-            row = dict(id=nid, asset=assets[nid]["asset"], band=c["section"],
-                       x=round(c["x"]), y=round(c["y"]), w=c["w"], h=c["h"])
-            print(f"({nid} is not in any band table -- scored from its raw node record)")
-        if not row:
-            print(f"!! {nid} is in no band table and has no exported asset")
+    def raw(nid):
+        c = zorder[nid]
+        return dict(id=nid, asset=assets[nid]["asset"],
+                    x=round(c["x"]), y=round(c["y"]), w=c["w"], h=c["h"])
+
+    # EXTRA may name a layer that is not in any table -- placing the acara oval and then
+    # the pearls that drape over it means injecting the oval, which PAINTS_NOTHING drops.
+    # Without this the "without the layer" baseline silently ignores the EXTRA entry and
+    # every candidate is scored against a composite missing the thing it overlaps.
+    have = {r["id"] for r in layers}
+    for nid in EXTRA:
+        if nid not in have and nid in zorder and nid in assets:
+            layers = layers + [raw(nid)]
+
+    row = next((r for r in layers if r["id"] == NID), None)
+    if row is None:
+        # gen_band.py's PAINTS_NOTHING drops a layer from the tables outright, and two of
+        # this frame's entries turn out to be the acara band's missing oval-and-pearls --
+        # they measured as invisible only because they were measured where their
+        # fictional bounds put them, which is the exact case this script is for.
+        if NID not in zorder or NID not in assets:
+            sys.exit(f"{NID} is in no band table and has no exported asset")
+        row = raw(NID)
+        print(f"({NID} is in no band table -- read from its raw node record)")
+
+    im = S.load("src/assets/" + row["asset"])
+    if ROT:
+        lo, hi, st = (int(v) for v in ROT.split(":"))
+        # expand=True so a rotated corner is not clipped; the origin shifts with it, which
+        # is why the reported best x/y is the rotated art's own top-left, not the node's.
+        angles = [(a, im.rotate(-a, Image.BICUBIC, expand=True)) for a in range(lo, hi + 1, st)]
+    else:
+        angles = [(0, im)]
+    y0 = max(0, BY0 - MARGIN - im.height)
+    y1 = min(S.FRAME_H, BY1 + MARGIN + im.height)
+    target = ref.crop((0, y0, S.FRAME_W, y1))
+    mask = S.text_mask(y0, y1)
+    base = S.ground_for(y0, y1)
+    for r in layers:
+        if r["id"] == NID:
             continue
-        band_top, band_h = spans[row["band"]]
-        y0 = max(0, band_top - Y_SPAN)
-        y1 = min(S.FRAME_H, band_top + band_h + Y_SPAN)
-        target = ref.crop((0, y0, S.FRAME_W, y1))
-        mask = S.text_mask(y0, y1)
-        ground = S.ground_for(y0, y1)
-        im = S.load("src/assets/" + row["asset"])
+        # [x, y] or [x, y, alpha, mode] -- the paint matters when the override is a plate
+        # whose solved alpha was fitted in the wrong place, which is every plate here.
+        o = EXTRA.get(r["id"])
+        x, y = (o[0], o[1]) if o else (r["x"], r["y"])
+        a = o[2] if o and len(o) > 2 else r.get("a", 1.0)
+        m = o[3] if o and len(o) > 3 else r.get("b", "normal")
+        if y < y1 and y + r["h"] > y0 and a > 0:
+            S.paste(base, S.load("src/assets/" + r["asset"]), x, y - y0, a, m)
 
-        # Everything else that reaches this window, painted where it currently sits.
-        others = [r for r in layers if r["id"] != nid and r["y"] < y1 and r["y"] + r["h"] > y0]
-        base = ground.copy()
-        for r in others:
-            S.paste(base, S.load("src/assets/" + r["asset"]), r["x"], r["y"] - y0,
-                    alphas.get(r["id"], 1.0), blends.get(r["id"], "normal"))
+    box = (BX0, BY0 - y0, BX1, BY1 - y0)
+    area = (BX1 - BX0) * (BY1 - BY0)
 
-        # A candidate pushed off the edge is scored over a sliver of flat ground and wins
-        # on points with a perfect 0.000 -- the first run of this put the lace panel at
-        # x -286, 20px of it on the frame. The score is a MEAN, so a small window is not
-        # self-penalising; the coverage floor is what rules those out.
-        MIN_COVER = 0.6
-        area = im.width * im.height
+    def score(x, y, a, mode, art=None):
+        canvas = base.crop(box)
+        S.paste(canvas, art if art is not None else im, x - BX0, y - BY0, a, mode)
+        d = ImageChops.difference(target.crop(box), canvas.convert("RGB")).convert("L")
+        d.paste(0, (0, 0), mask.crop(box))
+        return sum(i * n for i, n in enumerate(d.histogram())) / area
 
-        def delta(box):
-            """Mean abs delta of `base` against the render over `box`, text masked out."""
-            bx0, by0, bx1, by1 = box
-            d = ImageChops.difference(target.crop(box), base.crop(box).convert("RGB")).convert("L")
-            d.paste(0, (0, 0), mask.crop(box))
-            return sum(i * n for i, n in enumerate(d.histogram())) / ((bx1 - bx0) * (by1 - by0))
+    now = (row["x"], row["y"], row.get("a", 1.0), row.get("b", "normal"))
+    print(f"without the layer            {score(-99999, -99999, 1.0, 'normal'):7.3f}")
+    print(f"where it sits now  {now[0]},{now[1]}    {score(*now):7.3f}")
 
-        def score(x, y, a, mode):
-            """How much this layer IMPROVES the composite where it lands. Lower is better.
-
-            Not the absolute error under the layer: that is minimised by parking a plate
-            on ground the rest of the band already renders correctly and fading it to
-            nothing, which is exactly what the first cut of this returned for all three
-            light-leak plates -- 'a0.12 lighten' on empty cream, scoring 0.14. Measuring
-            the layer's own contribution instead means an invisible layer scores 0 by
-            construction and cannot win, and a layer is only credited where it actually
-            explains something the render has and the composite does not.
-            """
-            bx0, by0 = max(0, x), max(0, y - y0)
-            bx1 = min(S.FRAME_W, x + im.width)
-            by1 = min(y1 - y0, y - y0 + im.height)
-            if bx1 <= bx0 or by1 <= by0:
-                return 0.0
-            if (bx1 - bx0) * (by1 - by0) < MIN_COVER * area:
-                return 0.0
-            box = (bx0, by0, bx1, by1)
-            canvas = base.crop(box)
-            S.paste(canvas, im, x - bx0, y - y0 - by0, a, mode)
-            d = ImageChops.difference(target.crop(box), canvas.convert("RGB")).convert("L")
-            d.paste(0, (0, 0), mask.crop(box))
-            with_it = sum(i * n for i, n in enumerate(d.histogram())) / ((bx1 - bx0) * (by1 - by0))
-            return with_it - delta(box)
-
-        now = (row["x"], row["y"], alphas.get(nid, 1.0), blends.get(nid, "normal"))
-        best = [score(*now), *now]
-
-        def sweep(xs, ys, a, mode):
+    xs = range(max(-im.width + 20, BX0 - X_MARGIN), min(S.FRAME_W - 20, BX1 + X_MARGIN), STEP)
+    ys = range(y0, min(y1 - 20, BY1 + MARGIN), STEP)
+    best = None
+    coarse = [tuple(PAINT.split(":")) for _ in (0,)] if PAINT else COARSE_PAINT
+    if PAINT:
+        coarse = [(float(PAINT.split(":")[0]), PAINT.split(":")[1])]
+    for a, mode in coarse:
+        for rot, art in angles:
             for y in ys:
                 for x in xs:
-                    s = score(x, y, a, mode)
-                    if s < best[0]:
-                        best[0], best[1], best[2], best[3], best[4] = s, x, y, a, mode
-
-        # Position first at the paint the tables already hold, then paint at the position
-        # that found, then position again. Searching every (x, y, alpha, mode) jointly is
-        # the honest formulation and about 40x too slow to run -- and the plates this is
-        # for are identified by their SHAPE, which the wrong alpha dims but does not move.
-        for n, step in enumerate(STEPS):
-            if n == 0:
-                xs = range(-im.width + 20, S.FRAME_W - 20, step)
-                ys = range(y0, y1 - 20, step)
-                # A near-invisible starting alpha makes every position score the same, so
-                # the coarse pass runs at full strength whatever the table says.
-                sweep(xs, ys, max(now[2], 0.55), now[3])
-                sweep(xs, ys, 1.0, "screen")
-            else:
-                span = STEPS[n - 1] * 3
-                xs = range(best[1] - span, best[1] + span + 1, step)
-                ys = range(best[2] - span, best[2] + span + 1, step)
-                for mode in S.MODES:
-                    for a in S.LADDER:
-                        if a > 0.0:
-                            sweep(xs, ys, a, mode)
-        print(f"{nid:12} now  {now[0]},{now[1]} a{now[2]} {now[3]:8} gain {score(*now):+.3f}")
-        print(f"{'':12} best {best[1]},{best[2]} a{best[3]} {best[4]:8} gain {best[0]:+.3f}")
+                    v = score(x, y, a, mode, art)
+                    if best is None or v < best[0]:
+                        best = (v, x, y, a, mode, rot)
+    v, bx, by, ba, bm, brot = best
+    art = dict(angles)[brot]
+    print(f"coarse             {bx},{by} a{ba} {bm:9} rot {brot:4}  {v:7.3f}")
+    # Paint at the position the shape found, then position again at that paint.
+    for mode in ([bm] if PAINT else S.MODES):
+        for a in ([ba] if PAINT else S.LADDER):
+            if a == 0.0:
+                continue
+            t = score(bx, by, a, mode, art)
+            if t < v:
+                v, ba, bm = t, a, mode
+    for y in range(by - STEP * 2, by + STEP * 2 + 1):
+        for x in range(bx - STEP * 2, bx + STEP * 2 + 1):
+            t = score(x, y, ba, bm, art)
+            if t < v:
+                v, bx, by = t, x, y
+    print(f"best               {bx},{by} a{ba} {bm:9} rot {brot:4}  {v:7.3f}"
+          f"   (art {art.width}x{art.height})")
 
 
 main()

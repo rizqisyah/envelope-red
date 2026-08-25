@@ -84,7 +84,7 @@ MODES = ["normal", "screen", "multiply", "lighten", "darken"]
 # protects their alpha, and a hand-placed layer is exactly the kind the solver got wrong
 # in the first place. 2854:624 is hero's ornate frame: it was faded to 0.2 while it sat
 # 197px below where it belongs, and there is no reason to let that happen twice.
-NO_SOLVE = {"2854:624"}
+NO_SOLVE = {"2854:624", "2877:263", "2894:882", "2878:299", "2894:892", "2875:226"}
 
 # No closing brace in the pattern: gen_band appends `, a: ...` and `, b: '...'` to any
 # row this script has already solved, and anchoring on `h: N }` silently dropped every
@@ -93,6 +93,7 @@ NO_SOLVE = {"2854:624"}
 ROW = re.compile(
     r"\{ z: (\d+), id: '([^']+)', src: assets\['([^']+)'\], "
     r"x: (-?[\d.]+), y: (-?[\d.]+), w: ([\d.]+), h: ([\d.]+)"
+    r"(?:, a: ([\d.]+))?(?:, b: '([a-z]+)')?"
 )
 
 
@@ -104,10 +105,15 @@ def all_layers():
             continue
         src = open("src/lib/bands/" + f).read()
         top = int(re.search(r"BAND_TOP = (\d+)", src).group(1))
-        for z, i, a, x, y, w, h in ROW.findall(src):
+        for z, i, a, x, y, w, h, alpha, blend in ROW.findall(src):
+            # The generated table, not the solver's own JSON, is what the browser renders
+            # -- gen_band.py's PIN_A / PIN_B override the JSON on the way out, so reading
+            # the JSON back composites a plate at an opacity nothing on the page uses.
             rows.append(dict(z=int(z), id=i, asset=a, band=f[:-3],
                              x=round(float(x)), y=round(float(y)) + top,
-                             w=float(w), h=float(h)))
+                             w=float(w), h=float(h),
+                             a=float(alpha) if alpha else 1.0,
+                             b=blend or "normal"))
     rows.sort(key=lambda r: r["z"])
     return rows
 
@@ -227,12 +233,12 @@ def main():
             d.paste(0, (0, 0), mask)
             return sum(i * n for i, n in enumerate(d.histogram())) / (FRAME_W * height)
 
-        trial = {r["id"]: alphas.get(r["id"], 1.0) for r in window}
+        trial = {r["id"]: r["a"] for r in window}
         # Offsets are relative to whatever the table already holds, and the solved
         # ABSOLUTE position is what gets persisted -- so re-running is idempotent
         # rather than applying the same nudge on top of itself.
         offs = {r["id"]: (0, 0) for r in window}
-        modes = {r["id"]: blends.get(r["id"], "normal") for r in window}
+        modes = {r["id"]: r["b"] for r in window}
         idx = {r["id"]: n for n, r in enumerate(window)}
 
         def compose(canvas, rows, trial, offs, modes, x0, y0w):

@@ -17,7 +17,6 @@ export const LAYERS: BandLayer[] = [
   { z: 28, id: '2877:260', src: assets['theday/parts/2877-260.webp'], x: 0, y: 30, w: 375, h: 269 },
   { z: 29, id: '2881:350', src: assets['theday/parts/2881-350.webp'], x: 0, y: 30, w: 375, h: 269 },
   { z: 36, id: '2889:785', src: assets['theday/parts/2889-785.webp'], x: 131, y: 34, w: 114, h: 149, b: 'screen' },
-  { z: 37, id: '2877:263', src: assets['theday/parts/2877-263.webp'], x: -4, y: -17, w: 306, h: 200, a: 0.3, b: 'screen' },
   { z: 40, id: '2877:262', src: assets['theday/parts/2877-262.webp'], x: 24, y: 125, w: 316, h: 319, b: 'lighten' },
   { z: 41, id: '2911:3752', src: assets['theday/parts/2911-3752.webp'], x: 154, y: 243, w: 66, h: 13 },
   { z: 42, id: '2877:258', src: assets['theday/parts/2877-258.webp'], x: -40, y: 36, w: 375, h: 478, a: 0.12 },

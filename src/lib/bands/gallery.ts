@@ -15,7 +15,8 @@ export const BAND_HEIGHT = 652
 export const LAYERS: BandLayer[] = [
   { z: 4, id: '2896:933', src: assets['gallery/parts/2896-933.webp'], x: 99, y: -44, w: 177, h: 247 },
   { z: 34, id: '2875:225', src: assets['gallery/parts/2875-225.webp'], x: 0, y: 180, w: 375, h: 558 },
-  { z: 35, id: '2875:226', src: assets['gallery/parts/2875-226.webp'], x: 52, y: 228, w: 284, h: 409, a: 0.85 },
+  { z: 35, id: '2875:226', src: assets['gallery/parts/2875-226.webp'], x: 52, y: 228, w: 284, h: 409, a: 0.95 },
+  { z: 37, id: '2877:263', src: assets['theday/parts/2877-263.webp'], x: 52, y: 483, w: 306, h: 200 },
   { z: 38, id: '2875:228', src: assets['gallery/parts/2875-228.webp'], x: 104, y: 361, w: 167, h: 98 },
   { z: 138, id: '2875:232', src: assets['gallery/parts/2875-232.webp'], x: 160, y: 489, w: 9, h: 9 },
   { z: 139, id: '2875:233', src: assets['gallery/parts/2875-233.webp'], x: 183, y: 489, w: 9, h: 9 },
