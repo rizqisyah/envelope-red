@@ -21,9 +21,14 @@ const { el, shown } = useReveal(0.15)
 }
 
 .youme__line {
-  left: calc(92 * var(--px));
+  /*
+   * 210 wide against Figma's 198, kept centred on the node's own 191. Alex Brush sets
+   * "You, Me &" at 199 design px here — a pixel over the box — so the ampersand fell to
+   * the second line and the render's two lines came out as "You, Me" / "& Forever".
+   */
+  left: calc(86 * var(--px));
   top: calc(0 * var(--px));
-  width: calc(198 * var(--px));
+  width: calc(210 * var(--px));
   font-family: var(--font-heading);
   font-size: calc(48 * var(--px));
   line-height: calc(38 * var(--px));

@@ -83,7 +83,13 @@ OUT_DIR = pathlib.Path("src/lib/bands")
 # matches that, a rotation search only got the region from 6.87 to 6.50, and drawing an
 # upright necklace across the Resepsi card is worse than drawing nothing. Reproducing it
 # needs a rotate+scale on the layer, not a position.
-PAINTS_NOTHING = {"2899:222"}  # measured one at a time; see SLICING.md
+# 2893:848 is a 216x325 node reported at x -176, so only its right 40px are on-frame and
+# that is all Figma exported. Neither x 0 (where the clip rule puts a left-bleeding node)
+# nor the searched 37,6776 beats where locate left it, and all four candidates sit inside
+# 0.8 of each other -- there is no position in the wish band this sprite explains. What it
+# does do is poke a dark red sliver out from behind the first wish card, which the render
+# does not have. Dropping it is also the best of the five: 1.586 -> 1.575.
+PAINTS_NOTHING = {"2899:222", "2893:848"}  # measured one at a time; see SLICING.md
 
 # Layers where the clip rule is right and the search is wrong. A layer buried under
 # most of its band scores badly WHERE IT BELONGS, so the search wanders off to open
@@ -190,7 +196,19 @@ PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111, "2854:624": 0, "2854:6
          # dress instead of a seal on the rail. At its own reported 222,374 the region goes
          # 8.23 -> 0.96; drawing nothing at all scored 7.36, so the layer was costing more
          # than it paid.
-         "2854:626": 222}
+         "2854:626": 222,
+         # Two more of the calla lilies whose reported bounds are the unrotated box.
+         # 2878:301 is the second lily off the akad peony -- it was hanging off the right
+         # edge as a bare stem (17.39 over the pair's own box, 2.25 where it belongs), and
+         # 2881:347 is the pair under the Resepsi card's dahlia, which had dropped into the
+         # You-Me band below (6.51 -> 4.12).
+         "2878:301": 247, "2881:347": 25,
+         # 2877:262 is the Save-the-Date plaque -- the same "Photoroom" source as the
+         # quote band's arch panel. The solver had it on `lighten`, which over cream keeps
+         # whichever pixel is brighter and so eats the plaque's own soft edge: it rendered
+         # as a wide blob instead of a scalloped card. Normal at full strength, nudged 6px
+         # right, takes the band's card box 4.50 -> 3.34.
+         "2877:262": 30}
 
 # Same class of failure, but the y is wrong too, so PIN_X alone cannot fix it. Both of
 # Frame 253's entries are the fan pair above -- their y is 280px out as well as their x,
@@ -201,7 +219,8 @@ PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111, "2854:624": 0, "2854:6
 PIN_Y = {"2877:255": 3068, "2877:256": 3068, "2854:624": 147, "2854:632": 700,
          "2857:223": 1474, "2896:932": 3242,
          "2877:263": 3626, "2894:882": 5936, "2878:299": 4551, "2894:892": 7418,
-         "2878:311": 4607, "2854:626": 374}
+         "2878:311": 4607, "2854:626": 374,
+         "2878:301": 4375, "2881:347": 4960, "2877:262": 3920}
 
 # Opacity and blend mode for the layers whose POSITION is pinned above. solve_alpha
 # fitted their alpha against a composite in which they sat hundreds of pixels from home,
@@ -215,9 +234,10 @@ PIN_Y = {"2877:255": 3068, "2877:256": 3068, "2854:624": 147, "2854:632": 700,
 # grey-white. Swept together with the hem against the card's own box: card 0.95 with the
 # hem at full strength scores 9.62, against 13.36 for the pair the solver left.
 PIN_A = {"2877:263": 1.0, "2894:882": 1.0, "2878:299": 1.0, "2894:892": 1.0,
-         "2875:226": 0.95, "2854:626": 1.0}
+         "2875:226": 0.95, "2854:626": 1.0, "2877:262": 1.0}
 PIN_B = {"2877:263": "normal", "2894:882": "normal", "2878:299": "normal",
-         "2894:892": "normal", "2875:226": "normal", "2854:626": "normal"}
+         "2894:892": "normal", "2875:226": "normal", "2854:626": "normal",
+         "2877:262": "normal"}
 
 # A layer paints in the band its own y lands in, not the band Figma filed it under.
 # 2894:882 is filed in `wish` because its reported y is 6414, the wish band's first row --
