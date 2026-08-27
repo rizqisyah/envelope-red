@@ -17,9 +17,16 @@ const { groom, bride, coupleNickname } = useWedding()
 const initials = computed(() => {
   const g = groom.value?.name || ''
   const b = bride.value?.name || ''
-  if (g && b) return [g[0], b[0]]
+  /*
+   * The first letter is LOWERCASED. Charoly Demo draws its lowercase as plain capitals
+   * and its uppercase as swash capitals, and the design's node holds a lowercase "a" —
+   * feeding it "Ahmad"[0] renders the swash instead, a letter twice the size that fills
+   * the oval and buries the S behind it. The second letter stays as it comes: Figma's is
+   * an uppercase S in Bibliophile Script.
+   */
+  if (g && b) return [g[0].toLowerCase(), b[0]]
   const parts = coupleNickname.value.split(/\s*[&+]\s*|\s+dan\s+/i)
-  return parts.length > 1 ? [parts[0][0], parts[1][0]] : ['a', 'S']
+  return parts.length > 1 ? [parts[0][0].toLowerCase(), parts[1][0]] : ['a', 'S']
 })
 
 // Figma authors this break. `&#10;` in the template is folded to a space by the
@@ -31,8 +38,13 @@ const KICKER = 'Wedding\ninvitation'
   <section :ref="el" class="band invite" :class="{ 'is-in': shown }" aria-labelledby="invite-kicker">
     <BandArt :layers="LAYERS" :shown="shown" />
 
-    <!-- 2858:263 — Charoly Demo 24/28, #000000. Figma authors the break before "invitation". -->
-    <h2 id="invite-kicker" class="invite__kicker">{{ KICKER }}</h2>
+    <!--
+      2858:263 — Charoly Demo 24/28, #000000. Figma authors the break before "invitation".
+      The inner span carries the tilt: the band's reveal animates `transform` on every
+      direct child and lands on `none`, so a rotation set there would be wiped the moment
+      the band arrives.
+    -->
+    <h2 id="invite-kicker" class="invite__kicker"><span>{{ KICKER }}</span></h2>
 
     <!-- 2857:227 Charoly Demo 75/38 and 2857:228 Bibliophile Script 64/38, both #702029. -->
     <p class="invite__mono invite__mono--first">{{ initials[0] }}</p>
@@ -52,8 +64,20 @@ const KICKER = 'Wedding\ninvitation'
  */
 .invite__kicker {
   --delay: 80ms;
-  left: calc(101 * var(--px));
-  top: calc(44 * var(--px));
+  /*
+   * The node is rotated and Figma's MCP does not report rotation, so both the angle and
+   * the position are SWEPT against the render — the live shot cropped to the lace card,
+   * (85,1050)-(205,1150), scored the same way as a band. Fitting the ink's principal
+   * axis was tried first and answered 20.9 degrees, which is wrong: the axis of a
+   * two-line block is pulled toward the block's own diagonal, not the baseline. The
+   * sweep is unambiguous — 21 deg scores 22.65, 27 deg 19.72, 33 deg 18.06, 36 deg back
+   * up to 20.09 — and 33 is also what the design reads as by eye.
+   *
+   * Its reported box (100.64, 1053.65, 123x39) is the UNROTATED one and lands nowhere
+   * near the ink, so `left`/`top` are swept too rather than derived from it.
+   */
+  left: calc(77 * var(--px));
+  top: calc(70 * var(--px));
   width: calc(123 * var(--px));
   font-family: var(--font-display);
   font-size: calc(24 * var(--px));
@@ -61,6 +85,11 @@ const KICKER = 'Wedding\ninvitation'
   line-height: calc(28 * var(--px));
   white-space: pre-line;
   color: #000;
+}
+
+.invite__kicker span {
+  display: block;
+  transform: rotate(33deg);
 }
 
 .invite__mono {
