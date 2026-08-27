@@ -20,7 +20,7 @@ const parents = computed(() => parentLine(bride.value) || 'Putri Pertama dari Ba
   <section :ref="el" class="band bride" :class="{ 'is-in': shown }" aria-labelledby="bride-name">
     <BandArt :layers="LAYERS" :shown="shown" />
 
-    <!-- 2852:245 — Roben Elegante 32/38, #d0cb84. SUB: Sacramento. -->
+    <!-- 2852:245 — Roben Elegante Script 32/38, #d0cb84. -->
     <h2 id="bride-name" class="bride__call">{{ callName }}</h2>
     <!-- 2852:246 — Playfair Display SC 20/38, #d0cb84. -->
     <p class="bride__full">{{ fullName }}</p>
@@ -34,19 +34,14 @@ const parents = computed(() => parentLine(bride.value) || 'Putri Pertama dari Ba
   height: calc(v-bind(BAND_HEIGHT) * var(--px));
 }
 
-/*
- * 38, not Figma's 32. Great Vibes sets 1.7x narrower than Roben Elegante, but it is also
- * a tall connecting script where Roben Elegante is wide and short — matching the width
- * would put a 60px-tall name in a 40px gap above the full name below it. 38 closes most
- * of the gap without the collision. Revert to 32 with the real face.
- */
+/* 2852:245 — Roben Elegante Script 32/38, the design's own face. */
 .bride__call {
   --delay: 80ms;
   left: calc(83 * var(--px));
   top: calc(497 * var(--px));
   width: calc(202 * var(--px));
   font-family: var(--font-name);
-  font-size: calc(38 * var(--px));
+  font-size: calc(32 * var(--px));
   font-weight: 400;
   line-height: calc(38 * var(--px));
   color: var(--gold-muted);

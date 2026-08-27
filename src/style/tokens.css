@@ -32,12 +32,13 @@
   --paper: #530915;
 
   /*
-   * fonts — BusinessPenmanshipW00 (--font-script) has no webfont and no file, so it
-   * runs on the closest fontsource substitute. Its size compensation is measured by
-   * sweep against the render and lives on `.cover__eyebrow`; retiring the substitute
-   * means re-measuring, not just swapping this value.
+   * fonts — every face below is now the design's own, self-hosted from
+   * src/assets/fonts (see the @font-face block in style.css). Five of them were
+   * fontsource substitutes until the foundry files arrived, each carrying a measured
+   * size compensation on its own rule; those compensations are gone with the
+   * substitutes and every size is Figma's again.
    */
-  --font-script: "Playball", cursive; /* SUB for BusinessPenmanshipW00-Bold — "The Wedding Of" */
+  --font-script: "Business Penmanship", cursive; /* "The Wedding Of", "Bride Groom", "QS Ar-Rum 21" */
   /* Frame 254's real face, self-hosted (see the @font-face in style.css). No substitute
      and therefore no compensation: the couple name runs at Figma's own 32/27. */
   --font-display: "Charoly Demo", serif; /* couple name */
@@ -51,15 +52,7 @@
    * the value here.
    */
   --font-heading: "Alex Brush", cursive; /* real face — every band heading */
-  /*
-   * SUB for Roben Elegante — the two given names. Roben Elegante is exceptionally wide:
-   * "Ayilhah" measures 144 design px of ink at 32px in the render, against 82 for Great
-   * Vibes and 76 for the two other candidates tried (Italianno, Pinyon Script). Nothing
-   * on fontsource is that wide, so the size is compensated up as far as the box allows
-   * (see .bride__call) and the name still sets narrower than the design. That is the
-   * known deviation; licensing the real face is what closes it.
-   */
-  --font-name: "Great Vibes", cursive;
+  --font-name: "Roben Elegante", cursive; /* the two given names */
   --font-caps: "Playfair Display SC", serif; /* real face — full names, gallery labels */
   --font-parent: "Ovo", serif; /* real face — "Putri/Putra Pertama dari ..." */
   --font-detail: "Bellefair", serif; /* real face — the akad/resepsi details */
@@ -67,13 +60,18 @@
   --font-card: "Libre Caslon Condensed", serif; /* real face — the wish cards */
   --font-figures: "Activists", serif; /* real face, self-hosted — the countdown digits */
   --font-quote: "Cormorant Garamond", serif; /* real face — the RSVP field labels */
-  /* SUB for Blosta Script (closing name) and Bibliophile Script (the S monogram). */
-  --font-signature: "Alex Brush", cursive;
-  /* SUB for April Signature — the closing paragraph. A signature face set as a
-     five-line paragraph is unreadable at 15px, so this runs on the book italic the
-     rest of the sheet's copy uses. */
-  --font-closing: "EB Garamond", serif;
+  --font-signature: "Blosta Script", cursive; /* the closing couple name */
+  --font-monogram: "Bibliophile Script", cursive; /* the invite band's A/S monogram */
+  --font-closing: "April Signature", cursive; /* the closing paragraph */
   --font-arabic: "Amiri", serif; /* the QS Ar-Rum verse */
+  /*
+   * The QS Ar-Rum translation. Figma names the node "Playfair" — the 2023 variable
+   * family, NOT Playfair Display. The distinction is load-bearing at this size: EB
+   * Garamond fitted nine lines in the node's 155px box where the render has ten, and
+   * Playfair Display fitted six. Playfair's optical-size axis is what makes it set
+   * narrow enough at 10px to match.
+   */
+  --font-verse: "Playfair Variable", serif;
 
   /* design frame reference (Figma Frame 254 cover / Frame 253 body) */
   --frame-w: 375;

@@ -23,7 +23,7 @@ const parents = computed(() => parentLine(groom.value) || 'Putra Pertama dari Ba
 
     <!-- 2858:235 — Charoly Demo 64/38, #d0cb84. -->
     <p class="groom__and">And</p>
-    <!-- 2896:939 — Roben Elegante 20/38, #d0cb84. SUB: Sacramento. -->
+    <!-- 2896:939 — Roben Elegante Script 20/38, #d0cb84. -->
     <p class="groom__together">Better together</p>
 
     <!-- 2852:571 — Roben Elegante 32/38, #d0cb84. -->
@@ -68,19 +68,14 @@ const parents = computed(() => parentLine(groom.value) || 'Putra Pertama dari Ba
   color: var(--gold-muted);
 }
 
-/*
- * 38, not Figma's 32. Great Vibes sets 1.7x narrower than Roben Elegante, but it is also
- * a tall connecting script where Roben Elegante is wide and short — matching the width
- * would put a 60px-tall name in a 40px gap above the full name below it. 38 closes most
- * of the gap without the collision. Revert to 32 with the real face.
- */
+/* 2852:571 — Roben Elegante Script 32/38, the design's own face. */
 .groom__call {
   --delay: 80ms;
   left: calc(84 * var(--px));
   top: calc(712 * var(--px));
   width: calc(202 * var(--px));
   font-family: var(--font-name);
-  font-size: calc(38 * var(--px));
+  font-size: calc(32 * var(--px));
   font-weight: 400;
   line-height: calc(38 * var(--px));
   color: var(--gold-muted);

@@ -152,22 +152,16 @@ const fitCouple = useFitText()
   animation: rise 2400ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0ms) backwards;
 }
 
-/*
- * 2852:583 — BusinessPenmanshipW00-Bold 20/30, #e8e4a9. That face has no webfont and no
- * file, so this runs on Playball. Playball sets NARROWER than the penmanship at the same
- * size — 133 design px of ink against the render's 153 — so the size is compensated up to
- * 23 and `left` pulled 2px back to 51 to re-centre the wider line. Both numbers are ink
- * boxes measured against .figma-tmp/frame254-1x.png, and both must be reverted to Figma's
- * 20/53 if the real face is ever licensed.
- */
+/* 2852:583 — BusinessPenmanshipW00-Bold 20/30, #e8e4a9. The design's own face. */
 .cover__eyebrow {
   --delay: 900ms;
   z-index: 6;
   top: calc(147 * var(--px));
-  left: calc(51 * var(--px));
+  left: calc(53 * var(--px));
   width: calc(269 * var(--px));
   font-family: var(--font-script);
-  font-size: calc(23 * var(--px));
+  font-weight: 700;
+  font-size: calc(20 * var(--px));
   line-height: calc(30 * var(--px));
   color: var(--gold-pale);
 }

@@ -20,7 +20,7 @@ const { el, shown } = useReveal(0.15)
     <!-- 2854:620 — Charoly Demo 48/70, #d0cb84. -->
     <p class="hero__and">and</p>
     <!--
-      2852:235 — BusinessPenmanshipW00-Bold 40/34, #d0cb84. SUB: Playball.
+      2852:235 — BusinessPenmanshipW00-Bold 40/34, #d0cb84.
       The design's own words: the couple's names have their own bands further down, and
       this is the sheet's title, not a name slot.
     -->
@@ -55,15 +55,8 @@ const { el, shown } = useReveal(0.15)
   top: calc(125 * var(--px));
   width: calc(288 * var(--px));
   font-family: var(--font-script);
-  /*
-   * 48, not Figma's 40. Playball sets 1.30x NARROWER than BusinessPenmanshipW00 on this
-   * string (199 design px of ink against the render's 259) but 1.33x TALLER, so matching
-   * the width outright would put 36px of glyph in a 21px-tall design line. 1.2 splits it
-   * — the same ratio the quote band and the cover both measured for this face pair — and
-   * is what to revert to Figma's 40 if the real face is ever licensed.
-   */
-  font-size: calc(48 * var(--px));
-  font-weight: 400;
+  font-size: calc(40 * var(--px));
+  font-weight: 700;
   line-height: calc(34 * var(--px));
   color: var(--gold-muted);
 }

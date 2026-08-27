@@ -1,12 +1,11 @@
 /* Frame 254 (cover). */
-@import "@fontsource/playball/400.css";
 @import "@fontsource/ibarra-real-nova/500-italic.css";
 @import "@fontsource/jost/400.css";
 @import "@fontsource/cormorant-garamond/400.css";
 @import "@fontsource/cormorant-garamond/700.css";
 /* Frame 253 (invitation body). */
 @import "@fontsource/alex-brush/400.css";
-@import "@fontsource/great-vibes/400.css";
+@import "@fontsource-variable/playfair/opsz.css";
 @import "@fontsource/playfair-display-sc/400.css";
 @import "@fontsource/ovo/400.css";
 @import "@fontsource/bellefair/400.css";
@@ -45,6 +44,56 @@
 @font-face {
   font-family: "Activists";
   src: url("./assets/fonts/activists-regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+ * The five faces the design actually specifies. They were substituted with the closest
+ * fontsource cuts until the foundry files turned up in ~/Downloads/weddings/Font; each
+ * substitution carried a measured size compensation on its own rule, and those are gone
+ * with the substitutes — every one of these now runs at Figma's own size.
+ *
+ * LICENSE: like Charoly Demo and Activists above, several of these are demo or
+ * personal-use cuts. Shipping this template commercially needs the paid families. Each
+ * swap is one url() here.
+ */
+@font-face {
+  font-family: "Business Penmanship";
+  src: url("./assets/fonts/business-penmanship-bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roben Elegante";
+  src: url("./assets/fonts/roben-elegante-script.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bibliophile Script";
+  src: url("./assets/fonts/bibliophile-script-bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Blosta Script";
+  src: url("./assets/fonts/blosta-script.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "April Signature";
+  src: url("./assets/fonts/april-signature.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;

@@ -77,12 +77,13 @@ const KICKER = 'Wedding\ninvitation'
   font-size: calc(75 * var(--px));
 }
 
-/* SUB for Bibliophile Script — a copperplate script, so Alex Brush is the near match. */
+/* 2857:228 — Bibliophile Script Bold 64/38, the design's own face. */
 .invite__mono--second {
   --delay: 420ms;
   left: calc(216 * var(--px));
   top: calc(292 * var(--px));
-  font-family: var(--font-signature);
+  font-family: var(--font-monogram);
+  font-weight: 700;
   font-size: calc(64 * var(--px));
 }
 </style>

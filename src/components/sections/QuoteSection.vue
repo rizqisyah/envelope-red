@@ -38,8 +38,8 @@ const { quoteVerse, quoteArabic, quoteText } = useWedding()
   top: calc(45 * var(--px));
   width: calc(185 * var(--px));
   font-family: var(--font-script);
-  /* 24, not Figma's 20: Playball's ink measures 120 against the render's 144. */
-  font-size: calc(24 * var(--px));
+  font-weight: 700;
+  font-size: calc(20 * var(--px));
   line-height: calc(48 * var(--px));
   color: var(--cream-text);
 }
@@ -63,11 +63,17 @@ const { quoteVerse, quoteArabic, quoteText } = useWedding()
 .quote__arabic {
   font-family: var(--font-arabic);
   font-size: calc(10 * var(--px));
-  line-height: calc(18 * var(--px));
+  /*
+   * The node's own 14, not the 18 Amiri wants. Amiri stacks the harakat higher than the
+   * face Figma fell back to, so 18 pushed the verse's three lines 12px taller and shoved
+   * the translation below it down by the same amount. Overflow stays visible, so the
+   * marks are tight rather than clipped — which is how the render has them.
+   */
+  line-height: calc(14 * var(--px));
 }
 
 .quote__translation {
-  font-family: var(--font-body);
+  font-family: var(--font-verse);
   font-size: calc(10 * var(--px));
   line-height: calc(14 * var(--px));
 }
