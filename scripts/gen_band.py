@@ -181,7 +181,16 @@ PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111, "2854:624": 0, "2854:6
          # not: reported 114, locate moved it to 264, and it hung down the middle of the
          # ornate oval the design keeps clean. Over the akad blob's left shoulder,
          # 9.04 -> 2.71.
-         "2878:311": 27}
+         "2878:311": 27,
+         # 2854:626 is hero's wax seal, and it is the one case here where Figma's reported
+         # bounds were right all along: it exports 110x67 against a declared 110x67, so no
+         # reconcile branch fires. locate.py moved it anyway -- a dark red seal on a dark
+         # red frame rail matches most of the rail -- 30px left and 44px down, and
+         # solve_alpha then took it to 0.85 darken, which is why it read as a bruise on the
+         # dress instead of a seal on the rail. At its own reported 222,374 the region goes
+         # 8.23 -> 0.96; drawing nothing at all scored 7.36, so the layer was costing more
+         # than it paid.
+         "2854:626": 222}
 
 # Same class of failure, but the y is wrong too, so PIN_X alone cannot fix it. Both of
 # Frame 253's entries are the fan pair above -- their y is 280px out as well as their x,
@@ -192,7 +201,7 @@ PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111, "2854:624": 0, "2854:6
 PIN_Y = {"2877:255": 3068, "2877:256": 3068, "2854:624": 147, "2854:632": 700,
          "2857:223": 1474, "2896:932": 3242,
          "2877:263": 3626, "2894:882": 5936, "2878:299": 4551, "2894:892": 7418,
-         "2878:311": 4607}
+         "2878:311": 4607, "2854:626": 374}
 
 # Opacity and blend mode for the layers whose POSITION is pinned above. solve_alpha
 # fitted their alpha against a composite in which they sat hundreds of pixels from home,
@@ -206,9 +215,9 @@ PIN_Y = {"2877:255": 3068, "2877:256": 3068, "2854:624": 147, "2854:632": 700,
 # grey-white. Swept together with the hem against the card's own box: card 0.95 with the
 # hem at full strength scores 9.62, against 13.36 for the pair the solver left.
 PIN_A = {"2877:263": 1.0, "2894:882": 1.0, "2878:299": 1.0, "2894:892": 1.0,
-         "2875:226": 0.95}
+         "2875:226": 0.95, "2854:626": 1.0}
 PIN_B = {"2877:263": "normal", "2894:882": "normal", "2878:299": "normal",
-         "2894:892": "normal", "2875:226": "normal"}
+         "2894:892": "normal", "2875:226": "normal", "2854:626": "normal"}
 
 # A layer paints in the band its own y lands in, not the band Figma filed it under.
 # 2894:882 is filed in `wish` because its reported y is 6414, the wish band's first row --
