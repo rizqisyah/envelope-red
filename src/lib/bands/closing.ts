@@ -28,5 +28,12 @@ export const LAYERS: BandLayer[] = [
   { z: 218, id: '2894:923', src: assets['closing/parts/2894-923.webp'], x: 105, y: 70, w: 83, h: 111 },
   { z: 219, id: '2894:920', src: assets['closing/parts/2894-920.webp'], x: 124, y: 160, w: 57, h: 57 },
   { z: 220, id: '2894:922', src: assets['closing/parts/2894-922.webp'], x: 97, y: 193, w: 47, h: 47 },
-  { z: 228, id: '2920:221', src: assets['closing/parts/2920-221.webp'], x: 141, y: 96, w: 29, h: 29, a: 0.2 },
+  /*
+   * The cameo medallion on the plaque. Both its reported x (275.17) and the alpha
+   * solver's answer were wrong — the solver had walked it onto the velvet at (141, 96)
+   * and faded it to 0.2 to hide the mistake, which is why the plaque printed bare.
+   * x/y here are template-matched against the render: the ink runs 249..272 x
+   * 7123..7145 global, less the plate's 2px transparent margin.
+   */
+  { z: 228, id: '2920:221', src: assets['closing/parts/2920-221.webp'], x: 246, y: 37, w: 29, h: 29 },
 ]

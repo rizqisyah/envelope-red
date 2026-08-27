@@ -65,6 +65,13 @@ const KICKER = 'Wedding\ninvitation'
 .invite__kicker {
   --delay: 80ms;
   /*
+   * The quote band's swan pair (2854:637, z 65) hangs down over this card, and in the
+   * design the birds sit IN FRONT of the kicker. Live copy defaults to z 900 — above
+   * every plate — so this one node drops back between the lace card it prints on
+   * (2854:627, z 60) and the swans.
+   */
+  z-index: 64;
+  /*
    * The node is rotated and Figma's MCP does not report rotation, so both the angle and
    * the position are SWEPT against the render — the live shot cropped to the lace card,
    * (85,1050)-(205,1150), scored the same way as a band. Fitting the ink's principal

@@ -14,7 +14,7 @@ const LINE = 'Where \nlove becomes \nhome.'
 <template>
   <section :ref="el" class="band closing" :class="{ 'is-in': shown }">
     <BandArt :layers="LAYERS" :shown="shown" />
-    <!-- 2896:935 — Alex Brush 14/12, #ffffff. Figma authors both breaks. -->
+    <!-- 2896:935 — Alex Brush 14/12. Figma authors both breaks. -->
     <p class="closing__line">{{ LINE }}</p>
   </section>
 </template>
@@ -32,6 +32,11 @@ const LINE = 'Where \nlove becomes \nhome.'
   font-size: calc(14 * var(--px));
   line-height: calc(12 * var(--px));
   white-space: pre-line;
-  color: #fff;
+  /*
+   * NOT the #ffffff the text dump reports. The render prints this line in a dusty rose
+   * on a #e5e4df plaque — white would be all but invisible there — and the live shot
+   * reaches full coverage on the same glyphs, so the render's darkest ink IS the fill.
+   */
+  color: #cfaeae;
 }
 </style>
