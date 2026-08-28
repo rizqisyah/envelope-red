@@ -41,15 +41,37 @@ const dotCount = computed(() =>
   photos.value.length ? Math.min(photos.value.length, 5) : DESIGN_DOTS,
 )
 
-/* Touch only: the card is 167px wide on a phone, so arrows would cover the photo. */
+const step = (d: number) => {
+  const n = photos.value.length
+  if (n) active.value = (active.value + d + n) % n
+}
+
+/*
+ * Swipe is touch only — the card is 167px wide on a phone, so arrows would cover the
+ * photo. Tapping it opens the preview, which is the only way a mouse gets through.
+ */
+const SWIPE_PX = 30
 let startX = 0
+// A touch that moved far enough to count as a swipe still fires `click` afterwards.
+// Without this the card would advance twice per swipe.
+let swiped = false
 const onStart = (e: TouchEvent) => (startX = e.touches[0].clientX)
 const onEnd = (e: TouchEvent) => {
   const dx = e.changedTouches[0].clientX - startX
-  if (Math.abs(dx) < 30 || !photos.value.length) return
-  const n = photos.value.length
-  active.value = (active.value + (dx < 0 ? 1 : n - 1)) % n
+  swiped = Math.abs(dx) >= SWIPE_PX
+  if (swiped) step(dx < 0 ? 1 : -1)
 }
+const onClick = () => {
+  if (swiped) swiped = false
+  else dlg.value?.showModal()
+}
+
+/*
+ * Preview is a native <dialog>: it brings its own backdrop, top layer, Esc-to-close and
+ * focus trap, so none of that is written here. Teleported to <body> because a child of
+ * `.band` is absolutely positioned and faded by the shared band rules.
+ */
+const dlg = ref<HTMLDialogElement | null>(null)
 </script>
 
 <template>
@@ -62,18 +84,24 @@ const onEnd = (e: TouchEvent) => {
     <BandArt :layers="LAYERS" :skip="skip" :shown="shown" />
 
     <!-- The aperture in the linen card, in band-local design px. -->
-    <img
+    <button
       v-if="photos.length"
+      type="button"
       class="gallery__photo"
-      :src="photos[active].src"
-      :alt="photos[active].caption || 'Foto mempelai'"
-      width="167"
-      height="98"
-      loading="lazy"
-      decoding="async"
+      :aria-label="`Foto ${active + 1} dari ${photos.length} — ketuk untuk foto berikutnya`"
+      @click="onClick"
       @touchstart.passive="onStart"
       @touchend.passive="onEnd"
-    />
+    >
+      <img
+        :src="photos[active].src"
+        :alt="photos[active].caption || 'Foto mempelai'"
+        width="167"
+        height="98"
+        loading="lazy"
+        decoding="async"
+      />
+    </button>
 
     <!-- 2875:227 — Playfair Display SC 13/38, #000000. -->
     <p class="gallery__kicker">A glimpse of us</p>
@@ -98,6 +126,22 @@ const onEnd = (e: TouchEvent) => {
     <!-- 2883:363 — Playfair Display SC 10/38, #000000. -->
     <p class="gallery__swipe">Swipe for more</p>
   </section>
+
+  <Teleport to="body">
+    <dialog v-if="photos.length" ref="dlg" class="preview" @click.self="dlg?.close()">
+      <img
+        class="preview__img"
+        :src="photos[active].src"
+        :alt="photos[active].caption || 'Foto mempelai'"
+        @touchstart.passive="onStart"
+        @touchend.passive="onEnd"
+      />
+      <p v-if="photos[active].caption" class="preview__caption">{{ photos[active].caption }}</p>
+      <button type="button" class="preview__close" aria-label="Tutup" @click="dlg?.close()">
+        &times;
+      </button>
+    </dialog>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -108,10 +152,23 @@ const onEnd = (e: TouchEvent) => {
 .gallery__photo {
   /* 2875:228's own z, so the linen card's shading still paints over the photo edges. */
   z-index: 38;
+  /* Waits for the linen card it is cut into: BandArt starts layer i at 440 + i*150ms
+     and 2875:226 is index 2, so 740ms. */
+  --delay: 1400ms;
   left: calc(104 * var(--px));
   top: calc(361 * var(--px));
   width: calc(167 * var(--px));
   height: calc(98 * var(--px));
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.gallery__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -188,5 +245,59 @@ const onEnd = (e: TouchEvent) => {
   line-height: calc(38 * var(--px));
   letter-spacing: 0.08em;
   color: #000;
+}
+
+/*
+ * Plain units, not `--px`: that variable is a container-query length declared on the
+ * sheet element, and this dialog is teleported to <body>, outside it.
+ */
+.preview {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 0;
+  background: transparent;
+}
+
+.preview::backdrop {
+  background: rgb(40 6 10 / 0.92);
+}
+
+.preview__img {
+  max-width: 100%;
+  max-height: 78dvh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.preview__caption {
+  max-width: 100%;
+  font-family: var(--font-caps);
+  font-size: 0.75rem;
+  text-align: center;
+  color: #f2e6e6;
+}
+
+.preview__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+  font-size: 1.375rem;
+  line-height: 1;
+  cursor: pointer;
 }
 </style>
