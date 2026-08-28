@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watchEffect } from 'vue'
 import CoverSection from './components/cover/CoverSection.vue'
 import InviteBody from './components/invite/InviteBody.vue'
 import { usePreloadAssets } from './composables/usePreloadAssets'
@@ -44,6 +44,16 @@ async function openInvitation() {
     contentVisible.value = true
   })
 }
+
+/*
+ * The lock has to sit on the document, not on the column. `.is-locked` clipped the
+ * column at 100vh, but iOS Safari's 100vh is the toolbar-less height — taller than what
+ * is actually on screen — so the page itself still scrolled by the height of the
+ * toolbar and the invitation peeked out from under the cover.
+ */
+watchEffect(() => {
+  document.documentElement.classList.toggle('is-cover-locked', isLocked.value)
+})
 
 function onSplashLeave() {
   isLocked.value = false
@@ -260,7 +270,7 @@ function onSplashLeave() {
 
   .desktop-right-column.is-locked {
     overflow: hidden !important;
-    height: 100vh;
+    height: 100dvh;
   }
 }
 </style>

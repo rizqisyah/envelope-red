@@ -157,6 +157,15 @@ body {
   overflow-x: hidden;
 }
 
+/* While the cover owns the screen nothing scrolls — see App.vue's `isLocked`. */
+html.is-cover-locked,
+html.is-cover-locked body {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
   background: var(--paper);
   font-family: system-ui, sans-serif;
