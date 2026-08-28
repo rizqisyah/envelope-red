@@ -9,6 +9,7 @@ import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
 import { useWedding } from '../../composables/useWedding'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/gallery'
+import { assets } from '../../lib/bandAssets'
 
 const { el, shown } = useReveal(0.15)
 const { gallery } = useWedding()
@@ -17,29 +18,34 @@ const PLATE_PHOTO = '2875:228'
 // 2875:232/233/234 — the three dots. Live state, so they are drawn rather than pasted.
 const PLATE_DOTS = ['2875:232', '2875:233', '2875:234']
 
-const photos = computed(() =>
-  (gallery.value as any[])
+/*
+ * Design mode ships no API gallery, and an empty list left the whole card inert: the
+ * button was never rendered, so there was no preview, and the dots moved an `active`
+ * nothing read. The default deploy IS design mode, so that is what most people saw.
+ * Fall back to the design's own three couple photos — the gallery aperture's and the
+ * two polaroids from the invite band — and the same code path runs either way.
+ */
+const DESIGN_PHOTOS = [
+  { src: assets['gallery/parts/2875-228.webp'], caption: '' },
+  { src: assets['invite/parts/2858-249.webp'], caption: '' },
+  { src: assets['invite/parts/2858-245.webp'], caption: '' },
+]
+
+const photos = computed(() => {
+  const live = (gallery.value as any[])
     .map((g) => ({ src: g.image_url as string, caption: (g.caption as string) || '' }))
-    .filter((p) => p.src),
-)
+    .filter((p) => p.src)
+  return live.length ? live : DESIGN_PHOTOS
+})
 
 const active = ref(0)
 watch(photos, () => (active.value = 0))
 
-const skip = computed(() =>
-  photos.value.length ? [PLATE_PHOTO, ...PLATE_DOTS] : PLATE_DOTS,
-)
+// The aperture photo and the dots are always drawn live, never pasted.
+const skip = [PLATE_PHOTO, ...PLATE_DOTS]
 
-/*
- * Frame 253 draws three dots, so the design fallback keeps three: a single dot under a
- * card that cannot be swiped reads as a rendering bug, and the row is part of the
- * design's layout. With live photos the count follows the list, capped at the five the
- * row has space for.
- */
-const DESIGN_DOTS = 3
-const dotCount = computed(() =>
-  photos.value.length ? Math.min(photos.value.length, 5) : DESIGN_DOTS,
-)
+// Capped at the five the row has space for; the design's own row is three.
+const dotCount = computed(() => Math.min(photos.value.length, 5))
 
 const step = (d: number) => {
   const n = photos.value.length
@@ -85,7 +91,6 @@ const dlg = ref<HTMLDialogElement | null>(null)
 
     <!-- The aperture in the linen card, in band-local design px. -->
     <button
-      v-if="photos.length"
       type="button"
       class="gallery__photo"
       :aria-label="`Foto ${active + 1} dari ${photos.length} — ketuk untuk foto berikutnya`"
@@ -128,7 +133,7 @@ const dlg = ref<HTMLDialogElement | null>(null)
   </section>
 
   <Teleport to="body">
-    <dialog v-if="photos.length" ref="dlg" class="preview" @click.self="dlg?.close()">
+    <dialog ref="dlg" class="preview" @click.self="dlg?.close()">
       <img
         class="preview__img"
         :src="photos[active].src"
@@ -137,6 +142,24 @@ const dlg = ref<HTMLDialogElement | null>(null)
         @touchend.passive="onEnd"
       />
       <p v-if="photos[active].caption" class="preview__caption">{{ photos[active].caption }}</p>
+      <button
+        v-if="photos.length > 1"
+        type="button"
+        class="preview__nav preview__nav--prev"
+        aria-label="Foto sebelumnya"
+        @click="step(-1)"
+      >
+        &lsaquo;
+      </button>
+      <button
+        v-if="photos.length > 1"
+        type="button"
+        class="preview__nav preview__nav--next"
+        aria-label="Foto berikutnya"
+        @click="step(1)"
+      >
+        &rsaquo;
+      </button>
       <button type="button" class="preview__close" aria-label="Tutup" @click="dlg?.close()">
         &times;
       </button>
@@ -283,6 +306,30 @@ const dlg = ref<HTMLDialogElement | null>(null)
   font-size: 0.75rem;
   text-align: center;
   color: #f2e6e6;
+}
+
+.preview__nav {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0 0.2rem;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.preview__nav--prev {
+  left: 0.75rem;
+}
+
+.preview__nav--next {
+  right: 0.75rem;
 }
 
 .preview__close {
