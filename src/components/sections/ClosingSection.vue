@@ -25,6 +25,11 @@ const LINE = 'Where \nlove becomes \nhome.'
 }
 
 .closing__line {
+  /*
+   * Waits for the plaque 2894:908 it prints on: BandArt starts layer i at 440 + i*150ms
+   * and the plaque is index 8, so 1640ms.
+   */
+  --delay: 2200ms;
   left: calc(234 * var(--px));
   top: calc(73 * var(--px));
   width: calc(59 * var(--px));

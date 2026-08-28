@@ -63,7 +63,12 @@ const KICKER = 'Wedding\ninvitation'
  * the design's mixed-case string produces.
  */
 .invite__kicker {
-  --delay: 80ms;
+  /*
+   * Waits for the lace card it prints on. BandArt starts layer i at 440 + i*150ms;
+   * 2854:627 is index 3, so 890ms, and its 2700ms ease is ~85% landed 600ms later.
+   * Anything shorter and the words arrive on bare velvet before the card does.
+   */
+  --delay: 1500ms;
   /*
    * The quote band's swan pair (2854:637, z 65) hangs down over this card, and in the
    * design the birds sit IN FRONT of the kicker. Live copy defaults to z 900 — above
@@ -100,7 +105,8 @@ const KICKER = 'Wedding\ninvitation'
 }
 
 .invite__mono {
-  --delay: 300ms;
+  /* Same rule against the oval frame 2856:643 — index 9, so it starts at 1790ms. */
+  --delay: 2400ms;
   width: calc(82 * var(--px));
   line-height: calc(38 * var(--px));
   color: var(--wine-soft);
@@ -115,7 +121,7 @@ const KICKER = 'Wedding\ninvitation'
 
 /* 2857:228 — Bibliophile Script Bold 64/38, the design's own face. */
 .invite__mono--second {
-  --delay: 420ms;
+  --delay: 2520ms;
   left: calc(216 * var(--px));
   top: calc(292 * var(--px));
   font-family: var(--font-monogram);
