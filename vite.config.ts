@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
     plugins: [vue()],
     // Absolute, not './': slug routes like /demo-envelop are rewritten to index.html,
     // and a relative base would resolve assets against the slug path instead of the root.
-    base: '/',
+    base: '/TemaEnvelopRed',
     server: {
       port: 5174,
       proxy: {
