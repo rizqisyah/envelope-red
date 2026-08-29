@@ -48,22 +48,25 @@ export function formatEventDate(raw?: string | null): EventDate | null {
  */
 export function parseEventStart(date?: string | null, time?: string | null): Date | null {
   if (!date) return null
+  
+  let base: Date
   const d = date.match(/^(\d{4})-(\d{2})-(\d{2})$/)
-  if (!d) {
-    const loose = new Date(date)
-    return Number.isNaN(loose.getTime()) ? null : loose
+  if (d) {
+    base = new Date(Number(d[1]), Number(d[2]) - 1, Number(d[3]))
+  } else {
+    base = new Date(date)
   }
+  if (Number.isNaN(base.getTime())) return null
+
   const sep = time ? RANGE_SEPARATORS.find((s) => time.includes(s)) : undefined
   const start = sep && time ? time.split(sep)[0] : time
   const t = (start ?? '').trim().match(/^(\d{1,2})[.:](\d{2})/)
-  const at = new Date(
-    Number(d[1]),
-    Number(d[2]) - 1,
-    Number(d[3]),
-    t ? Number(t[1]) : 0,
-    t ? Number(t[2]) : 0,
-  )
-  return Number.isNaN(at.getTime()) ? null : at
+  
+  if (t) {
+    base.setHours(Number(t[1]), Number(t[2]), 0, 0)
+  }
+  
+  return base
 }
 
 export type Remaining = { days: number; hours: number; minutes: number; seconds: number }

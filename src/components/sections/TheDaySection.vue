@@ -9,7 +9,7 @@ import { parseEventStart, remainingUntil } from '../../lib/format'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/theday'
 
 const { el, shown } = useReveal(0.15)
-const { acara } = useWedding()
+const { acara, wedding } = useWedding()
 
 const now = ref(Date.now())
 const timer = window.setInterval(() => (now.value = Date.now()), 1000)
@@ -27,6 +27,10 @@ onUnmounted(() => window.clearInterval(timer))
 const DESIGN_DAY = new Date(2026, 5, 10, 8, 0)
 
 const target = computed(() => {
+  if (wedding.value?.countdown_date) {
+    const at = new Date(wedding.value.countdown_date)
+    if (!Number.isNaN(at.getTime())) return at
+  }
   for (const a of acara.value as any[]) {
     const at = parseEventStart(a?.event_date, a?.event_time)
     if (at) return at

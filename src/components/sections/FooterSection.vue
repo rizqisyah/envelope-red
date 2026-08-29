@@ -6,7 +6,7 @@ import { useWedding } from '../../composables/useWedding'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/footer'
 
 const { el, shown } = useReveal(0.15)
-const { coupleNickname } = useWedding()
+const { coupleNickname, closingMessage } = useWedding()
 </script>
 
 <template>
@@ -15,11 +15,11 @@ const { coupleNickname } = useWedding()
 
     <!-- 2852:381 — Alex Brush 36/28, #9a1010. -->
     <h2 id="thanks" class="footer__thanks">Thank You !</h2>
-    <!-- 2852:382 — April Signature 15/19, #7c4a15. -->
+    <!-- 2852:382 ?" April Signature 15/19, #7c4a15. -->
     <p class="footer__copy">
-      We sincerely thank you for your presence, prayers, and blessings on our special day.
+      {{ closingMessage }}
     </p>
-    <!-- 2852:380 — Blosta Script 24/28, #ffe7e7. -->
+    <!-- 2852:380 ?" Blosta Script 24/28, #ffe7e7. -->
     <p class="footer__couple">{{ coupleNickname }}</p>
     <!-- 2894:912 — Alex Brush 16/28, #ffffff. -->
     <p class="footer__credit">Created by @25ribuaja x Qinvi</p>

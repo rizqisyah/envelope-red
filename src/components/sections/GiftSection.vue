@@ -12,12 +12,12 @@ import { useWedding } from '../../composables/useWedding'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/gift'
 
 const { el, shown } = useReveal(0.15)
-const { gift } = useWedding()
+const { gift, videoPrewed } = useWedding()
 
 import bcaLogo from '../../assets/gift/parts/2852-333.webp'
 import copyIcon from '../../assets/gift/parts/2852-357.webp'
 
-type Card = { logo: boolean; lines: string[]; copy: string }
+type Card = { logo: boolean; isKado: boolean; lines: string[]; copy: string }
 
 /*
  * The design repeats the same BCA account twice and then prints a postal address as a
@@ -25,17 +25,18 @@ type Card = { logo: boolean; lines: string[]; copy: string }
  * all three so the band matches the render; live data replaces the lot.
  */
 const DESIGN: Card[] = [
-  { logo: true, lines: ['No. Rekening : 8715154435', 'A/n Muhammad Arif'], copy: '8715154435' },
-  { logo: true, lines: ['No. Rekening : 8715154435', 'A/n Muhammad Arif'], copy: '8715154435' },
+  { logo: true, isKado: false, lines: ['No. Rekening : 8715154435', 'A/n Muhammad Arif'], copy: '8715154435' },
+  { logo: true, isKado: false, lines: ['No. Rekening : 8715154435', 'A/n Muhammad Arif'], copy: '8715154435' },
   {
     logo: false,
+    isKado: true,
     lines: ['Alamat', '65, Jalan Raya Tanjung Barat', 'A/n Putrianti Resti Rusyah'],
     copy: '65, Jalan Raya Tanjung Barat',
   },
 ]
 
 /* A `kado` row is a postal address, not an account — the API has no separate field. */
-const isKado = (bank?: string) => /kado|alamat|address/i.test(bank || '')
+const checkKado = (bank?: string) => /kado|alamat|address/i.test(bank || '')
 
 const cards = computed<Card[]>(() => {
   const live = (gift.value as any[])
@@ -43,10 +44,11 @@ const cards = computed<Card[]>(() => {
       const number = (g.account_number || '').trim()
       const name = (g.account_name || '').trim()
       if (!number && !name) return null
-      return isKado(g.bank_name)
-        ? { logo: false, lines: ['Alamat', number, name].filter(Boolean), copy: number }
+      return checkKado(g.bank_name)
+        ? { logo: false, isKado: true, lines: ['Alamat', number, name].filter(Boolean), copy: number }
         : {
             logo: /bca/i.test(g.bank_name || ''),
+            isKado: false,
             lines: [
               `No. Rekening : ${number}`,
               name ? `A/n ${name}` : '',
@@ -59,6 +61,28 @@ const cards = computed<Card[]>(() => {
   // Three slots: the art behind them is three plates, so a fourth account has nowhere
   // to go. Extra rows fall off the end rather than painting past the last plate.
   return live.length ? live.slice(0, 3) : DESIGN
+})
+
+const hasGift = computed(() => {
+  const arr = gift.value as any[]
+  return arr && arr.length > 0
+})
+
+const hasVideo = computed(() => !!videoPrewed.value)
+
+// Show this section if there are gifts OR if we need to provide the bottom border for the video
+const showSection = computed(() => hasGift.value || hasVideo.value)
+
+// Dynamically compute the height based on the number of gifts.
+// Slot 0 ends around 363. Gap below is 142. Height = 505.
+// Slot 1 ends around 482. Gap below is 142. Height = 624.
+// Slot 2 ends around 601. Gap below is 142. Height = 743 (BAND_HEIGHT).
+const sectionHeight = computed(() => {
+  if (!hasGift.value) return 108
+  const count = cards.value.length
+  if (count === 1) return 505
+  if (count === 2) return 624
+  return BAND_HEIGHT
 })
 
 const copied = ref(-1)
@@ -84,54 +108,82 @@ const SLOT = 119
  * because the design's own two cards happen to be BCA.
  */
 const REDRAWN = ['2852:357', '2852:358', '2852:360', '2852:333', '2852:341']
+
+const skipLayers = computed(() => {
+  const skips = [...REDRAWN]
+  if (!hasGift.value) {
+    skips.push('2852:328', '2852:329')
+    skips.push('2852:336', '2852:337')
+    skips.push('2852:344', '2852:345')
+  } else {
+    const count = cards.value.length
+    if (count < 2) skips.push('2852:336', '2852:337')
+    if (count < 3) skips.push('2852:344', '2852:345')
+  }
+  return skips
+})
 </script>
 
 <template>
-  <section :ref="el" class="band gift" :class="{ 'is-in': shown }" aria-labelledby="gift-heading">
-    <BandArt :layers="LAYERS" :skip="REDRAWN" :shown="shown" />
+  <section v-if="showSection" :ref="el" class="band gift" :class="{ 'is-in': shown }" aria-labelledby="gift-heading">
+    <BandArt :layers="LAYERS" :skip="skipLayers" :shown="shown" />
 
-    <!-- 2852:325 — Alex Brush 40/28, #9a1010. -->
-    <h2 id="gift-heading" class="gift__heading">Wedding Gift</h2>
-    <!-- 2852:348 — EB Garamond 12/17, #000000, left aligned. -->
-    <p class="gift__copy">
-      Your presence and warm wishes are truly the greatest gifts to us. Should you kindly wish to
-      share an additional token of love, we would receive it with heartfelt gratitude.
-    </p>
+    <template v-if="hasGift">
+      <!-- 2852:325 — Alex Brush 40/28, #9a1010. -->
+      <h2 id="gift-heading" class="gift__heading">Wedding Gift</h2>
+      <!-- 2852:348 — EB Garamond 12/17, #000000, left aligned. -->
+      <p class="gift__copy">
+        Your presence and warm wishes are truly the greatest gifts to us. Should you kindly wish to
+        share an additional token of love, we would receive it with heartfelt gratitude.
+      </p>
 
-    <template v-for="(card, i) in cards" :key="i">
-      <img
-        v-if="card.logo"
-        class="gift__logo"
-        :src="bcaLogo"
-        alt="BCA"
-        width="60"
-        height="19"
-        :style="{ '--slot': `${i * SLOT}` }"
-      />
-      <p class="gift__lines" :style="{ '--slot': `${i * SLOT}` }">{{ card.lines.join('\n') }}</p>
-      <button
-        type="button"
-        class="gift__copybtn"
-        :style="{ '--slot': `${i * SLOT}` }"
-        :aria-label="copied === i ? 'Tersalin' : `Salin ${card.copy}`"
-        @click="copy(i, card.copy)"
-      >
+      <template v-for="(card, i) in cards" :key="i">
         <img
-          class="gift__copyicon"
-          :class="{ 'is-copied': copied === i }"
-          :src="copyIcon"
-          alt=""
-          width="21"
-          height="21"
+          v-if="card.logo"
+          class="gift__logo"
+          :src="bcaLogo"
+          alt="BCA"
+          width="60"
+          height="19"
+          :style="{ '--slot': `${i * SLOT}` }"
         />
-      </button>
+        <div
+          v-else-if="card.isKado"
+          class="gift__icon"
+          :style="{ '--slot': `${i * SLOT}` }"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="8" width="18" height="4" rx="1"/>
+            <path d="M12 8v13"/>
+            <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/>
+            <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+          </svg>
+        </div>
+        <p class="gift__lines" :style="{ '--slot': `${i * SLOT}` }">{{ card.lines.join('\n') }}</p>
+        <button
+          type="button"
+          class="gift__copybtn"
+          :style="{ '--slot': `${i * SLOT}` }"
+          :aria-label="copied === i ? 'Tersalin' : `Salin ${card.copy}`"
+          @click="copy(i, card.copy)"
+        >
+          <img
+            class="gift__copyicon"
+            :class="{ 'is-copied': copied === i }"
+            :src="copyIcon"
+            alt=""
+            width="21"
+            height="21"
+          />
+        </button>
+      </template>
     </template>
   </section>
 </template>
 
 <style scoped>
 .gift {
-  height: calc(v-bind(BAND_HEIGHT) * var(--px));
+  height: calc(v-bind(sectionHeight) * var(--px));
 }
 
 .gift__heading {
@@ -164,6 +216,16 @@ const REDRAWN = ['2852:357', '2852:358', '2852:360', '2852:333', '2852:341']
   top: calc((268 + var(--slot)) * var(--px));
   width: calc(60 * var(--px));
   height: calc(19 * var(--px));
+}
+
+.gift__icon {
+  --delay: 300ms;
+  position: absolute;
+  left: calc(45 * var(--px));
+  top: calc((266 + var(--slot)) * var(--px));
+  width: calc(24 * var(--px));
+  height: calc(24 * var(--px));
+  color: #fff;
 }
 
 .gift__lines {

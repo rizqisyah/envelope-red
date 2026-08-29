@@ -73,11 +73,35 @@ const cards = computed<Card[]>(() => {
     }
   })
 })
+
+const skipLayers = computed(() => {
+  const skip = []
+  if (cards.value.length === 1) {
+    skip.push(
+      '2880:333', // second aperture background
+      '2880:334', '2880:335', '2880:336', '2880:337', // corner dots
+      '2878:323', // pin
+      '2878:325', // maps chip
+      '2881:360', // pink lace
+      '2881:347', // dahlia stem
+      '2881:342', // dahlia small
+      '2881:348', // dahlia large
+      '2881:352', // golden seal
+      '2880:339', // left floral (starts at 2nd aperture)
+      '2881:361'  // right floral (starts at 2nd aperture)
+    )
+  }
+  return skip
+})
+
+// When there is only 1 event, the second slot (which is 358px tall) is removed.
+// We shrink the band height so the next section slides up naturally.
+const sectionHeight = computed(() => cards.value.length === 1 ? BAND_HEIGHT - 358 : BAND_HEIGHT)
 </script>
 
 <template>
   <section :ref="el" class="band acara" :class="{ 'is-in': shown }" aria-labelledby="acara-0">
-    <BandArt :layers="LAYERS" :shown="shown" />
+    <BandArt :layers="LAYERS" :skip="skipLayers" :shown="shown" />
 
     <template v-for="(card, i) in cards" :key="i">
       <!-- 2878:289 / 2878:318 — Alex Brush 32/26, #ffffff. -->
@@ -107,7 +131,7 @@ const cards = computed<Card[]>(() => {
 
 <style scoped>
 .acara {
-  height: calc(v-bind(BAND_HEIGHT) * var(--px));
+  height: calc(v-bind(sectionHeight) * var(--px));
 }
 
 /* The two cards are identical apart from their y, so each row is placed once and the

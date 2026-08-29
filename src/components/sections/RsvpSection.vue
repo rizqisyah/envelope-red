@@ -25,9 +25,11 @@ const SKIP = ['2852:389', '2852:387']
 const name = ref('')
 const phone = ref('')
 const attendance = ref('')
+const guestCount = ref('1')
 const sending = ref(false)
 const error = ref('')
 const done = ref(false)
+const showPopup = ref(false)
 
 /* The `?to=` link names the guest, so the field starts filled in for them. */
 onMounted(() => {
@@ -53,9 +55,10 @@ async function send() {
       guest_name: name.value.trim(),
       phone: phone.value.trim(),
       attendance_status: attendance.value,
-      guest_count: attendance.value === 'hadir' ? 1 : 0,
+      guest_count: attendance.value === 'hadir' ? parseInt(guestCount.value) || 1 : 0,
     })
     done.value = true
+    showPopup.value = true
   } catch (err: any) {
     error.value = err?.message || 'Gagal mengirim. Coba lagi.'
   } finally {
@@ -99,10 +102,19 @@ async function send() {
 
       <!-- 2852:390 / 2852:389 -->
       <label class="rsvp__label rsvp__label--going" for="rsvp-going">Kehadiran</label>
-      <select id="rsvp-going" v-model="attendance" class="rsvp__field rsvp__field--going">
+      <select id="rsvp-going" v-model="attendance" class="rsvp__field rsvp__field--going" :class="{ 'is-half': attendance === 'hadir' }">
         <option value="" disabled>Pilih</option>
         <option value="hadir">Hadir</option>
         <option value="tidak">Tidak hadir</option>
+      </select>
+
+      <label v-if="attendance === 'hadir'" class="rsvp__label rsvp__label--count" for="rsvp-count">Tamu</label>
+      <select v-if="attendance === 'hadir'" id="rsvp-count" v-model="guestCount" class="rsvp__field rsvp__field--count">
+        <option value="1">1 Orang</option>
+        <option value="2">2 Orang</option>
+        <option value="3">3 Orang</option>
+        <option value="4">4 Orang</option>
+        <option value="5">5 Orang</option>
       </select>
 
       <!-- 2852:387 plate + 2852:388 Jost 13/16.8, #f4e8c1. -->
@@ -112,6 +124,19 @@ async function send() {
     </form>
 
     <p v-if="error" class="rsvp__error" role="alert">{{ error }}</p>
+
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="showPopup" class="success-popup">
+          <div class="success-popup__box">
+            <svg viewBox="0 0 24 24" class="success-popup__icon"><path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p class="success-popup__title">Terima Kasih!</p>
+            <p class="success-popup__text">Konfirmasi kehadiran Anda telah berhasil dikirim.</p>
+            <button class="success-popup__close" type="button" @click="showPopup = false">Tutup</button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </section>
 </template>
 
@@ -217,6 +242,26 @@ async function send() {
 
 .rsvp__field--going {
   top: calc(297 * var(--px));
+  transition: width 0.3s ease;
+}
+.rsvp__field--going.is-half {
+  width: calc(125 * var(--px));
+}
+
+.rsvp__label--count {
+  left: calc(195 * var(--px));
+  top: calc(274 * var(--px));
+}
+.rsvp__field--count {
+  left: calc(194 * var(--px));
+  top: calc(297 * var(--px));
+  width: calc(125 * var(--px));
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .rsvp__send {
@@ -253,5 +298,75 @@ async function send() {
   font-size: calc(12 * var(--px));
   line-height: calc(16 * var(--px));
   color: var(--crimson-deep);
+}
+
+.success-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  padding: 24px;
+}
+.success-popup__box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.success-popup__icon {
+  width: 48px;
+  height: 48px;
+  color: var(--crimson);
+  margin: 0 auto 16px;
+}
+.success-popup__title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  color: var(--crimson-deep);
+  margin: 0 0 8px;
+}
+.success-popup__text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #444;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+.success-popup__close {
+  background: var(--crimson-deep);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.success-popup__close:hover {
+  opacity: 0.85;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

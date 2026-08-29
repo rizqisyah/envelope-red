@@ -2,10 +2,12 @@
 import { computed, nextTick, onMounted, ref, watchEffect } from 'vue'
 import CoverSection from './components/cover/CoverSection.vue'
 import InviteBody from './components/invite/InviteBody.vue'
+import BottomNav from './components/sections/BottomNav.vue'
+import VideoSection from './components/sections/VideoSection.vue'
 import { usePreloadAssets } from './composables/usePreloadAssets'
 import { useWedding } from './composables/useWedding'
 
-const { guest, wedding, coupleNickname, quoteText, quoteVerse } = useWedding()
+const { guest, coupleNickname, quoteText, quoteVerse, leftCoverBg } = useWedding()
 const { coverLoaded, preloadCover, preloadInviteBody } = usePreloadAssets()
 
 const isOpen = ref(false)
@@ -24,7 +26,7 @@ const guestName = computed(
 const coupleName = coupleNickname
 
 const leftBackgroundStyle = computed(() => {
-  const img = wedding.value?.image_bg1 || wedding.value?.image_cover || ''
+  const img = leftCoverBg.value
   return img ? { backgroundImage: `url(${img})` } : {}
 })
 
@@ -94,8 +96,11 @@ function onSplashLeave() {
         class="invitation-content"
         :class="{ 'is-visible': contentVisible }"
       >
+        <VideoSection />
         <InviteBody />
       </div>
+
+      <BottomNav v-if="isOpen" />
     </div>
   </main>
 </template>

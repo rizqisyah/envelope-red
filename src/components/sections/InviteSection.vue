@@ -5,9 +5,10 @@ import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
 import { useWedding } from '../../composables/useWedding'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/invite'
+import { assets } from '../../lib/bandAssets'
 
 const { el, shown } = useReveal(0.15)
-const { groom, bride, coupleNickname } = useWedding()
+const { groom, bride, coupleNickname, logoMempelai, gallery } = useWedding()
 
 /*
  * 2857:227 / 2857:228 are the two-letter monogram on the oval frame — the design sets
@@ -17,16 +18,27 @@ const { groom, bride, coupleNickname } = useWedding()
 const initials = computed(() => {
   const g = groom.value?.name || ''
   const b = bride.value?.name || ''
-  /*
-   * The first letter is LOWERCASED. Charoly Demo draws its lowercase as plain capitals
-   * and its uppercase as swash capitals, and the design's node holds a lowercase "a" —
-   * feeding it "Ahmad"[0] renders the swash instead, a letter twice the size that fills
-   * the oval and buries the S behind it. The second letter stays as it comes: Figma's is
-   * an uppercase S in Bibliophile Script.
-   */
   if (g && b) return [g[0].toLowerCase(), b[0]]
   const parts = coupleNickname.value.split(/\s*[&+]\s*|\s+dan\s+/i)
   return parts.length > 1 ? [parts[0][0].toLowerCase(), parts[1][0]] : ['a', 'S']
+})
+
+const customLogo = computed(() => logoMempelai.value)
+const firstGalleryPhoto = computed(() => {
+  const arr = gallery.value as any[]
+  return (arr && arr.length > 0) ? arr[0].image_url : null
+})
+const secondGalleryPhoto = computed(() => {
+  const arr = gallery.value as any[]
+  return (arr && arr.length > 1) ? arr[1].image_url : null
+})
+
+const skipLayers = computed(() => {
+  const skip = []
+  if (customLogo.value) skip.push('2856:645')
+  if (firstGalleryPhoto.value) skip.push('2858:249')
+  if (secondGalleryPhoto.value) skip.push('2858:245')
+  return skip
 })
 
 // Figma authors this break. `&#10;` in the template is folded to a space by the
@@ -36,7 +48,49 @@ const KICKER = 'Wedding\ninvitation'
 
 <template>
   <section :ref="el" class="band invite" :class="{ 'is-in': shown }" aria-labelledby="invite-kicker">
-    <BandArt :layers="LAYERS" :shown="shown" />
+    <BandArt :layers="LAYERS" :skip="skipLayers" :shown="shown" />
+
+    <div v-if="customLogo" class="invite__logo-wrapper" :class="{ 'is-in': shown }">
+      <img
+        class="invite__logo"
+        :src="customLogo"
+        alt="Logo Mempelai"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <div v-if="firstGalleryPhoto" class="invite__polaroid-wrapper" :class="{ 'is-in': shown }">
+      <img
+        class="invite__polaroid"
+        :src="firstGalleryPhoto"
+        alt="Foto Pasangan 1"
+        loading="lazy"
+        decoding="async"
+        :style="{
+          maskImage: `url(${assets['invite/parts/2858-249.webp']})`,
+          WebkitMaskImage: `url(${assets['invite/parts/2858-249.webp']})`,
+          maskSize: '100% 100%',
+          WebkitMaskSize: '100% 100%'
+        }"
+      />
+    </div>
+
+    <div v-if="secondGalleryPhoto" class="invite__polaroid-wrapper-2" :class="{ 'is-in': shown }">
+      <img
+        class="invite__polaroid-2"
+        :src="secondGalleryPhoto"
+        alt="Foto Pasangan 2"
+        loading="lazy"
+        decoding="async"
+        :style="{
+          maskImage: `url(${assets['invite/parts/2858-245.webp']})`,
+          WebkitMaskImage: `url(${assets['invite/parts/2858-245.webp']})`,
+          maskSize: '100% 100%',
+          WebkitMaskSize: '100% 100%'
+        }"
+      />
+    </div>
 
     <!--
       2858:263 — Charoly Demo 24/28, #000000. Figma authors the break before "invitation".
@@ -47,14 +101,116 @@ const KICKER = 'Wedding\ninvitation'
     <h2 id="invite-kicker" class="invite__kicker"><span>{{ KICKER }}</span></h2>
 
     <!-- 2857:227 Charoly Demo 75/38 and 2857:228 Bibliophile Script 64/38, both #702029. -->
-    <p class="invite__mono invite__mono--first">{{ initials[0] }}</p>
-    <p class="invite__mono invite__mono--second">{{ initials[1] }}</p>
+    <template v-if="!customLogo">
+      <p class="invite__mono invite__mono--first">{{ initials[0] }}</p>
+      <p class="invite__mono invite__mono--second">{{ initials[1] }}</p>
+    </template>
   </section>
 </template>
 
 <style scoped>
 .invite {
   height: calc(v-bind(BAND_HEIGHT) * var(--px));
+}
+
+.invite__logo-wrapper {
+  position: absolute;
+  z-index: 113; /* BEHIND the oval frame (2856:643 is 114) so the frame edges frame it nicely, but IN FRONT of the cream lace card (58) */
+  left: calc(179 * var(--px));
+  top: calc(194 * var(--px));
+  width: calc(171 * var(--px));
+  height: calc(201 * var(--px));
+  border-radius: 50%;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.invite__logo-wrapper.is-in {
+  visibility: visible;
+  /* Syncs with frame 2856:643 (index 9 in BandArt) -> 440 + 9*150 = 1790ms */
+  animation: invite-item-in 2700ms cubic-bezier(0.16, 1, 0.28, 1) backwards;
+  animation-delay: 1790ms;
+}
+
+.invite__logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Keeps the logo elegant without stretching */
+}
+
+.invite__polaroid-wrapper {
+  position: absolute;
+  z-index: 62; /* Replacing 2858:249 which is index 5 */
+  left: calc(102 * var(--px));
+  top: calc(264 * var(--px));
+  width: calc(81 * var(--px));
+  height: calc(97 * var(--px));
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.invite__polaroid-wrapper.is-in {
+  visibility: visible;
+  /* Syncs with index 5 -> 440 + 5*150 = 1190ms */
+  animation: invite-item-in 2700ms cubic-bezier(0.16, 1, 0.28, 1) backwards;
+  animation-delay: 1190ms;
+}
+
+.invite__polaroid {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.invite__polaroid-wrapper-2 {
+  position: absolute;
+  z-index: 67; /* Replacing 2858:245 which is index 7 */
+  left: calc(240 * var(--px));
+  top: calc(129 * var(--px));
+  width: calc(76 * var(--px));
+  height: calc(93 * var(--px));
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.invite__polaroid-wrapper-2.is-in {
+  visibility: visible;
+  /* Syncs with index 7 -> 440 + 7*150 = 1490ms */
+  animation: invite-item-in 2700ms cubic-bezier(0.16, 1, 0.28, 1) backwards;
+  animation-delay: 1490ms;
+}
+
+.invite__polaroid-2 {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@keyframes invite-item-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, calc(44 * var(--px)), 0) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .invite__logo-wrapper,
+  .invite__logo-wrapper.is-in,
+  .invite__polaroid-wrapper,
+  .invite__polaroid-wrapper.is-in,
+  .invite__polaroid-wrapper-2,
+  .invite__polaroid-wrapper-2.is-in {
+    visibility: visible;
+    animation: none;
+    will-change: auto;
+  }
 }
 
 /*

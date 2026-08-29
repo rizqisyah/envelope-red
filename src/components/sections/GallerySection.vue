@@ -4,7 +4,7 @@
 // 2875:228 ("prewed") is the design's own couple photo, sitting in an aperture cut
 // through the linen card. It is skipped whenever the API has a gallery, and the live
 // photos are drawn into the same rectangle instead.
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
 import { useWedding } from '../../composables/useWedding'
@@ -47,10 +47,34 @@ const skip = [PLATE_PHOTO, ...PLATE_DOTS]
 // Capped at the five the row has space for; the design's own row is three.
 const dotCount = computed(() => Math.min(photos.value.length, 5))
 
+let autoplayTimer: number | null = null
+const startAutoplay = () => {
+  stopAutoplay()
+  if (photos.value.length > 1) {
+    autoplayTimer = window.setInterval(() => step(1), 3000)
+  }
+}
+const stopAutoplay = () => {
+  if (autoplayTimer) {
+    clearInterval(autoplayTimer)
+    autoplayTimer = null
+  }
+}
+
 const step = (d: number) => {
   const n = photos.value.length
   if (n) active.value = (active.value + d + n) % n
 }
+
+// Reset timer whenever active changes (either manually or by timer)
+watch(active, () => {
+  if (dlg.value && !dlg.value.open) {
+    startAutoplay()
+  }
+})
+
+onMounted(() => startAutoplay())
+onUnmounted(() => stopAutoplay())
 
 /*
  * Swipe is touch only — the card is 167px wide on a phone, so arrows would cover the
@@ -61,15 +85,23 @@ let startX = 0
 // A touch that moved far enough to count as a swipe still fires `click` afterwards.
 // Without this the card would advance twice per swipe.
 let swiped = false
-const onStart = (e: TouchEvent) => (startX = e.touches[0].clientX)
+const onStart = (e: TouchEvent) => {
+  startX = e.touches[0].clientX
+  stopAutoplay()
+}
 const onEnd = (e: TouchEvent) => {
   const dx = e.changedTouches[0].clientX - startX
   swiped = Math.abs(dx) >= SWIPE_PX
   if (swiped) step(dx < 0 ? 1 : -1)
+  else if (!dlg.value?.open) startAutoplay()
 }
 const onClick = () => {
-  if (swiped) swiped = false
-  else dlg.value?.showModal()
+  if (swiped) {
+    swiped = false
+  } else {
+    stopAutoplay()
+    dlg.value?.showModal()
+  }
 }
 
 /*
@@ -82,6 +114,7 @@ const dlg = ref<HTMLDialogElement | null>(null)
 
 <template>
   <section
+    v-if="gallery.length > 0"
     :ref="el"
     class="band gallery"
     :class="{ 'is-in': shown }"
@@ -133,7 +166,7 @@ const dlg = ref<HTMLDialogElement | null>(null)
   </section>
 
   <Teleport to="body">
-    <dialog ref="dlg" class="preview" @click.self="dlg?.close()">
+    <dialog ref="dlg" class="preview" @close="startAutoplay" @click.self="dlg?.close()">
       <img
         class="preview__img"
         :src="photos[active].src"
@@ -279,14 +312,17 @@ const dlg = ref<HTMLDialogElement | null>(null)
   max-width: 100vw;
   height: 100dvh;
   max-height: 100dvh;
+  padding: 1.5rem;
+  border: 0;
+  background: transparent;
+}
+
+.preview[open] {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 1.5rem;
-  border: 0;
-  background: transparent;
 }
 
 .preview::backdrop {

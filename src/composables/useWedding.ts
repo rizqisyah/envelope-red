@@ -35,7 +35,23 @@ function applyTheme(themeData: any, weddingData: any) {
   if (colors.bg_body) root.style.setProperty('--bg-body', colors.bg_body)
 
   if (fonts.script) root.style.setProperty('--font-script', fonts.script)
-  if (fonts.hand) root.style.setProperty('--font-hand', fonts.hand)
+  if (fonts.display) root.style.setProperty('--font-display', fonts.display)
+  if (fonts.serif) root.style.setProperty('--font-serif', fonts.serif)
+  if (fonts.sans) root.style.setProperty('--font-sans', fonts.sans)
+  if (fonts.heading) root.style.setProperty('--font-heading', fonts.heading)
+  if (fonts.name) root.style.setProperty('--font-name', fonts.name)
+  if (fonts.caps) root.style.setProperty('--font-caps', fonts.caps)
+  if (fonts.parent) root.style.setProperty('--font-parent', fonts.parent)
+  if (fonts.detail) root.style.setProperty('--font-detail', fonts.detail)
+  if (fonts.body) root.style.setProperty('--font-body', fonts.body)
+  if (fonts.card) root.style.setProperty('--font-card', fonts.card)
+  if (fonts.figures) root.style.setProperty('--font-figures', fonts.figures)
+  if (fonts.quote) root.style.setProperty('--font-quote', fonts.quote)
+  if (fonts.signature) root.style.setProperty('--font-signature', fonts.signature)
+  if (fonts.monogram) root.style.setProperty('--font-monogram', fonts.monogram)
+  if (fonts.closing) root.style.setProperty('--font-closing', fonts.closing)
+  if (fonts.arabic) root.style.setProperty('--font-arabic', fonts.arabic)
+  if (fonts.verse) root.style.setProperty('--font-verse', fonts.verse)
 }
 
 /*
@@ -182,6 +198,8 @@ export function useWedding() {
     pengantin,
     acara,
     gallery,
+    quoteVerse,
+    quoteArabic,
     gift,
     wishes,
     sendWish,
@@ -189,8 +207,51 @@ export function useWedding() {
     bride,
     coupleNickname,
     quoteText,
-    quoteVerse,
-    quoteArabic,
+    logoMempelai: computed(() => {
+      let override = wedding.value?.theme_override
+      if (typeof override === 'string') {
+        try { override = JSON.parse(override) } catch { override = {} }
+      }
+      return override?.images?.logo_mempelai ||
+        override?.images?.['logo-mempelai'] ||
+        override?.logo_mempelai ||
+        wedding.value?.logo_mempelai || 
+        wedding.value?.['logo-mempelai'] || 
+        content.value?.logo_mempelai || 
+        content.value?.['logo-mempelai']
+    }),
+    videoPrewed: computed(() => {
+      let override = wedding.value?.theme_override
+      if (typeof override === 'string') {
+        try { override = JSON.parse(override) } catch { override = {} }
+      }
+      return override?.words?.video_prewed || ''
+    }),
+    videoUrl: computed(() => wedding.value?.video_url || ''),
+    leftCoverBg: computed(() => {
+      let override = wedding.value?.theme_override
+      if (typeof override === 'string') {
+        try { override = JSON.parse(override) } catch { override = {} }
+      }
+      return override?.backgrounds?.left_bg ||
+        override?.images?.left_bg || 
+        override?.backgrounds?.['left-cover-bg'] ||
+        override?.images?.['left-cover-bg'] ||
+        override?.images?.left_cover_bg ||
+        wedding.value?.left_cover_bg ||
+        wedding.value?.['left-cover-bg'] ||
+        content.value?.left_cover_bg ||
+        content.value?.['left-cover-bg'] ||
+        wedding.value?.image_bg1 ||
+        wedding.value?.image_cover || ''
+    }),
+    closingMessage: computed(() => {
+      let override = wedding.value?.theme_override
+      if (typeof override === 'string') {
+        try { override = JSON.parse(override) } catch { override = {} }
+      }
+      return override?.words?.footer_message_en || override?.words?.footer_message || wedding.value?.pesan_penutup || 'We sincerely thank you for your presence, prayers, and blessings on our special day.'
+    }),
     refetch: fetchWeddingData,
   }
 }
