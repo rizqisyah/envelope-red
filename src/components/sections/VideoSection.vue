@@ -5,11 +5,7 @@ import { useWedding } from '../../composables/useWedding'
 const { wedding } = useWedding()
 
 const src = computed(() => {
-  let override = wedding.value?.theme_override
-  if (typeof override === 'string') {
-    try { override = JSON.parse(override) } catch { override = {} }
-  }
-  return (wedding.value?.video_url as string) || (override?.words?.video_prewed as string) || ''
+  return (wedding.value?.video_url as string) || ''
 })
 
 const poster = computed(() => (wedding.value?.image_cover as string) || undefined)
