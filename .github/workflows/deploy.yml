@@ -26,6 +26,7 @@ jobs:
         run: npm run build
         env:
           VITE_API_BASE_URL: https://api.qinvi.id/api
+          VITE_DEFAULT_SLUG: demo-envelop
 
       - name: Setup SSH Key
         run: |

@@ -1,23 +1,22 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
-/*
- * Only used when the URL carries no slug segment at all -- normally the last path segment
- * wins. It was 'tema-elegan-putih', the PREVIOUS template's slug, so a deploy that forgot
- * VITE_DEFAULT_SLUG fetched the wrong wedding. Set VITE_DEFAULT_SLUG per deployment.
- */
 const DEFAULT_SLUG = import.meta.env.VITE_DEFAULT_SLUG || 'demo-envelop'
 
-/*
- * DESIGN MODE (the default): the app renders Frame 243/244's own content and never
- * touches the backend. Declared here, at the boundary, rather than in a composable,
- * so no component can reach past it -- RsvpSection imports submitRsvp directly, and
- * a guard that lived only in useWedding would have let its POST through to
- * production. Set VITE_LIVE_DATA=1 to talk to the real API.
- */
-export const DESIGN_MODE = !import.meta.env.VITE_LIVE_DATA
+export const DESIGN_MODE =
+  import.meta.env.VITE_DESIGN_MODE === '1' || import.meta.env.VITE_DESIGN_MODE === 'true'
 
 export function resolveSlug(): string {
+  const searchParams = new URLSearchParams(window.location.search)
+  const querySlug = searchParams.get('slug')
+  if (querySlug) return querySlug
+
   const segments = window.location.pathname.split('/').filter(Boolean)
-  return segments.length ? segments[segments.length - 1] : DEFAULT_SLUG
+  if (segments.length === 0) return DEFAULT_SLUG
+
+  const last = segments[segments.length - 1]
+  if (last.toLowerCase() === 'temaenvelopred' || last.toLowerCase() === 'tema-envelop-red') {
+    return DEFAULT_SLUG
+  }
+  return last
 }
 
 async function request(path: string, options: RequestInit = {}): Promise<any> {
