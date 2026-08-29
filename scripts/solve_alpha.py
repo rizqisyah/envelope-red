@@ -85,7 +85,7 @@ MODES = ["normal", "screen", "multiply", "lighten", "darken"]
 # in the first place. 2854:624 is hero's ornate frame: it was faded to 0.2 while it sat
 # 197px below where it belongs, and there is no reason to let that happen twice.
 NO_SOLVE = {"2854:624", "2877:263", "2894:882", "2878:299", "2894:892", "2875:226",
-            "2854:626", "2877:262", "2878:301", "2881:347"}
+            "2854:626", "2877:262", "2878:301", "2881:347", "2877:258"}
 
 # No closing brace in the pattern: gen_band appends `, a: ...` and `, b: '...'` to any
 # row this script has already solved, and anchoring on `h: N }` silently dropped every

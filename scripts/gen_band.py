@@ -208,7 +208,7 @@ PIN_X = {"2877:255": 0, "2877:256": 156, "2858:262": 111, "2854:624": 0, "2854:6
          # whichever pixel is brighter and so eats the plaque's own soft edge: it rendered
          # as a wide blob instead of a scalloped card. Normal at full strength, nudged 6px
          # right, takes the band's card box 4.50 -> 3.34.
-         "2877:262": 30}
+         "2877:262": 30, "2877:258": 0}
 
 # Same class of failure, but the y is wrong too, so PIN_X alone cannot fix it. Both of
 # Frame 253's entries are the fan pair above -- their y is 280px out as well as their x,
@@ -220,7 +220,7 @@ PIN_Y = {"2877:255": 3068, "2877:256": 3068, "2854:624": 147, "2854:632": 700,
          "2857:223": 1474, "2896:932": 3242,
          "2877:263": 3626, "2894:882": 5936, "2878:299": 4551, "2894:892": 7418,
          "2878:311": 4607, "2854:626": 374,
-         "2878:301": 4375, "2881:347": 4960, "2877:262": 3920}
+         "2878:301": 4375, "2881:347": 4960, "2877:262": 3920, "2877:258": 3831}
 
 # Opacity and blend mode for the layers whose POSITION is pinned above. solve_alpha
 # fitted their alpha against a composite in which they sat hundreds of pixels from home,
@@ -234,10 +234,10 @@ PIN_Y = {"2877:255": 3068, "2877:256": 3068, "2854:624": 147, "2854:632": 700,
 # grey-white. Swept together with the hem against the card's own box: card 0.95 with the
 # hem at full strength scores 9.62, against 13.36 for the pair the solver left.
 PIN_A = {"2877:263": 1.0, "2894:882": 1.0, "2878:299": 1.0, "2894:892": 1.0,
-         "2875:226": 0.95, "2854:626": 1.0, "2877:262": 1.0}
+         "2875:226": 0.95, "2854:626": 1.0, "2877:262": 1.0, "2877:258": 0.12}
 PIN_B = {"2877:263": "normal", "2894:882": "normal", "2878:299": "normal",
          "2894:892": "normal", "2875:226": "normal", "2854:626": "normal",
-         "2877:262": "normal"}
+         "2877:262": "normal", "2877:258": "normal"}
 
 # A layer paints in the band its own y lands in, not the band Figma filed it under.
 # 2894:882 is filed in `wish` because its reported y is 6414, the wish band's first row --

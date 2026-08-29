@@ -19,7 +19,7 @@ export const LAYERS: BandLayer[] = [
   { z: 36, id: '2889:785', src: assets['theday/parts/2889-785.webp'], x: 131, y: 34, w: 114, h: 149, b: 'screen' },
   { z: 40, id: '2877:262', src: assets['theday/parts/2877-262.webp'], x: 30, y: 125, w: 316, h: 319 },
   { z: 41, id: '2911:3752', src: assets['theday/parts/2911-3752.webp'], x: 154, y: 243, w: 66, h: 13 },
-  { z: 42, id: '2877:258', src: assets['theday/parts/2877-258.webp'], x: -40, y: 36, w: 375, h: 478, a: 0.12 },
+  { z: 42, id: '2877:258', src: assets['theday/parts/2877-258.webp'], x: 0, y: 36, w: 375, h: 478, a: 0.12 },
   { z: 143, id: '2877:264', src: assets['theday/parts/2877-264.webp'], x: 151, y: 109, w: 72, h: 72 },
   { z: 225, id: '2896:936', src: assets['theday/parts/2896-936.webp'], x: 102, y: 0, w: 175, h: 34 },
   { z: 226, id: '2896:937', src: assets['theday/parts/2896-937.webp'], x: 102, y: 0, w: 175, h: 34 },
