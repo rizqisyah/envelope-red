@@ -7,10 +7,18 @@ import { useWedding } from '../../composables/useWedding'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/closing'
 
 const { el, shown } = useReveal(0.15)
-const { wedding } = useWedding()
+const { customSpousePhoto, spousePhotoTransform } = useWedding()
 
-const customSpousePhoto = computed(() => wedding.value?.image_spouse)
-const skipLayers = computed(() => customSpousePhoto.value ? ['2894:887'] : [])
+const skipLayers = computed(() => (customSpousePhoto.value ? ['2894:887'] : []))
+
+const spousePhotoStyle = computed(() => {
+  const t = spousePhotoTransform.value
+  return {
+    objectPosition: `${t.x}% ${t.y}%`,
+    transformOrigin: `${t.x}% ${t.y}%`,
+    transform: `scale(${t.scale})`,
+  }
+})
 
 // Figma authors this break. `&#10;` in the template is folded to a space by the
 // HTML parser, so the string comes from here and the box sets `white-space: pre-line`.
@@ -28,6 +36,7 @@ const LINE = 'Where \nlove becomes \nhome.'
         alt="Foto Pasangan"
         loading="lazy"
         decoding="async"
+        :style="spousePhotoStyle"
       />
     </div>
 

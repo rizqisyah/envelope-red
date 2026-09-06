@@ -13,41 +13,20 @@ import { useWedding } from '../../composables/useWedding'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/hero'
 
 const { el, shown } = useReveal(0.15)
-const { wedding, theme, isGroomFirst } = useWedding()
-
-const customPhoto = computed(() => {
-  return (
-    wedding.value?.theme_override?.images?.foto_mempelai_setelah_buka ||
-    theme.value?.theme_config?.images?.foto_mempelai_setelah_buka ||
-    wedding.value?.foto_mempelai_setelah_buka ||
-    wedding.value?.image_spouse
-  )
-})
+const { isGroomFirst, parsedOverride } = useWedding()
 
 const heroHeading = computed(() => {
   return (
-    wedding.value?.theme_override?.words?.hero_title ||
-    wedding.value?.theme_override?.words?.hero_heading ||
+    parsedOverride.value?.words?.hero_title ||
+    parsedOverride.value?.words?.hero_heading ||
     (isGroomFirst.value ? 'Groom Bride' : 'Bride Groom')
   )
 })
-
-const skipLayers = computed(() => customPhoto.value ? ['2852:231'] : [])
 </script>
 
 <template>
   <section :ref="el" class="band hero" :class="{ 'is-in': shown }" aria-labelledby="hero-heading">
-    <BandArt :layers="LAYERS" :skip="skipLayers" :shown="shown" />
-    
-    <div v-if="customPhoto" class="hero__photo-wrapper" :class="{ 'is-in': shown }">
-      <img
-        class="hero__photo"
-        :src="customPhoto"
-        alt="Foto mempelai"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
+    <BandArt :layers="LAYERS" :shown="shown" />
 
     <!-- 2854:620 — Charoly Demo 48/70, #d0cb84. -->
     <p class="hero__and">and</p>
@@ -63,55 +42,6 @@ const skipLayers = computed(() => customPhoto.value ? ['2852:231'] : [])
 <style scoped>
 .hero {
   height: calc(v-bind(BAND_HEIGHT) * var(--px));
-}
-
-.hero__photo-wrapper {
-  position: absolute;
-  z-index: 71; /* Matches the white card (2896:929) so it sits behind the red frame */
-  left: calc(50 * var(--px));
-  top: calc(203 * var(--px));
-  width: calc(268 * var(--px));
-  height: calc(311 * var(--px));
-  -webkit-mask-image: url('../../assets/hero/parts/2896-929.webp');
-  -webkit-mask-size: 100% 100%;
-  mask-image: url('../../assets/hero/parts/2896-929.webp');
-  mask-size: 100% 100%;
-  visibility: hidden;
-  will-change: transform, opacity;
-}
-
-.hero__photo-wrapper.is-in {
-  visibility: visible;
-  /* Entrance animation matching the white card (index 1 in BandArt, stagger 150ms -> 440+150 = 590ms) */
-  animation: hero-photo-in 2700ms cubic-bezier(0.16, 1, 0.28, 1) backwards;
-  animation-delay: 590ms;
-}
-
-.hero__photo {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-@keyframes hero-photo-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, calc(44 * var(--px)), 0) scale(0.86);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero__photo-wrapper,
-  .hero__photo-wrapper.is-in {
-    visibility: visible;
-    animation: none;
-    will-change: auto;
-  }
 }
 
 /*

@@ -85,12 +85,36 @@ async function fetchWeddingData() {
   state.value.error = null
   try {
     const data = await getHome(slug.value, guestCode.value)
-    state.value.data = data
-    if (data?.theme || data?.wedding) {
-      applyTheme(data.theme, data.wedding)
+    
+    // Preserve and merge any preview overrides if present
+    const currentWedding = state.value.data?.wedding
+    let currentOverride = currentWedding?.theme_override
+    if (typeof currentOverride === 'string') {
+      try { currentOverride = JSON.parse(currentOverride) } catch { currentOverride = {} }
     }
-    if (data?.wedding?.title) {
-      document.title = `${data.wedding.title} - Undangan Pernikahan`
+    let dataOverride = data?.wedding?.theme_override
+    if (typeof dataOverride === 'string') {
+      try { dataOverride = JSON.parse(dataOverride) } catch { dataOverride = {} }
+    }
+
+    state.value.data = {
+      ...data,
+      wedding: {
+        ...(data?.wedding || {}),
+        ...(currentWedding || {}),
+        theme_override: {
+          ...(dataOverride || {}),
+          ...(currentOverride || {}),
+        },
+      },
+      theme: state.value.data?.theme || data?.theme,
+    }
+
+    if (state.value.data?.theme || state.value.data?.wedding) {
+      applyTheme(state.value.data.theme, state.value.data.wedding)
+    }
+    if (state.value.data?.wedding?.title) {
+      document.title = `${state.value.data.wedding.title} - Undangan Pernikahan`
     }
   } catch (err: any) {
     console.error('Failed to load wedding data:', err)
@@ -144,7 +168,7 @@ if (typeof window !== 'undefined') {
         applyTheme(state.value.data.theme, state.value.data.wedding)
       }
 
-      if (refetch) {
+      if (refetch || !state.value.data?.content) {
         inflight = null
         fetchWeddingData()
       }
@@ -161,7 +185,8 @@ const designWishes = ref<any[]>([])
 
 export function useWedding() {
   onMounted(() => {
-    if (DESIGN_MODE || state.value.data) return
+    if (DESIGN_MODE) return
+    if (state.value.data?.content) return
     inflight ??= fetchWeddingData().finally(() => {
       inflight = null
     })
@@ -338,6 +363,58 @@ export function useWedding() {
         try { override = JSON.parse(override) } catch { override = {} }
       }
       return override?.words?.footer_message_en || override?.words?.footer_message || wedding.value?.pesan_penutup || 'We sincerely thank you for your presence, prayers, and blessings on our special day.'
+    }),
+    parsedOverride: computed(() => {
+      let ov = wedding.value?.theme_override
+      if (typeof ov === 'string') {
+        try { ov = JSON.parse(ov) } catch { ov = {} }
+      }
+      return ov || {}
+    }),
+    customHeroPhoto: computed(() => {
+      let ov = wedding.value?.theme_override
+      if (typeof ov === 'string') {
+        try { ov = JSON.parse(ov) } catch { ov = {} }
+      }
+      return (
+        ov?.images?.foto_mempelai_setelah_buka ||
+        ov?.images?.['foto_mempelai_setelah_buka'] ||
+        theme.value?.theme_config?.images?.foto_mempelai_setelah_buka ||
+        wedding.value?.foto_mempelai_setelah_buka ||
+        wedding.value?.image_spouse ||
+        wedding.value?.image_cover ||
+        ''
+      )
+    }),
+    customSpousePhoto: computed(() => {
+      let ov = wedding.value?.theme_override
+      if (typeof ov === 'string') {
+        try { ov = JSON.parse(ov) } catch { ov = {} }
+      }
+      return (
+        wedding.value?.image_spouse ||
+        wedding.value?.['image-spouse'] ||
+        content.value?.image_spouse ||
+        ov?.images?.image_spouse ||
+        ov?.images?.foto_pasangan ||
+        ov?.images?.foto_mempelai_setelah_buka ||
+        theme.value?.theme_config?.images?.image_spouse ||
+        ''
+      )
+    }),
+    fotoMempelaiTransform: computed(() => {
+      let ov = wedding.value?.theme_override
+      if (typeof ov === 'string') {
+        try { ov = JSON.parse(ov) } catch { ov = {} }
+      }
+      return ov?.foto_mempelai_transform || { scale: 1, x: 50, y: 50 }
+    }),
+    spousePhotoTransform: computed(() => {
+      let ov = wedding.value?.theme_override
+      if (typeof ov === 'string') {
+        try { ov = JSON.parse(ov) } catch { ov = {} }
+      }
+      return ov?.spouse_photo_transform || { scale: 1, x: 50, y: 50 }
     }),
     refetch: fetchWeddingData,
   }

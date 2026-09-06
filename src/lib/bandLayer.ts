@@ -21,4 +21,8 @@ export type BandLayer = {
    * `normal`.
    */
   b?: string
+  /** Optional mask image URL to clip the layer sprite (e.g. for photo apertures) */
+  mask?: string
+  /** Optional CSS object-position (e.g. 'center top') */
+  objectPosition?: string
 }

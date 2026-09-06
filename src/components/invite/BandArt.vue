@@ -32,6 +32,17 @@ const styleFor = (l: BandLayer, i: number): Record<string, string> => ({
   top: `calc(${l.y} * var(--px))`,
   width: `calc(${l.w} * var(--px))`,
   height: `calc(${l.h} * var(--px))`,
+  ...(l.mask
+    ? {
+        WebkitMaskImage: `url('${l.mask}')`,
+        maskImage: `url('${l.mask}')`,
+        WebkitMaskSize: '100% 100%',
+        maskSize: '100% 100%',
+        WebkitMaskRepeat: 'no-repeat',
+        maskRepeat: 'no-repeat',
+      }
+    : {}),
+  ...(l.objectPosition ? { objectPosition: l.objectPosition } : {}),
   /*
    * Figma's MCP reports neither `opacity` nor `blendMode`, so both are solved off the
    * render by scripts/solve_alpha.py and carried on the layer. Absent means the layer
@@ -99,7 +110,7 @@ const stagger = () => Math.min(props.step, MAX_STAGGER / Math.max(1, visible().l
 <template>
   <img
     v-for="(layer, i) in visible()"
-    :key="layer.id"
+    :key="`${layer.id}:${layer.src}`"
     class="band-art"
     :class="{ 'is-in': shown }"
     :src="layer.src"

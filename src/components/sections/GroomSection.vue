@@ -11,7 +11,7 @@ import { BAND_HEIGHT, LAYERS } from '../../lib/bands/groom'
 import { assets } from '../../lib/bandAssets'
 
 const { el, shown } = useReveal(0.15)
-const { groom, bride, isGroomFirst } = useWedding()
+const { groom, bride, isGroomFirst, parsedOverride } = useWedding()
 
 const person = computed(() => (isGroomFirst.value ? bride.value : groom.value))
 
@@ -35,12 +35,31 @@ const fallbackParents = computed(() =>
 const parents = computed(() => parentLine(person.value) || fallbackParents.value)
 
 // Layer 2858:254 is the portrait photo plate in Slot 2 (w: 309, h: 247).
-const layers = computed(() => {
-  const photoSrc = isGroomFirst.value
-    ? (bride.value?.photo_url || assets['bride/parts/2856-648.webp'])
-    : (groom.value?.photo_url || assets['groom/parts/2858-254.webp'])
+const photoSrc = computed(() => {
+  const custom = isGroomFirst.value
+    ? (bride.value?.photo_url ||
+       parsedOverride.value?.images?.foto_mempelai_wanita ||
+       parsedOverride.value?.images?.foto_wanita ||
+       parsedOverride.value?.images?.bride)
+    : (groom.value?.photo_url ||
+       parsedOverride.value?.images?.foto_mempelai_pria ||
+       parsedOverride.value?.images?.foto_pria ||
+       parsedOverride.value?.images?.groom)
 
-  return LAYERS.map((l) => (l.id === '2858:254' ? { ...l, src: photoSrc } : l))
+  return custom || (isGroomFirst.value ? assets['bride/parts/2856-648.webp'] : assets['groom/parts/2858-254.webp'])
+})
+
+const layers = computed(() => {
+  return LAYERS.map((l) =>
+    l.id === '2858:254'
+      ? {
+          ...l,
+          src: photoSrc.value,
+          mask: assets['groom/parts/2858-254.webp'],
+          objectPosition: 'center top',
+        }
+      : l,
+  )
 })
 </script>
 
