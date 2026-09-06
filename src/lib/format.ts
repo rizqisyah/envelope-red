@@ -155,21 +155,28 @@ export function formatShortDate(raw?: string | null): string {
   return `${p(d.getDate())}. ${p(d.getMonth() + 1)}. ${String(d.getFullYear()).slice(2)}`
 }
 
-/*
- * The "Putra Pertama dari Bapak Tono & Ibu Ratna" line under a name. getHome has no
- * `parents` field -- the components read one and always fell through to the design copy.
- * It ships the pieces separately as `child_of` + `father_name` + `mother_name`, any of
- * which can be blank, so join whatever is there and let the caller supply the fallback.
- */
 export function parentLine(p?: {
   child_of?: string | null
+  child_order?: string | null
   father_name?: string | null
   mother_name?: string | null
+  type?: string | null
 } | null): string {
   if (!p) return ''
-  const prefix = (p.child_of || '').trim()
-  const parents = [p.father_name, p.mother_name].map((s) => (s || '').trim()).filter(Boolean).join(' ')
+  let prefix = (p.child_of || '').trim()
+  if (!prefix && p.child_order) {
+    const isPria = p.type === 'groom' || p.type === 'pria'
+    prefix = `${isPria ? 'Putra' : 'Putri'} ${p.child_order.trim()} dari`
+  }
+  const father = (p.father_name || '').trim()
+  const mother = (p.mother_name || '').trim()
+  let parents = ''
+  if (father && mother) {
+    parents = father.includes('&') || father.includes('dan') ? `${father} ${mother}` : `${father}\n& ${mother}`
+  } else {
+    parents = father || mother
+  }
   // `child_of` on real data is often the whole sentence already; don't repeat the parents.
   if (prefix && parents && prefix.includes(parents)) return prefix
-  return [prefix, parents].filter(Boolean).join(' ').trim()
+  return [prefix, parents].filter(Boolean).join('\n').trim()
 }

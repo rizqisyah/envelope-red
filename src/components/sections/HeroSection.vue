@@ -13,11 +13,23 @@ import { useWedding } from '../../composables/useWedding'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/hero'
 
 const { el, shown } = useReveal(0.15)
-const { wedding, theme } = useWedding()
+const { wedding, theme, isGroomFirst } = useWedding()
 
 const customPhoto = computed(() => {
-  return wedding.value?.theme_override?.images?.foto_mempelai_setelah_buka ||
-         theme.value?.theme_config?.images?.foto_mempelai_setelah_buka
+  return (
+    wedding.value?.theme_override?.images?.foto_mempelai_setelah_buka ||
+    theme.value?.theme_config?.images?.foto_mempelai_setelah_buka ||
+    wedding.value?.foto_mempelai_setelah_buka ||
+    wedding.value?.image_spouse
+  )
+})
+
+const heroHeading = computed(() => {
+  return (
+    wedding.value?.theme_override?.words?.hero_title ||
+    wedding.value?.theme_override?.words?.hero_heading ||
+    (isGroomFirst.value ? 'Groom Bride' : 'Bride Groom')
+  )
 })
 
 const skipLayers = computed(() => customPhoto.value ? ['2852:231'] : [])
@@ -44,7 +56,7 @@ const skipLayers = computed(() => customPhoto.value ? ['2852:231'] : [])
       The design's own words: the couple's names have their own bands further down, and
       this is the sheet's title, not a name slot.
     -->
-    <h2 id="hero-heading" class="hero__title">Bride Groom</h2>
+    <h2 id="hero-heading" class="hero__title">{{ heroHeading }}</h2>
   </section>
 </template>
 

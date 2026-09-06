@@ -8,18 +8,45 @@ import { useReveal } from '../../composables/useReveal'
 import { useWedding } from '../../composables/useWedding'
 import { parentLine } from '../../lib/format'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/groom'
+import { assets } from '../../lib/bandAssets'
 
 const { el, shown } = useReveal(0.15)
-const { groom } = useWedding()
+const { groom, bride, isGroomFirst } = useWedding()
 
-const fullName = computed(() => groom.value?.name?.trim() || 'Septian Ahmad Satya')
-const callName = computed(() => groom.value?.nickname?.trim() || 'Ahmad')
-const parents = computed(() => parentLine(groom.value) || 'Putra Pertama dari Bapak Heri\n& Ibu Sofie')
+const person = computed(() => (isGroomFirst.value ? bride.value : groom.value))
+
+const fullName = computed(() => {
+  if (person.value?.name?.trim()) return person.value.name.trim()
+  return isGroomFirst.value ? 'Ayilhah Shella Pratni' : 'Septian Ahmad Satya'
+})
+
+const callName = computed(() => {
+  if (person.value?.nickname?.trim()) return person.value.nickname.trim()
+  if (person.value?.name?.trim()) return person.value.name.trim().split(' ')[0]
+  return isGroomFirst.value ? 'Ayilhah' : 'Ahmad'
+})
+
+const fallbackParents = computed(() =>
+  isGroomFirst.value
+    ? 'Putri Pertama dari Bapak Heri\n& Ibu Sofie'
+    : 'Putra Pertama dari Bapak Heri\n& Ibu Sofie',
+)
+
+const parents = computed(() => parentLine(person.value) || fallbackParents.value)
+
+// Layer 2858:254 is the portrait photo plate in Slot 2 (w: 309, h: 247).
+const layers = computed(() => {
+  const photoSrc = isGroomFirst.value
+    ? (bride.value?.photo_url || assets['bride/parts/2856-648.webp'])
+    : (groom.value?.photo_url || assets['groom/parts/2858-254.webp'])
+
+  return LAYERS.map((l) => (l.id === '2858:254' ? { ...l, src: photoSrc } : l))
+})
 </script>
 
 <template>
   <section :ref="el" class="band groom" :class="{ 'is-in': shown }" aria-labelledby="groom-name">
-    <BandArt :layers="LAYERS" :shown="shown" />
+    <BandArt :layers="layers" :shown="shown" />
 
     <!-- 2858:235 — Charoly Demo 64/38, #d0cb84. -->
     <p class="groom__and">And</p>

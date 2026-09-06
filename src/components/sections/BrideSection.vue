@@ -6,19 +6,45 @@ import { useReveal } from '../../composables/useReveal'
 import { useWedding } from '../../composables/useWedding'
 import { parentLine } from '../../lib/format'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/bride'
+import { assets } from '../../lib/bandAssets'
 
 const { el, shown } = useReveal(0.15)
-const { bride } = useWedding()
+const { bride, groom, isGroomFirst } = useWedding()
 
-// The design prints "Ayilhah / Ayilhah Shella Pratni", so an unconfigured render matches it.
-const fullName = computed(() => bride.value?.name?.trim() || 'Ayilhah Shella Pratni')
-const callName = computed(() => bride.value?.nickname?.trim() || 'Ayilhah')
-const parents = computed(() => parentLine(bride.value) || 'Putri Pertama dari Bapak Heri\n& Ibu Sofie')
+const person = computed(() => (isGroomFirst.value ? groom.value : bride.value))
+
+const fullName = computed(() => {
+  if (person.value?.name?.trim()) return person.value.name.trim()
+  return isGroomFirst.value ? 'Septian Ahmad Satya' : 'Ayilhah Shella Pratni'
+})
+
+const callName = computed(() => {
+  if (person.value?.nickname?.trim()) return person.value.nickname.trim()
+  if (person.value?.name?.trim()) return person.value.name.trim().split(' ')[0]
+  return isGroomFirst.value ? 'Ahmad' : 'Ayilhah'
+})
+
+const fallbackParents = computed(() =>
+  isGroomFirst.value
+    ? 'Putra Pertama dari Bapak Heri\n& Ibu Sofie'
+    : 'Putri Pertama dari Bapak Heri\n& Ibu Sofie',
+)
+
+const parents = computed(() => parentLine(person.value) || fallbackParents.value)
+
+// Layer 2856:648 is the portrait photo plate in Slot 1 (w: 309, h: 247).
+const layers = computed(() => {
+  const photoSrc = isGroomFirst.value
+    ? (groom.value?.photo_url || assets['groom/parts/2858-254.webp'])
+    : (bride.value?.photo_url || assets['bride/parts/2856-648.webp'])
+
+  return LAYERS.map((l) => (l.id === '2856:648' ? { ...l, src: photoSrc } : l))
+})
 </script>
 
 <template>
   <section :ref="el" class="band bride" :class="{ 'is-in': shown }" aria-labelledby="bride-name">
-    <BandArt :layers="LAYERS" :shown="shown" />
+    <BandArt :layers="layers" :shown="shown" />
 
     <!-- 2852:245 — Roben Elegante Script 32/38, #d0cb84. -->
     <h2 id="bride-name" class="bride__call">{{ callName }}</h2>

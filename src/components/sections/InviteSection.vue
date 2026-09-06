@@ -8,7 +8,7 @@ import { BAND_HEIGHT, LAYERS } from '../../lib/bands/invite'
 import { assets } from '../../lib/bandAssets'
 
 const { el, shown } = useReveal(0.15)
-const { groom, bride, coupleNickname, logoMempelai, gallery } = useWedding()
+const { groom, bride, isGroomFirst, coupleNickname, logoMempelai, gallery } = useWedding()
 
 /*
  * 2857:227 / 2857:228 are the two-letter monogram on the oval frame — the design sets
@@ -16,11 +16,15 @@ const { groom, bride, coupleNickname, logoMempelai, gallery } = useWedding()
  * string. They follow the couple, so they are derived rather than printed.
  */
 const initials = computed(() => {
-  const g = groom.value?.name || ''
-  const b = bride.value?.name || ''
-  if (g && b) return [g[0].toLowerCase(), b[0]]
+  const g = (groom.value?.nickname || groom.value?.name || '').trim()
+  const b = (bride.value?.nickname || bride.value?.name || '').trim()
+  if (g && b) {
+    return isGroomFirst.value
+      ? [g[0].toLowerCase(), b[0].toUpperCase()]
+      : [b[0].toLowerCase(), g[0].toUpperCase()]
+  }
   const parts = coupleNickname.value.split(/\s*[&+]\s*|\s+dan\s+/i)
-  return parts.length > 1 ? [parts[0][0].toLowerCase(), parts[1][0]] : ['a', 'S']
+  return parts.length > 1 ? [parts[0][0].toLowerCase(), parts[1][0].toUpperCase()] : ['a', 'S']
 })
 
 const customLogo = computed(() => logoMempelai.value)

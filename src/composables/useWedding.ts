@@ -62,6 +62,96 @@ function applyTheme(themeData: any, weddingData: any) {
  */
 let inflight: Promise<void> | null = null
 
+function getGuestCode(): string {
+  if (typeof window === 'undefined') return ''
+  const searchParams = new URLSearchParams(window.location.search)
+  return (
+    searchParams.get('to') ||
+    searchParams.get('k') ||
+    searchParams.get('code') ||
+    searchParams.get('guest') ||
+    ''
+  ).trim()
+}
+
+const slug = ref(resolveSlug())
+const guestCode = ref(getGuestCode())
+
+async function fetchWeddingData() {
+  if (DESIGN_MODE) return
+  slug.value = resolveSlug()
+  guestCode.value = getGuestCode()
+  state.value.loading = true
+  state.value.error = null
+  try {
+    const data = await getHome(slug.value, guestCode.value)
+    state.value.data = data
+    if (data?.theme || data?.wedding) {
+      applyTheme(data.theme, data.wedding)
+    }
+    if (data?.wedding?.title) {
+      document.title = `${data.wedding.title} - Undangan Pernikahan`
+    }
+  } catch (err: any) {
+    console.error('Failed to load wedding data:', err)
+    state.value.error = err.message
+  } finally {
+    state.value.loading = false
+  }
+}
+
+// Listen for live preview messages from the admin dashboard ("Mode Imajinasi")
+if (typeof window !== 'undefined') {
+  window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'QINVI_PREVIEW_UPDATE') {
+      const { wedding: previewWedding, theme: previewTheme, refetch } = event.data
+
+      if (previewWedding) {
+        let resolvedWedding = { ...previewWedding }
+        if (typeof resolvedWedding.theme_override === 'string') {
+          try {
+            resolvedWedding.theme_override = JSON.parse(resolvedWedding.theme_override)
+          } catch (e) {
+            console.error('Failed to parse theme_override:', e)
+          }
+        }
+
+        const existingOverride = state.value.data?.wedding?.theme_override || {}
+        const mergedOverride = {
+          ...existingOverride,
+          ...(resolvedWedding.theme_override || {}),
+        }
+
+        state.value.data = {
+          ...(state.value.data || {}),
+          wedding: {
+            ...(state.value.data?.wedding || {}),
+            ...resolvedWedding,
+            theme_override: mergedOverride,
+          },
+        }
+      }
+
+      if (previewTheme) {
+        state.value.data = {
+          ...(state.value.data || {}),
+          theme: previewTheme,
+        }
+      }
+
+      // Re-apply theme styles dynamically
+      if (state.value.data?.theme || state.value.data?.wedding) {
+        applyTheme(state.value.data.theme, state.value.data.wedding)
+      }
+
+      if (refetch) {
+        inflight = null
+        fetchWeddingData()
+      }
+    }
+  })
+}
+
 /*
  * Wishes posted while in design mode. Kept outside `state` on purpose: seeding
  * state.data to hold them would make `wedding` non-null, and every band would drop
@@ -70,30 +160,6 @@ let inflight: Promise<void> | null = null
 const designWishes = ref<any[]>([])
 
 export function useWedding() {
-  const slug = ref(resolveSlug())
-  const guestCode = ref(new URLSearchParams(window.location.search).get('to') || '')
-
-  async function fetchWeddingData() {
-    if (DESIGN_MODE) return
-    state.value.loading = true
-    state.value.error = null
-    try {
-      const data = await getHome(slug.value, guestCode.value)
-      state.value.data = data
-      if (data?.theme || data?.wedding) {
-        applyTheme(data.theme, data.wedding)
-      }
-      if (data?.wedding?.title) {
-        document.title = `${data.wedding.title} - Undangan Pernikahan`
-      }
-    } catch (err: any) {
-      console.error('Failed to load wedding data:', err)
-      state.value.error = err.message
-    } finally {
-      state.value.loading = false
-    }
-  }
-
   onMounted(() => {
     if (DESIGN_MODE || state.value.data) return
     inflight ??= fetchWeddingData().finally(() => {
@@ -160,17 +226,37 @@ export function useWedding() {
     putWishes([row, ...(Array.isArray(wishes.value) ? wishes.value : [])])
     return res
   }
+  const groom = computed(() => {
+    return (
+      pengantin.value.find(
+        (p: any) =>
+          p.type?.toLowerCase() === 'groom' || p.type?.toLowerCase() === 'pria',
+      ) || null
+    )
+  })
+  const bride = computed(() => {
+    return (
+      pengantin.value.find(
+        (p: any) =>
+          p.type?.toLowerCase() === 'bride' || p.type?.toLowerCase() === 'wanita',
+      ) || null
+    )
+  })
 
-  const groom = computed(() => pengantin.value.find((p: any) => p.type === 'groom') || null)
-  const bride = computed(() => pengantin.value.find((p: any) => p.type === 'bride') || null)
+  const isGroomFirst = computed(() => {
+    if (!wedding.value) return false
+    return wedding.value.order_groom_first !== false
+  })
 
   const coupleNickname = computed(() => {
-    if (wedding.value?.title) return wedding.value.title
     if (groom.value?.name && bride.value?.name) {
-      return `${groom.value.name.split(' ')[0]} & ${bride.value.name.split(' ')[0]}`
+      const gName = groom.value?.nickname?.trim() || groom.value.name.trim().split(' ')[0]
+      const bName = bride.value?.nickname?.trim() || bride.value.name.trim().split(' ')[0]
+      return isGroomFirst.value ? `${gName} & ${bName}` : `${bName} & ${gName}`
     }
+    if (wedding.value?.title) return wedding.value.title
     // Frame 243/244 print "Ahmad & Salma", so an unconfigured render matches the design.
-    return 'Ahmad & Salma'
+    return isGroomFirst.value ? 'Ahmad & Salma' : 'Salma & Ahmad'
   })
 
   const quoteText = computed(
@@ -205,6 +291,7 @@ export function useWedding() {
     sendWish,
     groom,
     bride,
+    isGroomFirst,
     coupleNickname,
     quoteText,
     logoMempelai: computed(() => {
