@@ -101,7 +101,7 @@ const fitCouple = useFitText()
  * Phones have no such column, so the fill-the-screen rule above still holds there and
  * only this case is clamped.
  */
-@media (min-width: 768px) {
+@media (min-width: 1025px) {
   .cover__frame {
     width: min(100%, calc(100dvh * 375 / 725));
   }

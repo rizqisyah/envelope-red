@@ -159,7 +159,7 @@ function onSplashLeave() {
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1025px) {
   .app-shell {
     display: flex;
     flex-direction: row;
@@ -197,7 +197,7 @@ function onSplashLeave() {
     justify-content: space-between;
     height: 100%;
     width: 100%;
-    padding: 60px;
+    padding: clamp(32px, 5vw, 60px);
   }
 
   .left-subtitle {
@@ -211,7 +211,7 @@ function onSplashLeave() {
   .left-title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: 56px;
+    font-size: clamp(38px, 4.2vw, 56px);
     font-weight: 400;
     line-height: 1.15;
     letter-spacing: -0.04em;
@@ -219,7 +219,7 @@ function onSplashLeave() {
   }
 
   .left-quote-container {
-    max-width: 480px;
+    max-width: clamp(320px, 35vw, 480px);
     margin-top: auto;
     margin-bottom: 40px;
   }
@@ -258,7 +258,7 @@ function onSplashLeave() {
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .app-shell {
     width: 100%;
     overflow-x: hidden;
@@ -270,7 +270,10 @@ function onSplashLeave() {
 
   .desktop-right-column {
     width: 100%;
+    max-width: 100%;
     overflow-x: hidden;
+    position: relative;
+    background: var(--paper);
   }
 
   .desktop-right-column.is-locked {

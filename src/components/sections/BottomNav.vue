@@ -97,7 +97,7 @@ onBeforeUnmount(() => {
   transform: scale(0.9);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1025px) {
   .floating-music {
     right: auto;
     left: 40px;
