@@ -383,12 +383,9 @@ export function useWedding() {
         ov?.['foto-mempelai-setelah-buka'] ||
         theme.value?.theme_config?.images?.foto_mempelai_setelah_buka ||
         wedding.value?.foto_mempelai_setelah_buka ||
+        wedding.value?.['foto-mempelai-setelah-buka'] ||
         content.value?.foto_mempelai_setelah_buka ||
         content.value?.images?.foto_mempelai_setelah_buka ||
-        wedding.value?.image_spouse ||
-        wedding.value?.image_cover ||
-        content.value?.image_spouse ||
-        content.value?.image_cover ||
         ''
       return typeof raw === 'string' ? raw.trim() : (raw || '')
     }),
