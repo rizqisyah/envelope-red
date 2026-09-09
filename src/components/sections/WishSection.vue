@@ -224,6 +224,7 @@ async function send() {
 .wish__list {
   --delay: 300ms;
   position: absolute;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: calc(7 * var(--px));
@@ -232,6 +233,10 @@ async function send() {
   width: calc(292 * var(--px));
   max-height: calc(420 * var(--px));
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--crimson-deep) rgba(107, 13, 14, 0.1);
   list-style: none;
   padding-right: calc(4 * var(--px));
 }
