@@ -25,33 +25,8 @@ const { wishes, sendWish, guest } = useWedding()
 
 type Wish = { guest_name?: string; message?: string; created_at?: string | null }
 
-// Frame 253 prints these three, so an unconfigured render matches the design.
-const DESIGN: Wish[] = [
-  {
-    guest_name: 'Budi & Sarti',
-    message: 'Dear Ahmad & Salma, happy wedding ya. semoga bahagia selalu',
-  },
-  {
-    guest_name: 'Budi & Sarti',
-    message:
-      'Wishing you a lifetime of love, laughter, and endless happiness. Happy Wedding! 💐🤍 Semoga bisa menjadi keluarga yang sejahtera, selalu bahagia, selalu bersama.....',
-  },
-  {
-    guest_name: 'Budi & Sarti',
-    message:
-      'Wishing you a lifetime of love, laughter, and endless happiness. Happy Wedding! 💐🤍 Semoga bisa menjadi keluarga yang sejahtera, selalu bahagia, selalu bersama.....',
-  },
-  // A fourth, so the design fallback still shows the render's "Show more" — the button
-  // is part of Frame 253's layout, and one that reveals nothing is worse than no button.
-  {
-    guest_name: 'Rian & Keluarga',
-    message: 'Selamat menempuh hidup baru, semoga sakinah mawaddah warahmah 🤍',
-  },
-]
-
 const list = computed<Wish[]>(() => {
-  const live = (wishes.value as Wish[]).filter((w) => w.guest_name || w.message)
-  return live.length ? live : DESIGN
+  return ((wishes.value || []) as Wish[]).filter((w) => w?.guest_name || w?.message)
 })
 
 const name = ref(guest.value?.name || '')
@@ -111,7 +86,7 @@ async function send() {
     <p v-if="error" class="wish__error" role="alert">{{ error }}</p>
 
     <!-- 2894:863 / 872 / 877 — 292px plates, stacked from y 232 with a 7px gutter. -->
-    <ul class="wish__list">
+    <ul v-if="list.length" class="wish__list">
       <li v-for="(w, i) in list" :key="i" class="wish__card">
         <p class="wish__who">{{ w.guest_name || 'Tamu' }}</p>
         <p class="wish__text">{{ w.message }}</p>
