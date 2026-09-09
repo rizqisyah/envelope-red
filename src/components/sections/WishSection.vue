@@ -5,7 +5,7 @@
 // cards are 292px plates whose height follows the message, and "Show more" reveals the
 // rest of the list — none of which a raster can do, so this band draws its own chrome
 // and BandArt only paints the florals behind it.
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
 import { useWedding } from '../../composables/useWedding'
@@ -21,7 +21,7 @@ const { el, shown } = useReveal(0.15)
  * moves inside a real button.
  */
 const SKIP = ['2894:863', '2894:872', '2894:877', '2894:880', '2894:860']
-const { wishes, sendWish, guest } = useWedding()
+const { wishes, sendWish, guest, guestName } = useWedding()
 
 type Wish = { guest_name?: string; message?: string; created_at?: string | null }
 
@@ -29,7 +29,21 @@ const list = computed<Wish[]>(() => {
   return ((wishes.value || []) as Wish[]).filter((w) => w?.guest_name || w?.message)
 })
 
-const name = ref(guest.value?.name || '')
+const name = ref('')
+
+watch(
+  [guest, guestName],
+  () => {
+    if (!name.value) {
+      const resolved =
+        guest.value?.guest_name ||
+        guest.value?.name ||
+        (guestName.value !== 'Nama Tamu' ? guestName.value : '')
+      if (resolved) name.value = resolved
+    }
+  },
+  { immediate: true },
+)
 const message = ref('')
 const sending = ref(false)
 const error = ref('')

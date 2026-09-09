@@ -4,7 +4,7 @@
 // The three fields are `Input` frames in Figma with a flat #6b0d0e fill and the sample
 // answer typed inside. They ship as real inputs, not as art — a raster of a form cannot
 // be filled in — so 2852:389 is skipped and all three plates are CSS.
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
 import { useWedding } from '../../composables/useWedding'
@@ -12,7 +12,7 @@ import { submitRsvp } from '../../lib/api'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/rsvp'
 
 const { el, shown } = useReveal(0.15)
-const { slug, guest } = useWedding()
+const { slug, guest, guestName } = useWedding()
 
 /*
  * Redrawn below, so the rasters are skipped: 2852:389 is the third field's plate (the
@@ -31,11 +31,23 @@ const error = ref('')
 const done = ref(false)
 const showPopup = ref(false)
 
-/* The `?to=` link names the guest, so the field starts filled in for them. */
-onMounted(() => {
-  const known = guest.value?.name || new URLSearchParams(location.search).get('to')
-  if (known) name.value = String(known)
-})
+/*
+ * `guest` arrives from the API after this component mounts, so watch rather than read once.
+ * A guest who already replied has has_rsvp set.
+ */
+watch(
+  [guest, guestName],
+  ([g, gName]) => {
+    if (g?.has_rsvp) done.value = true
+    if (g?.phone && !phone.value) phone.value = String(g.phone)
+    const known =
+      g?.guest_name ??
+      g?.name ??
+      (gName !== 'Nama Tamu' ? gName : '')
+    if (known && !name.value) name.value = String(known)
+  },
+  { immediate: true },
+)
 
 const canSend = computed(() => !!name.value.trim() && !!attendance.value && !sending.value)
 

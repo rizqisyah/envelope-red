@@ -7,7 +7,7 @@ import VideoSection from './components/sections/VideoSection.vue'
 import { usePreloadAssets } from './composables/usePreloadAssets'
 import { useWedding } from './composables/useWedding'
 
-const { guest, coupleNickname, quoteText, quoteVerse, leftCoverBg } = useWedding()
+const { guestName, coupleNickname, quoteText, quoteVerse, leftCoverBg } = useWedding()
 const { coverLoaded, preloadCover, preloadInviteBody } = usePreloadAssets()
 
 const isOpen = ref(false)
@@ -16,13 +16,6 @@ const isOpen = ref(false)
 const isLocked = ref(true)
 const contentVisible = ref(false)
 
-/*
- * Falls back to the design's own printed guest name, so an unconfigured render matches
- * the design instead of whatever wedding the default slug points at.
- */
-const guestName = computed(
-  () => new URLSearchParams(location.search).get('to') || guest.value?.name || 'Nama Tamu',
-)
 const coupleName = coupleNickname
 
 const leftBackgroundStyle = computed(() => {

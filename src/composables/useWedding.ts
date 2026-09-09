@@ -67,11 +67,25 @@ function getGuestCode(): string {
   const searchParams = new URLSearchParams(window.location.search)
   return (
     searchParams.get('to') ||
-    searchParams.get('k') ||
-    searchParams.get('code') ||
     searchParams.get('guest') ||
+    searchParams.get('c') ||
+    searchParams.get('code') ||
+    searchParams.get('k') ||
     ''
   ).trim()
+}
+
+function isSystemGuestCode(val: string): boolean {
+  if (!val) return false
+  return /^[A-Za-z]{1,4}\d{2,6}$/i.test(val.trim())
+}
+
+function formatDirectName(val: string): string {
+  try {
+    return decodeURIComponent(val.replace(/\+/g, ' ')).trim()
+  } catch {
+    return val.replace(/\+/g, ' ').trim()
+  }
 }
 
 const slug = ref(resolveSlug())
@@ -186,7 +200,13 @@ const designWishes = ref<any[]>([])
 export function useWedding() {
   onMounted(() => {
     if (DESIGN_MODE) return
-    if (state.value.data?.content) return
+    const currentCode = getGuestCode()
+    const currentSlug = resolveSlug()
+    if (state.value.data && slug.value === currentSlug && guestCode.value === currentCode) {
+      return
+    }
+    slug.value = currentSlug
+    guestCode.value = currentCode
     inflight ??= fetchWeddingData().finally(() => {
       inflight = null
     })
@@ -195,6 +215,20 @@ export function useWedding() {
   const wedding = computed(() => state.value.data?.wedding ?? null)
   const theme = computed(() => state.value.data?.theme ?? null)
   const guest = computed(() => state.value.data?.guest ?? null)
+  const guestName = computed(() => {
+    if (guest.value?.guest_name) return guest.value.guest_name
+    if (guest.value?.name) return guest.value.name
+
+    const rawParam = guestCode.value.trim()
+    if (!rawParam) return 'Nama Tamu'
+
+    if (isSystemGuestCode(rawParam)) {
+      return 'Nama Tamu'
+    }
+
+    return formatDirectName(rawParam) || 'Nama Tamu'
+  })
+  const guestGroup = computed(() => guest.value?.group_name || '')
   /*
    * getHome nests every list under `data.content` -- these were read straight off `data`,
    * so all five were permanently empty. No pixel diff could catch it: an empty list falls
@@ -301,6 +335,8 @@ export function useWedding() {
   return {
     slug,
     guestCode,
+    guestName,
+    guestGroup,
     loading: computed(() => state.value.loading),
     error: computed(() => state.value.error),
     wedding,
