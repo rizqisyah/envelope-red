@@ -376,15 +376,21 @@ export function useWedding() {
       if (typeof ov === 'string') {
         try { ov = JSON.parse(ov) } catch { ov = {} }
       }
-      return (
+      const raw =
         ov?.images?.foto_mempelai_setelah_buka ||
-        ov?.images?.['foto_mempelai_setelah_buka'] ||
+        ov?.images?.['foto-mempelai-setelah-buka'] ||
+        ov?.foto_mempelai_setelah_buka ||
+        ov?.['foto-mempelai-setelah-buka'] ||
         theme.value?.theme_config?.images?.foto_mempelai_setelah_buka ||
         wedding.value?.foto_mempelai_setelah_buka ||
+        content.value?.foto_mempelai_setelah_buka ||
+        content.value?.images?.foto_mempelai_setelah_buka ||
         wedding.value?.image_spouse ||
         wedding.value?.image_cover ||
+        content.value?.image_spouse ||
+        content.value?.image_cover ||
         ''
-      )
+      return typeof raw === 'string' ? raw.trim() : (raw || '')
     }),
     customSpousePhoto: computed(() => {
       let ov = wedding.value?.theme_override
@@ -407,7 +413,12 @@ export function useWedding() {
       if (typeof ov === 'string') {
         try { ov = JSON.parse(ov) } catch { ov = {} }
       }
-      return ov?.foto_mempelai_transform || { scale: 1, x: 50, y: 50 }
+      const t = ov?.foto_mempelai_transform
+      return {
+        scale: typeof t?.scale === 'number' ? t.scale : (parseFloat(t?.scale) || 1),
+        x: typeof t?.x === 'number' ? t.x : (parseFloat(t?.x) || 50),
+        y: typeof t?.y === 'number' ? t.y : (parseFloat(t?.y) || 50),
+      }
     }),
     spousePhotoTransform: computed(() => {
       let ov = wedding.value?.theme_override
