@@ -30,7 +30,7 @@ const FALLBACK: Card[] = [
   {
     title: 'Akad\nNikah',
     date: DESIGN_DATE,
-    time: '08.00 - 10.00 WIB',
+    time: '08.00 - 10.00',
     venue: 'Kediaman Mempelai Wanita',
     address: DESIGN_ADDRESS,
     maps: '',
@@ -38,7 +38,7 @@ const FALLBACK: Card[] = [
   {
     title: 'Resepsi',
     date: DESIGN_DATE,
-    time: '08.00 - 10.00 WIB',
+    time: '08.00 - 10.00',
     venue: 'Kediaman Mempelai Wanita',
     address: DESIGN_ADDRESS,
     maps: '',
