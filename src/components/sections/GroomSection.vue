@@ -11,7 +11,7 @@ import { BAND_HEIGHT, LAYERS } from '../../lib/bands/groom'
 import { assets } from '../../lib/bandAssets'
 
 const { el, shown } = useReveal(0.15)
-const { groom, bride, isGroomFirst, parsedOverride } = useWedding()
+const { groom, bride, isGroomFirst, parsedOverride, brideTransform, groomTransform } = useWedding()
 
 const person = computed(() => (isGroomFirst.value ? bride.value : groom.value))
 
@@ -57,6 +57,8 @@ const layers = computed(() => {
           src: photoSrc.value,
           mask: assets['groom/parts/2858-254.webp'],
           objectPosition: 'center top',
+          // the transform follows the person shown in this slot, not the slot
+          zoom: (isGroomFirst.value ? brideTransform.value : groomTransform.value) ?? undefined,
         }
       : l,
   )

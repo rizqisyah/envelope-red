@@ -106,6 +106,10 @@ async function send() {
         <p class="wish__text">{{ w.message }}</p>
       </li>
     </ul>
+    <div v-else class="wish__empty">
+      <p class="wish__who">Belum ada ucapan</p>
+      <p class="wish__text">Jadilah yang pertama mengirimkan doa dan ucapan untuk kedua mempelai.</p>
+    </div>
 
     <Teleport to="body">
       <Transition name="fade">
@@ -273,6 +277,18 @@ async function send() {
   border-radius: calc(6 * var(--px));
   background: #6b0d0e;
   text-align: left;
+}
+
+/* Same plate as a wish card, in the slot the first card would take, centred. */
+.wish__empty {
+  --delay: 300ms;
+  left: calc(42 * var(--px));
+  top: calc(232 * var(--px));
+  width: calc(292 * var(--px));
+  padding: calc(6 * var(--px)) calc(17 * var(--px)) calc(19 * var(--px));
+  border-radius: calc(6 * var(--px));
+  background: #6b0d0e;
+  text-align: center;
 }
 
 .wish__who {

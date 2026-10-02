@@ -108,19 +108,39 @@ const stagger = () => Math.min(props.step, MAX_STAGGER / Math.max(1, visible().l
 </script>
 
 <template>
-  <img
-    v-for="(layer, i) in visible()"
-    :key="`${layer.id}:${layer.src}`"
-    class="band-art"
-    :class="{ 'is-in': shown }"
-    :src="layer.src"
-    alt=""
-    :width="layer.w"
-    :height="layer.h"
-    loading="lazy"
-    decoding="async"
-    :style="styleFor(layer, i)"
-  />
+  <template v-for="(layer, i) in visible()" :key="`${layer.id}:${layer.src}`">
+    <div
+      v-if="layer.zoom"
+      class="band-art band-art--zoom"
+      :class="{ 'is-in': shown }"
+      :style="styleFor(layer, i)"
+    >
+      <img
+        class="band-art__photo"
+        :src="layer.src"
+        alt=""
+        loading="lazy"
+        decoding="async"
+        :style="{
+          objectPosition: `${layer.zoom.x}% ${layer.zoom.y}%`,
+          transformOrigin: `${layer.zoom.x}% ${layer.zoom.y}%`,
+          transform: `scale(${layer.zoom.scale})`,
+        }"
+      />
+    </div>
+    <img
+      v-else
+      class="band-art"
+      :class="{ 'is-in': shown }"
+      :src="layer.src"
+      alt=""
+      :width="layer.w"
+      :height="layer.h"
+      loading="lazy"
+      decoding="async"
+      :style="styleFor(layer, i)"
+    />
+  </template>
 </template>
 
 <style scoped>
@@ -137,6 +157,17 @@ const stagger = () => Math.min(props.step, MAX_STAGGER / Math.max(1, visible().l
   will-change: transform, opacity;
   object-fit: cover;
   pointer-events: none;
+}
+
+.band-art--zoom {
+  overflow: hidden;
+}
+
+.band-art__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .band-art.is-in {

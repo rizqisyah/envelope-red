@@ -25,4 +25,12 @@ export type BandLayer = {
   mask?: string
   /** Optional CSS object-position (e.g. 'center top') */
   objectPosition?: string
+  /**
+   * Admin-set zoom & focus for a photo aperture (theme_override.foto_*_transform), x/y in
+   * %. Scaling the layer itself would scale its mask too, so a zoomed layer is drawn as
+   * a masked frame with the photo zoomed inside it.
+   */
+  zoom?: PhotoTransform
 }
+
+export type PhotoTransform = { scale: number; x: number; y: number }
