@@ -5,12 +5,15 @@
 import { computed } from 'vue'
 import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
+import { useFitLine } from '../../composables/useFitText'
 import { useWedding } from '../../composables/useWedding'
 import { parentLine } from '../../lib/format'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/groom'
 import { assets } from '../../lib/bandAssets'
 
 const { el, shown } = useReveal(0.15)
+const fitCall = useFitLine()
+const fitFull = useFitLine()
 const { groom, bride, isGroomFirst, parsedOverride, brideTransform, groomTransform } = useWedding()
 
 const person = computed(() => (isGroomFirst.value ? bride.value : groom.value))
@@ -74,12 +77,15 @@ const layers = computed(() => {
     <!-- 2896:939 — Roben Elegante Script 20/38, #d0cb84. -->
     <p class="groom__together">Better together</p>
 
-    <!-- 2852:571 — Roben Elegante 32/38, #d0cb84. -->
-    <h2 id="groom-name" class="groom__call">{{ callName }}</h2>
-    <!-- 2852:572 — Playfair Display SC 20/38, #d0cb84. -->
-    <p class="groom__full">{{ fullName }}</p>
-    <!-- 2852:573 — Ovo 15/22, #d0cb84. -->
-    <p class="groom__parents">{{ parents }}</p>
+    <!-- One stack, for the same reason as the bride band's: a long name pushes, never overprints. -->
+    <div class="band-stack groom__names">
+      <!-- 2852:571 — Roben Elegante 32/38, #d0cb84. -->
+      <h2 :ref="fitCall" id="groom-name" class="groom__call">{{ callName }}</h2>
+      <!-- 2852:572 — Playfair Display SC 20/38, #d0cb84. -->
+      <p :ref="fitFull" class="groom__full">{{ fullName }}</p>
+      <!-- 2852:573 — Ovo 15/22, #d0cb84. -->
+      <p class="groom__parents">{{ parents }}</p>
+    </div>
   </section>
 </template>
 
@@ -116,34 +122,45 @@ const layers = computed(() => {
   color: var(--gold-muted);
 }
 
-/* 2852:571 — Roben Elegante Script 32/38, the design's own face. */
+/* Spans the frame so each node below keeps its design x as a margin-left. */
+.groom__names {
+  left: 0;
+  top: calc(712 * var(--px));
+  width: calc(375 * var(--px));
+}
+
+/*
+ * 2852:571 — Roben Elegante Script 32/38, the design's own face. Widened from Figma's
+ * 84..286 to 25..345 about the same centre, as in the bride band.
+ */
 .groom__call {
   --delay: 80ms;
-  left: calc(84 * var(--px));
-  top: calc(712 * var(--px));
-  width: calc(202 * var(--px));
+  margin-left: calc(25 * var(--px));
+  width: calc(320 * var(--px));
   font-family: var(--font-name);
-  font-size: calc(32 * var(--px));
+  font-size: calc(32 * var(--px) * var(--fit, 1));
   font-weight: 400;
   line-height: calc(38 * var(--px));
   color: var(--gold-muted);
 }
 
+/* 26 + 2 x 6 = the design's 38 line box; see .bride__full. */
 .groom__full {
   --delay: 200ms;
-  left: calc(29 * var(--px));
-  top: calc(752 * var(--px));
+  margin-top: calc(2 * var(--px)); /* 752 - 712 - 38 */
+  margin-left: calc(29 * var(--px));
   width: calc(321 * var(--px));
+  padding-block: calc(6 * var(--px));
   font-family: var(--font-caps);
-  font-size: calc(20 * var(--px));
-  line-height: calc(38 * var(--px));
+  font-size: calc(20 * var(--px) * var(--fit, 1));
+  line-height: calc(26 * var(--px));
   color: var(--gold-muted);
 }
 
 .groom__parents {
   --delay: 320ms;
-  left: calc(25 * var(--px));
-  top: calc(791 * var(--px));
+  margin-top: calc(1 * var(--px)); /* 791 - 752 - 38 */
+  margin-left: calc(25 * var(--px));
   width: calc(321 * var(--px));
   font-family: var(--font-parent);
   font-size: calc(15 * var(--px));

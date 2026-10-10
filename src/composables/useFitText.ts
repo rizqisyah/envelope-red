@@ -1,5 +1,7 @@
 import { onUnmounted, type ComponentPublicInstance } from "vue";
 
+type FitRef = (node: Element | ComponentPublicInstance | null) => void;
+
 /**
  * Shrinks an element's text until it fits its own box.
  *
@@ -16,15 +18,15 @@ import { onUnmounted, type ComponentPublicInstance } from "vue";
  *   const fit = useFitText()
  *   <p :ref="fit" class="...">        // needs a fixed height in CSS
  *   font-size: calc(10 * var(--px) * var(--fit, 1));
+ *
+ * One instance drives one element; a v-for needs one instance per slot. `minScale`
+ * is the floor below which the text is left to overflow instead.
  */
 const MIN_SCALE = 0.72;
 const STEP = 0.02;
 
-export function useFitText(): (node: Element | ComponentPublicInstance | null) => void {
-  let observer: ResizeObserver | null = null;
-  let visibility: IntersectionObserver | null = null;
-
-  function fit(node: HTMLElement): void {
+export function useFitText(minScale = MIN_SCALE): FitRef {
+  return useFit((node) => {
     // No box yet — the band is still behind the cover. Measuring now would report
     // 0 and lock in a scale of 1; the observers below refit once it is rendered.
     if (!node.clientHeight) return;
@@ -32,11 +34,38 @@ export function useFitText(): (node: Element | ComponentPublicInstance | null) =
     let scale = 1;
     node.style.setProperty("--fit", "1");
     // A fractional pixel of slack stops a rounding wobble from looping forever.
-    while (node.scrollHeight > node.clientHeight + 1 && scale > MIN_SCALE) {
+    while (node.scrollHeight > node.clientHeight + 1 && scale > minScale) {
       scale -= STEP;
       node.style.setProperty("--fit", String(scale));
     }
-  }
+  });
+}
+
+/**
+ * The same, for copy the design sets on ONE line -- a full name, a nickname. The box
+ * width is the constraint: the text shrinks until it fits on a line, and only when
+ * MIN_SCALE still is not enough does it wrap. Pair it with a flow layout (see
+ * `.band-stack` in style.css) so that wrap pushes the copy below it down rather than
+ * printing over it. Same `--fit` contract as useFitText, but no fixed height.
+ */
+export function useFitLine(): FitRef {
+  return useFit((node) => {
+    if (!node.clientWidth) return;
+
+    let scale = 1;
+    node.style.setProperty("--fit", "1");
+    node.style.whiteSpace = "nowrap";
+    while (node.scrollWidth > node.clientWidth + 1 && scale > MIN_SCALE) {
+      scale -= STEP;
+      node.style.setProperty("--fit", String(scale));
+    }
+    if (node.scrollWidth > node.clientWidth + 1) node.style.whiteSpace = "";
+  });
+}
+
+function useFit(fit: (node: HTMLElement) => void): FitRef {
+  let observer: ResizeObserver | null = null;
+  let visibility: IntersectionObserver | null = null;
 
   function disconnect(): void {
     observer?.disconnect();

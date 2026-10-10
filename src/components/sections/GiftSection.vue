@@ -8,10 +8,13 @@
 import { computed, ref } from 'vue'
 import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
+import { useFitText } from '../../composables/useFitText'
 import { useWedding } from '../../composables/useWedding'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/gift'
 
 const { el, shown } = useReveal(0.15)
+// One per plate: a useFitText instance drives a single element.
+const fitLines = [useFitText(), useFitText(), useFitText()]
 const { gift, videoPrewed } = useWedding()
 
 import bcaLogo from '../../assets/gift/parts/2852-333.webp'
@@ -159,7 +162,7 @@ const skipLayers = computed(() => {
             <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
           </svg>
         </div>
-        <p class="gift__lines" :style="{ '--slot': `${i * SLOT}` }">{{ card.lines.join('\n') }}</p>
+        <p :ref="fitLines[i]" class="gift__lines" :style="{ '--slot': `${i * SLOT}` }">{{ card.lines.join('\n') }}</p>
         <button
           type="button"
           class="gift__copybtn"
@@ -228,14 +231,20 @@ const skipLayers = computed(() => {
   color: #fff;
 }
 
+/*
+ * `height` is only useFitText's constraint: what is left of the 110px plate (253..363)
+ * below the first line, less a margin. Three lines fit as designed; a long kado address
+ * or account name shrinks instead of running onto the next plate.
+ */
 .gift__lines {
   --delay: 340ms;
   left: calc(40 * var(--px));
   top: calc((291 + var(--slot)) * var(--px));
   width: calc(255 * var(--px));
+  height: calc(64 * var(--px));
   font-family: var(--font-body);
-  font-size: calc(14 * var(--px));
-  line-height: calc(19 * var(--px));
+  font-size: calc(14 * var(--px) * var(--fit, 1));
+  line-height: calc(19 * var(--px) * var(--fit, 1));
   text-align: left;
   white-space: pre-line;
   color: #fff;

@@ -3,12 +3,15 @@
 import { computed } from 'vue'
 import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
+import { useFitLine } from '../../composables/useFitText'
 import { useWedding } from '../../composables/useWedding'
 import { parentLine } from '../../lib/format'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/bride'
 import { assets } from '../../lib/bandAssets'
 
 const { el, shown } = useReveal(0.15)
+const fitCall = useFitLine()
+const fitFull = useFitLine()
 const { bride, groom, isGroomFirst, parsedOverride, brideTransform, groomTransform } = useWedding()
 
 const person = computed(() => (isGroomFirst.value ? groom.value : bride.value))
@@ -67,12 +70,18 @@ const layers = computed(() => {
   <section :ref="el" class="band bride" :class="{ 'is-in': shown }" aria-labelledby="bride-name">
     <BandArt :layers="layers" :shown="shown" />
 
-    <!-- 2852:245 — Roben Elegante Script 32/38, #d0cb84. -->
-    <h2 id="bride-name" class="bride__call">{{ callName }}</h2>
-    <!-- 2852:246 — Playfair Display SC 20/38, #d0cb84. -->
-    <p class="bride__full">{{ fullName }}</p>
-    <!-- 2852:247 — Ovo 15/22, #d0cb84. Figma authors the break before "& Ibu". -->
-    <p class="bride__parents">{{ parents }}</p>
+    <!--
+      One stack rather than three nodes at fixed tops: a full name with a degree
+      ("... S.Hum") wrapped onto a second line and printed over the parents' line.
+    -->
+    <div class="band-stack bride__names">
+      <!-- 2852:245 — Roben Elegante Script 32/38, #d0cb84. -->
+      <h2 :ref="fitCall" id="bride-name" class="bride__call">{{ callName }}</h2>
+      <!-- 2852:246 — Playfair Display SC 20/38, #d0cb84. -->
+      <p :ref="fitFull" class="bride__full">{{ fullName }}</p>
+      <!-- 2852:247 — Ovo 15/22, #d0cb84. Figma authors the break before "& Ibu". -->
+      <p class="bride__parents">{{ parents }}</p>
+    </div>
   </section>
 </template>
 
@@ -81,35 +90,50 @@ const layers = computed(() => {
   height: calc(v-bind(BAND_HEIGHT) * var(--px));
 }
 
-/* 2852:245 — Roben Elegante Script 32/38, the design's own face. */
+/* Spans the frame so each node below keeps its design x as a margin-left. */
+.bride__names {
+  left: 0;
+  top: calc(497 * var(--px));
+  width: calc(375 * var(--px));
+}
+
+/*
+ * 2852:245 — Roben Elegante Script 32/38, the design's own face. Figma's box is 83..285;
+ * this one is 24..344 about the same centre, so a long nickname gets the room before
+ * useFitLine starts shrinking it.
+ */
 .bride__call {
   --delay: 80ms;
-  left: calc(83 * var(--px));
-  top: calc(497 * var(--px));
-  width: calc(202 * var(--px));
+  margin-left: calc(24 * var(--px));
+  width: calc(320 * var(--px));
   font-family: var(--font-name);
-  font-size: calc(32 * var(--px));
+  font-size: calc(32 * var(--px) * var(--fit, 1));
   font-weight: 400;
   line-height: calc(38 * var(--px));
   color: var(--gold-muted);
 }
 
+/*
+ * 26 + 2 x 6 is the design's 38 line box, so one line sits exactly where it did; a name
+ * too long even for useFitLine's smallest size wraps with its lines 26 apart, not 38.
+ */
 .bride__full {
   --delay: 200ms;
-  left: calc(29 * var(--px));
-  top: calc(537 * var(--px));
+  margin-top: calc(2 * var(--px)); /* 537 - 497 - 38 */
+  margin-left: calc(29 * var(--px));
   width: calc(321 * var(--px));
+  padding-block: calc(6 * var(--px));
   font-family: var(--font-caps);
-  font-size: calc(20 * var(--px));
-  line-height: calc(38 * var(--px));
+  font-size: calc(20 * var(--px) * var(--fit, 1));
+  line-height: calc(26 * var(--px));
   color: var(--gold-muted);
 }
 
 /* `pre-line` carries the API's own newline, and the design fallback's, into the box. */
 .bride__parents {
   --delay: 320ms;
-  left: calc(25 * var(--px));
-  top: calc(576 * var(--px));
+  margin-top: calc(1 * var(--px)); /* 576 - 537 - 38 */
+  margin-left: calc(25 * var(--px));
   width: calc(321 * var(--px));
   font-family: var(--font-parent);
   font-size: calc(15 * var(--px));

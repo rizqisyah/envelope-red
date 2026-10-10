@@ -2,10 +2,15 @@
 // Figma Frame 253 band "footer", y 7631–7979. Coords are band-local design px.
 import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
+import { useFitLine, useFitText } from '../../composables/useFitText'
 import { useWedding } from '../../composables/useWedding'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/footer'
 
 const { el, shown } = useReveal(0.15)
+// Lower floor than the default: the box is short, and the closing paragraph admins
+// paste in is often twice the design's three lines.
+const fitCopy = useFitText(0.6)
+const fitCouple = useFitLine()
 const { coupleNickname, closingMessage } = useWedding()
 </script>
 
@@ -16,11 +21,11 @@ const { coupleNickname, closingMessage } = useWedding()
     <!-- 2852:381 — Alex Brush 36/28, #9a1010. -->
     <h2 id="thanks" class="footer__thanks">Thank You !</h2>
     <!-- 2852:382 ?" April Signature 15/19, #7c4a15. -->
-    <p class="footer__copy">
+    <p :ref="fitCopy" class="footer__copy">
       {{ closingMessage }}
     </p>
     <!-- 2852:380 ?" Blosta Script 24/28, #ffe7e7. -->
-    <p class="footer__couple">{{ coupleNickname }}</p>
+    <p :ref="fitCouple" class="footer__couple">{{ coupleNickname }}</p>
     <!-- 2894:912 — Alex Brush 16/28, #ffffff. -->
     <p class="footer__credit">Created by @25ribuaja x Qinvi</p>
   </section>
@@ -43,24 +48,35 @@ const { coupleNickname, closingMessage } = useWedding()
   color: var(--crimson);
 }
 
+/*
+ * `height` is only useFitText's constraint: down to the top of the envelope it sits
+ * above (2894:903, y 104), less a margin. The design's message is three lines; a longer
+ * custom one shrinks rather than running onto the dark envelope and the name on it.
+ */
 .footer__copy {
   --delay: 180ms;
   left: calc(97 * var(--px));
   top: calc(36 * var(--px));
   width: calc(182 * var(--px));
+  height: calc(66 * var(--px));
   font-family: var(--font-closing);
-  font-size: calc(15 * var(--px));
-  line-height: calc(19 * var(--px));
+  font-size: calc(15 * var(--px) * var(--fit, 1));
+  line-height: calc(19 * var(--px) * var(--fit, 1));
   color: var(--bronze);
 }
 
+/*
+ * Figma's box is 121..254, narrower than most real "Name & Name" pairs; this one is
+ * 78..298 about the same centre, still inside the plaque it prints on (2894:903,
+ * 45..331), and useFitLine shrinks whatever that does not hold.
+ */
 .footer__couple {
   --delay: 300ms;
-  left: calc(121 * var(--px));
+  left: calc(78 * var(--px));
   top: calc(134 * var(--px));
-  width: calc(133 * var(--px));
+  width: calc(220 * var(--px));
   font-family: var(--font-signature);
-  font-size: calc(24 * var(--px));
+  font-size: calc(24 * var(--px) * var(--fit, 1));
   line-height: calc(28 * var(--px));
   color: var(--blush);
 }

@@ -131,11 +131,44 @@
 }
 
 /*
+ * Copy whose lines come from the API and can wrap — a name over its parents' line.
+ * Placed absolutely, each node sits at a fixed `top`, so a name that wraps prints its
+ * second line over the node below it. A stack is placed as ONE box and its children
+ * flow inside it: each keeps its design x and width (as margin-left/width), the gap
+ * between them is a margin-top, and a wrap pushes everything below it down. The box
+ * itself does not fade; its children carry the band's staggered reveal instead.
+ */
+.band > .band-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+.band > .band-stack > * {
+  flex: none;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(calc(24 * var(--px)));
+  transition:
+    opacity 1200ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0ms),
+    transform 1600ms cubic-bezier(0.16, 1, 0.28, 1) var(--delay, 0ms);
+}
+
+.band.is-in > .band-stack > * {
+  opacity: 1;
+  transform: none;
+}
+
+/*
  * Motion this large is exactly what a vestibular disorder cannot tolerate, so the
  * reduced-motion path is not a shortened version of it — it is no movement at all.
  */
 @media (prefers-reduced-motion: reduce) {
-  .band > *:not(.band-art) {
+  .band > *:not(.band-art),
+  .band > .band-stack > * {
     opacity: 1;
     transform: none;
     transition: none;

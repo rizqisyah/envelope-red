@@ -7,11 +7,15 @@
 import { computed } from 'vue'
 import BandArt from '../invite/BandArt.vue'
 import { useReveal } from '../../composables/useReveal'
+import { useFitText } from '../../composables/useFitText'
 import { useWedding } from '../../composables/useWedding'
 import { formatEventDate, formatEventTime } from '../../lib/format'
 import { BAND_HEIGHT, LAYERS } from '../../lib/bands/acara'
 
 const { el, shown } = useReveal(0.15)
+// One per card: a useFitText instance drives a single element.
+const fitTitle = [useFitText(), useFitText()]
+const fitPlace = [useFitText(), useFitText()]
 const { acara } = useWedding()
 
 type Card = {
@@ -105,15 +109,21 @@ const sectionHeight = computed(() => cards.value.length === 1 ? BAND_HEIGHT - 35
 
     <template v-for="(card, i) in cards" :key="i">
       <!-- 2878:289 / 2878:318 — Alex Brush 32/26, #ffffff. -->
-      <h2 :id="`acara-${i}`" class="acara__title" :class="`acara__slot--${i}`">{{ card.title }}</h2>
+      <h2 :ref="fitTitle[i]" :id="`acara-${i}`" class="acara__title" :class="`acara__slot--${i}`">{{ card.title }}</h2>
       <!-- 2878:290 / 2878:319 — Alex Brush 20/24. -->
       <p class="acara__date" :class="`acara__slot--${i}`">{{ card.date }}</p>
       <!-- 2878:292 / 2878:320 — Bellefair 15/18. -->
       <p class="acara__time" :class="`acara__slot--${i}`">{{ card.time }}</p>
-      <!-- 2878:303 / 2878:321 — Bellefair 13/16. -->
-      <p class="acara__venue" :class="`acara__slot--${i}`">{{ card.venue }}</p>
-      <!-- 2878:304 / 2878:322 — Bellefair 11/13. -->
-      <p class="acara__address" :class="`acara__slot--${i}`">{{ card.address }}</p>
+      <!--
+        Venue and address share one box: a venue name that wrapped printed its second
+        line over the address, which sat at a fixed 16px below it.
+      -->
+      <div :ref="fitPlace[i]" class="acara__place" :class="`acara__slot--${i}`">
+        <!-- 2878:303 / 2878:321 — Bellefair 13/16. -->
+        <p class="acara__venue">{{ card.venue }}</p>
+        <!-- 2878:304 / 2878:322 — Bellefair 11/13. -->
+        <p class="acara__address">{{ card.address }}</p>
+      </div>
       <!-- 2878:306 / 2878:326 — Bellefair 10/16, #660c21, on the chip at 2878:305/325. -->
       <a
         v-if="card.maps"
@@ -161,15 +171,21 @@ const sectionHeight = computed(() => cards.value.length === 1 ? BAND_HEIGHT - 35
   color: #fff;
 }
 
+/*
+ * `height` is only useFitText's constraint (overflow stays visible): two lines, as
+ * "Akad Nikah" takes, plus the gap down to the date at 165. A third line shrinks the
+ * heading instead of landing on the date.
+ */
 .acara__title {
   --delay: 60ms;
   left: calc(88 * var(--px));
   top: calc((96 + var(--tslot)) * var(--px));
   width: calc(198 * var(--px));
+  height: calc(64 * var(--px));
   font-family: var(--font-heading);
-  font-size: calc(32 * var(--px));
+  font-size: calc(32 * var(--px) * var(--fit, 1));
   font-weight: 400;
-  line-height: calc(26 * var(--px));
+  line-height: calc(26 * var(--px) * var(--fit, 1));
 }
 
 .acara__date {
@@ -192,24 +208,33 @@ const sectionHeight = computed(() => cards.value.length === 1 ? BAND_HEIGHT - 35
   line-height: calc(18 * var(--px));
 }
 
-.acara__venue {
+/*
+ * The MAPS chip (2878:305) is art at a fixed y, so the box cannot grow down onto it:
+ * `height` runs from the venue's 284 to the chip's 339 plus a pixel, and useFitText
+ * shrinks both lines together when a long venue or address needs more than that.
+ */
+.acara__place {
   --delay: 260ms;
   left: calc(96 * var(--px));
   top: calc((284 + var(--slot)) * var(--px));
-  width: calc(182 * var(--px));
-  font-family: var(--font-detail);
-  font-size: calc(13 * var(--px));
-  line-height: calc(16 * var(--px));
+  width: calc(183 * var(--px));
+  height: calc(56 * var(--px));
 }
 
-.acara__address {
-  --delay: 300ms;
-  left: calc(97 * var(--px));
-  top: calc((300 + var(--slot)) * var(--px));
+.acara__venue {
   width: calc(182 * var(--px));
   font-family: var(--font-detail);
-  font-size: calc(11 * var(--px));
-  line-height: calc(13 * var(--px));
+  font-size: calc(13 * var(--px) * var(--fit, 1));
+  line-height: calc(16 * var(--px) * var(--fit, 1));
+}
+
+/* Figma's x is 97, a pixel right of the venue's. */
+.acara__address {
+  margin-left: calc(1 * var(--px));
+  width: calc(182 * var(--px));
+  font-family: var(--font-detail);
+  font-size: calc(11 * var(--px) * var(--fit, 1));
+  line-height: calc(13 * var(--px) * var(--fit, 1));
 }
 
 /* Sits on 2878:305, the cream chip — hence the dark fill rather than white. */
