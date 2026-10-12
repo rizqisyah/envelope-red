@@ -254,6 +254,12 @@ export function useWedding() {
   const pengantin = computed(() => content.value?.pengantin ?? [])
   const acara = computed(() => content.value?.acara ?? [])
   const gallery = computed(() => content.value?.gallery ?? [])
+  // `cerita_cinta` rows, in the order the admin set.
+  const ceritaCinta = computed(() =>
+    [...((content.value?.ceritaCinta ?? content.value?.cerita_cinta ?? []) as any[])].sort(
+      (a, b) => (a?.sort_order ?? 0) - (b?.sort_order ?? 0),
+    ),
+  )
   // The API calls the account list `rekening`.
   const gift = computed(() => content.value?.rekening ?? content.value?.gift ?? [])
   const wishes = computed(() => designWishes.value.length ? designWishes.value : content.value?.ucapan ?? content.value?.wishes ?? [])
@@ -359,6 +365,7 @@ export function useWedding() {
     pengantin,
     acara,
     gallery,
+    ceritaCinta,
     quoteVerse,
     quoteArabic,
     gift,

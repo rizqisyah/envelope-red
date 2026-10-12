@@ -11,6 +11,7 @@ import GroomSection from '../sections/GroomSection.vue'
 import GallerySection from '../sections/GallerySection.vue'
 import TheDaySection from '../sections/TheDaySection.vue'
 import AcaraSection from '../sections/AcaraSection.vue'
+import LoveStorySection from '../sections/LoveStorySection.vue'
 import YouMeSection from '../sections/YouMeSection.vue'
 import GiftSection from '../sections/GiftSection.vue'
 import RsvpSection from '../sections/RsvpSection.vue'
@@ -36,6 +37,8 @@ import FooterSection from '../sections/FooterSection.vue'
     <GallerySection />
     <TheDaySection />
     <AcaraSection />
+    <!-- Not in Frame 253: flows to fit the API's chapters. See LoveStorySection.vue. -->
+    <LoveStorySection />
     <YouMeSection />
     <GiftSection />
     <RsvpSection />
