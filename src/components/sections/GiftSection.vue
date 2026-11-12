@@ -17,10 +17,9 @@ const { el, shown } = useReveal(0.15)
 const fitLines = [useFitText(), useFitText(), useFitText()]
 const { gift, videoPrewed } = useWedding()
 
-import bcaLogo from '../../assets/gift/parts/2852-333.webp'
 import copyIcon from '../../assets/gift/parts/2852-357.webp'
 
-type Card = { logo: boolean; isKado: boolean; lines: string[]; copy: string }
+type Card = { isKado: boolean; lines: string[]; copy: string }
 
 /*
  * The design repeats the same BCA account twice and then prints a postal address as a
@@ -28,10 +27,9 @@ type Card = { logo: boolean; isKado: boolean; lines: string[]; copy: string }
  * all three so the band matches the render; live data replaces the lot.
  */
 const DESIGN: Card[] = [
-  { logo: true, isKado: false, lines: ['No. Rekening : 8715154435', 'A/n Muhammad Arif'], copy: '8715154435' },
-  { logo: true, isKado: false, lines: ['No. Rekening : 8715154435', 'A/n Muhammad Arif'], copy: '8715154435' },
+  { isKado: false, lines: ['No. Rekening : 8715154435', 'A/n Muhammad Arif', 'BCA'], copy: '8715154435' },
+  { isKado: false, lines: ['No. Rekening : 8715154435', 'A/n Muhammad Arif', 'BCA'], copy: '8715154435' },
   {
-    logo: false,
     isKado: true,
     lines: ['Alamat', '65, Jalan Raya Tanjung Barat', 'A/n Putrianti Resti Rusyah'],
     copy: '65, Jalan Raya Tanjung Barat',
@@ -48,14 +46,13 @@ const cards = computed<Card[]>(() => {
       const name = (g.account_name || '').trim()
       if (!number && !name) return null
       return checkKado(g.bank_name)
-        ? { logo: false, isKado: true, lines: ['Alamat', number, name].filter(Boolean), copy: number }
+        ? { isKado: true, lines: ['Alamat', number, name].filter(Boolean), copy: number }
         : {
-            logo: /bca/i.test(g.bank_name || ''),
             isKado: false,
             lines: [
               `No. Rekening : ${number}`,
               name ? `A/n ${name}` : '',
-              !/bca/i.test(g.bank_name || '') && g.bank_name ? String(g.bank_name) : '',
+              g.bank_name ? String(g.bank_name) : '',
             ].filter(Boolean),
             copy: number,
           }
@@ -106,9 +103,8 @@ async function copy(i: number, text: string) {
 const SLOT = 119
 
 /*
- * Everything this band draws itself. The copy icons become real buttons, and the BCA
- * logos are per-account: BandArt would paint the raster under a Mandiri account number
- * because the design's own two cards happen to be BCA.
+ * Everything this band draws itself. The copy icons become real buttons. The design's
+ * BCA logos (2852:333/341) are skipped outright: accounts show the bank as text instead.
  */
 const REDRAWN = ['2852:357', '2852:358', '2852:360', '2852:333', '2852:341']
 
@@ -141,17 +137,8 @@ const skipLayers = computed(() => {
       </p>
 
       <template v-for="(card, i) in cards" :key="i">
-        <img
-          v-if="card.logo"
-          class="gift__logo"
-          :src="bcaLogo"
-          alt="BCA"
-          width="60"
-          height="19"
-          :style="{ '--slot': `${i * SLOT}` }"
-        />
         <div
-          v-else-if="card.isKado"
+          v-if="card.isKado"
           class="gift__icon"
           :style="{ '--slot': `${i * SLOT}` }"
         >
@@ -211,14 +198,6 @@ const skipLayers = computed(() => {
   line-height: calc(17 * var(--px));
   text-align: left;
   color: #000;
-}
-
-.gift__logo {
-  --delay: 300ms;
-  left: calc(40 * var(--px));
-  top: calc((268 + var(--slot)) * var(--px));
-  width: calc(60 * var(--px));
-  height: calc(19 * var(--px));
 }
 
 .gift__icon {
