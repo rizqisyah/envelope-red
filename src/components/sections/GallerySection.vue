@@ -133,7 +133,7 @@ const dlg = ref<HTMLDialogElement | null>(null)
     >
       <img
         :src="photos[active].src"
-        :alt="photos[active].caption || 'Foto mempelai'"
+        alt="Foto mempelai"
         width="167"
         height="98"
         loading="lazy"
@@ -170,11 +170,10 @@ const dlg = ref<HTMLDialogElement | null>(null)
       <img
         class="preview__img"
         :src="photos[active].src"
-        :alt="photos[active].caption || 'Foto mempelai'"
+        alt="Foto mempelai"
         @touchstart.passive="onStart"
         @touchend.passive="onEnd"
       />
-      <p v-if="photos[active].caption" class="preview__caption">{{ photos[active].caption }}</p>
       <button
         v-if="photos.length > 1"
         type="button"
@@ -334,14 +333,6 @@ const dlg = ref<HTMLDialogElement | null>(null)
   max-height: 78dvh;
   object-fit: contain;
   border-radius: 4px;
-}
-
-.preview__caption {
-  max-width: 100%;
-  font-family: var(--font-caps);
-  font-size: 0.75rem;
-  text-align: center;
-  color: #f2e6e6;
 }
 
 .preview__nav {
