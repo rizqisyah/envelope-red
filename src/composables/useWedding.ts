@@ -1,16 +1,24 @@
 import { ref, computed, onMounted } from 'vue'
 
 
-import { resolveSlug, getHome, submitUcapan, DESIGN_MODE } from '../lib/api'
+import { resolveSlug, getHome, submitUcapan, DESIGN_MODE, ApiError } from '../lib/api'
 import type { PhotoTransform } from '../lib/bandLayer'
 
 const state = ref<{
   loading: boolean
   error: string | null
+  /*
+   * Set when the server refuses this invitation outright (any 4xx): switched off, owner's
+   * account deactivated, private link, wrong theme. Every band falls back to the design's
+   * sample copy when `data` is empty, so without this a dead invitation would still render
+   * as a full, live-looking demo.
+   */
+  blocked: { status: number; code?: string; message: string } | null
   data: any | null
 }>({
   loading: true,
   error: null,
+  blocked: null,
   data: null,
 })
 
@@ -98,6 +106,7 @@ async function fetchWeddingData() {
   guestCode.value = getGuestCode()
   state.value.loading = true
   state.value.error = null
+  state.value.blocked = null
   try {
     const data = await getHome(slug.value, guestCode.value)
     
@@ -134,6 +143,9 @@ async function fetchWeddingData() {
   } catch (err: any) {
     console.error('Failed to load wedding data:', err)
     state.value.error = err.message
+    if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+      state.value.blocked = { status: err.status, code: err.code, message: err.message }
+    }
   } finally {
     state.value.loading = false
   }
@@ -359,6 +371,7 @@ export function useWedding() {
     guestGroup,
     loading: computed(() => state.value.loading),
     error: computed(() => state.value.error),
+    blocked: computed(() => state.value.blocked),
     wedding,
     theme,
     guest,

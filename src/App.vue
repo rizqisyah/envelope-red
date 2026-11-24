@@ -4,10 +4,11 @@ import CoverSection from './components/cover/CoverSection.vue'
 import InviteBody from './components/invite/InviteBody.vue'
 import BottomNav from './components/sections/BottomNav.vue'
 import VideoSection from './components/sections/VideoSection.vue'
+import UnavailableScreen from './components/UnavailableScreen.vue'
 import { usePreloadAssets } from './composables/usePreloadAssets'
 import { useWedding } from './composables/useWedding'
 
-const { guestName, coupleNickname, quoteText, quoteVerse, leftCoverBg } = useWedding()
+const { guestName, coupleNickname, quoteText, quoteVerse, leftCoverBg, blocked } = useWedding()
 const { coverLoaded, preloadCover, preloadInviteBody } = usePreloadAssets()
 
 const isOpen = ref(false)
@@ -56,7 +57,8 @@ function onSplashLeave() {
 </script>
 
 <template>
-  <main class="app-shell">
+  <UnavailableScreen v-if="blocked" v-bind="blocked" />
+  <main v-else class="app-shell">
     <!-- Desktop only: the invitation is a 430px column, this fills the rest. -->
     <div class="desktop-left-column" :style="leftBackgroundStyle">
       <div class="left-overlay"></div>

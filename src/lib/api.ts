@@ -19,6 +19,17 @@ export function resolveSlug(): string {
   return last
 }
 
+/** A failed API call, with the HTTP status and the server's machine-readable `code`. */
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly code?: string,
+  ) {
+    super(message)
+  }
+}
+
 async function request(path: string, options: RequestInit = {}): Promise<any> {
   let res: Response
   try {
@@ -39,7 +50,7 @@ async function request(path: string, options: RequestInit = {}): Promise<any> {
 
   if (!res.ok || (payload && payload.success === false)) {
     const message = (payload && payload.message) || `Request failed (${res.status})`
-    throw new Error(message)
+    throw new ApiError(message, res.status, payload?.code)
   }
 
   return payload
